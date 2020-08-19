@@ -42,3 +42,7 @@ Or in live form:
 Now, you can just package up your mod files like you usually would (or use `./acmi.exe zip` to quickly have it done for you)
 
 ![acmi zip](/acmi-zip.gif)
+
+When a user installs that ZIP file with a supported mod installer (Vortex in this example), they'll see a proper wizard stepping them through aircraft and slot choices:
+
+![fomod installer](/ac-fomod-min.gif)
