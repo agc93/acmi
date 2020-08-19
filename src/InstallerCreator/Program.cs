@@ -15,9 +15,12 @@ namespace InstallerCreator
             var services = new ServiceCollection();
             var app = new CommandApp(new DependencyInjectionRegistrar(services));
             app.Configure(c => {
-                c.SetApplicationName("AC7 Mod Installer Creator");
+                c.SetApplicationName("acmi");
                 c.AddCommand<BuildCommand>("build");
                 c.AddCommand<PackCommand>("zip");
+                c.AddExample(new[] {"build"});
+                c.AddExample(new[] {"build", "./ModPackFiles"});
+                c.AddExample(new[] {"build", "--author", "agc93", "--title", "\"My Awesome Skin Pack\"", "--version", "1.0.0"});
             });
             return await app.RunAsync(args);
         }

@@ -6,6 +6,7 @@ using Spectre.Cli;
 
 namespace InstallerCreator.Commands
 {
+    [Description("Creates a ZIP archive of the given directory. This is just a convenience.")]
     public class PackCommand : Command<PackCommand.Settings>
     {
         public override int Execute(CommandContext context, Settings settings) {
@@ -25,9 +26,11 @@ namespace InstallerCreator.Commands
         public class Settings : AppSettings {
             [CommandOption("-e|--extension [value]")]
             [DefaultValue(".zip")]
+            [Description("Optionally choose a non-default file extension.")]
             public FlagValue<string> Extension {get;set;}
 
             [CommandArgument(1, "[archiveFileName]")]
+            [Description("The target file for the ZIP archive. Defaults to a file named for (and in) the mod root directory.")]
             public string TargetFileName {get;set;}
 
         }

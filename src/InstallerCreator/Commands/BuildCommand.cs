@@ -8,6 +8,7 @@ using Spectre.Cli;
 
 namespace InstallerCreator.Commands
 {
+    [Description("Builds the Mod Installer XML files for the given mod files.")]
     public class BuildCommand : Command<BuildCommand.Settings>
     {
         public override int Execute(CommandContext context, Settings settings)
@@ -38,19 +39,24 @@ namespace InstallerCreator.Commands
 
         public class Settings : AppSettings {
             [CommandOption("--author [VALUE]")]
+            [Description("Name and/or username to use as the author in installer files. Only affects the installer.")]
             public FlagValue<string> Author {get;set;}
 
             [CommandOption("--title  [VALUE]")]
+            [Description("Title for the generated installer. This is usually shown as the dialog title.")]
             public FlagValue<string> Title {get;set;}
 
             [CommandOption("--description [VALUE]")]
+            [Description("An optional description to include in the installer files.")]
             public FlagValue<string> Description {get;set;}
 
             [CommandOption("--version [VERSION]")]
             [DefaultValue("1.0.0")]
+            [Description("Version string to use for the generated info files. Only affects the installer.")]
             public FlagValue<string> Version {get;set;}
 
             [CommandOption("--group <VALUE>")]
+            [Description("Optional list of named groups for this installer. Usually used as categories.")]
             public List<string> Groups {get;set;} = new List<string> {"Models and Textures"};
         }
     }
