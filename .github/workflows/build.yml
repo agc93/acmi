@@ -30,7 +30,7 @@ jobs:
     - name: Run the Cake script
       uses: cake-build/cake-action@v1
       with:
-        target: Release
+        target: Publish
         cake-bootstrap: true
     - uses: actions/upload-artifact@v1
       name: Upload Artifacts
