@@ -1,0 +1,22 @@
+baseURL = "/"
+languageCode = "en-au"
+
+title = "ACMI"
+theme = "kraiklyn"
+
+pygmentsCodeFences = true
+pygmentsStyle = "monokailight"
+
+[params]
+sidebarColor = "blue"
+customCss = []
+
+[[menu.shortcuts]]
+name = "GitHub"
+url = "https://github.com/agc93/acmi"
+weight = 10
+
+[[menu.shortcuts]]
+name = "Nexus Mods"
+url = "https://www.nexusmods.com/acecombat7skiesunknown/mods"
+weight = 20

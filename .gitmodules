@@ -1,0 +1,3 @@
+[submodule "docs/themes/kraiklyn"]
+	path = docs/themes/kraiklyn
+	url = https://github.com/jsnjack/kraiklyn.git
