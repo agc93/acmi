@@ -25,12 +25,13 @@ namespace InstallerCreator.Commands
                 Console.WriteLine("Could not locate any PAK files");
                 return 204;
             }
+            Console.WriteLine();
+            Console.WriteLine($"INFO: Building installer from {skins.Count} detected skin mods ({extraFiles.Count} other mod files).");
             var builder = new ModInstallerBuilder(modRoot, settings.Title.Value, settings.Description.IsSet ? settings.Description.Value : null);
             var info = builder.GenerateInfoXml(settings.Author.Value, settings.Version.Value, settings.Groups, settings.Description.Value);
             
             var moduleConfig = builder.GenerateModuleConfigXml(skins, extraFiles);
             builder.WriteToInstallerFiles(info, moduleConfig);
-            Console.WriteLine();
             Console.WriteLine($"INFO: Mod Installer files have been written to the {Path.Combine(modRoot, "fomod")} directory!");
             return 0;
         }
