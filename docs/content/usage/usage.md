@@ -9,5 +9,5 @@ You'll need a command prompt open (Windows PowerShell, Terminal, whatever) then 
 If it completes successfully, you should see a new `fomod` directory in your mod files. Just include that folder when you ZIP up your archive (to upload to Nexus/ModDB/wherever) then anyone who installs your archive with a mod manager will get the nice guided installer. Users who want to install manually can just ignore the fomod folder and it will not affect your other files in any way.
 
 {{< block tip >}}
-You can also just run `acmi.exe` (or `acmi.exe --help`) to see some basic help and usage info
+You can also just run <code>acmi.exe --help</code> to see some basic help and usage info
 {{< /block >}}

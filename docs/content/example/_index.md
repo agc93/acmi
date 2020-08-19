@@ -35,9 +35,9 @@ Now it's just a case of running ACMI and telling it where your mod files are:
 ```text
 D:\Mods> .\acmi.exe build '.\Skies Untold Warlock Pack\'
 ```
-Or in live form:
+Or to make it easier, just drag your folder on to the `.exe` file you unpacked:
 
-![walkthrough](/acmi.gif)
+![walkthrough](/acmi-drag.gif)
 
 Now, you can just package up your mod files like you usually would (or use `./acmi.exe zip` to quickly have it done for you)
 

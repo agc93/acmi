@@ -7,7 +7,7 @@ namespace InstallerCreator
 {
     public class InputHelpers
     {
-        public static BuildCommand.Settings PromptMissing(BuildCommand.Settings settings) {
+        public static BuildCommand.Settings PromptMissing(BuildCommand.Settings settings, bool isUnattended = false) {
             if (!settings.Title.IsSet) {
                 settings.Title.Value = Question.Input("Please enter your mod name")
                     .WithDefaultValue(new DirectoryInfo(settings.ModRootPath).Name)
@@ -28,7 +28,7 @@ namespace InstallerCreator
                     .Prompt();
                 settings.Version.IsSet = true;
             }
-            if (!settings.Description.IsSet && !(settings.Title.IsSet && settings.Author.IsSet && settings.Version.IsSet)) {
+            if (!settings.Description.IsSet && !isUnattended) {
                 settings.Description.Value = Question.Input("Optionally enter a description")
                     .WithDefaultValue(string.Empty)
                     .Prompt();

@@ -13,6 +13,7 @@ namespace InstallerCreator.Commands
     {
         public override int Execute(CommandContext context, Settings settings)
         {
+            var isUnattended = settings.Author.IsSet && settings.Version.IsSet && settings.Title.IsSet;
             var rootPath = new ModRootPath(settings.ModRootPath);
             settings.ModRootPath = rootPath.RootPath;
             var modRoot = rootPath.AbsolutePath;
@@ -20,7 +21,7 @@ namespace InstallerCreator.Commands
                 Console.WriteLine("ERROR: The specified mod root doesn't appear to exist!");
                 return 1;
             }
-            settings = InputHelpers.PromptMissing(settings);
+            settings = InputHelpers.PromptMissing(settings, isUnattended);
             var skins = FileHelpers.GetSkins(modRoot, out var extraFiles);
             if (skins.Count == 0) {
                 Console.WriteLine("Could not locate any PAK files");
@@ -34,6 +35,10 @@ namespace InstallerCreator.Commands
             var moduleConfig = builder.GenerateModuleConfigXml(skins, extraFiles);
             builder.WriteToInstallerFiles(info, moduleConfig);
             Console.WriteLine($"INFO: Mod Installer files have been written to the {Path.Combine(modRoot, "fomod")} directory!");
+            if (!isUnattended) {
+                Console.WriteLine("Press <ENTER> to continue...");
+                Console.ReadLine();
+            }
             return 0;
         }
 
