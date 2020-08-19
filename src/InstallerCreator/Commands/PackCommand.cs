@@ -9,12 +9,15 @@ namespace InstallerCreator.Commands
     public class PackCommand : Command<PackCommand.Settings>
     {
         public override int Execute(CommandContext context, Settings settings) {
+            var rootPath = new ModRootPath(settings.ModRootPath);
             var targetFile = string.IsNullOrWhiteSpace(settings.TargetFileName)
                 ? new DirectoryInfo(settings.ModRootPath).Name
                 : settings.TargetFileName;
+            var tempFile = Path.Combine(Path.GetTempPath(), targetFile);
             targetFile = Path.GetFileNameWithoutExtension(targetFile) + (settings.Extension.IsSet ? settings.Extension.Value : ".zip");
-            var absoluteTarget = Path.Combine(settings.ModRootPath, targetFile);
-            ZipFile.CreateFromDirectory(settings.ModRootPath, absoluteTarget);
+            var absoluteTarget = Path.Combine(rootPath.AbsolutePath, targetFile);
+            ZipFile.CreateFromDirectory(settings.ModRootPath, tempFile);
+            File.Move(tempFile, absoluteTarget);
             Console.WriteLine($"Created archive file at ${absoluteTarget}");
             return File.Exists(absoluteTarget) ? 0 : 500;
         }

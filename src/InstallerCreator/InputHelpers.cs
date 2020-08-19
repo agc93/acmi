@@ -10,7 +10,7 @@ namespace InstallerCreator
         public static BuildCommand.Settings PromptMissing(BuildCommand.Settings settings) {
             if (!settings.Title.IsSet) {
                 settings.Title.Value = Question.Input("Please enter your mod name")
-                    .WithDefaultValue(new DirectoryInfo(System.Environment.CurrentDirectory).Name)
+                    .WithDefaultValue(new DirectoryInfo(settings.ModRootPath).Name)
                     .Prompt();
                 settings.Title.IsSet = true;
             }
