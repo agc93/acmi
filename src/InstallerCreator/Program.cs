@@ -16,6 +16,7 @@ namespace InstallerCreator
             var app = new CommandApp(new DependencyInjectionRegistrar(services));
             app.SetDefaultCommand<BuildCommand>();
             app.Configure(c => {
+                c.SetApplicationName("acmi");
                 c.AddCommand<BuildCommand>("build");
                 c.AddCommand<PackCommand>("zip");
                 c.AddExample(new[] {"build"});

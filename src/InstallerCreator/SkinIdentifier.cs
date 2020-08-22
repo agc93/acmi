@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace InstallerCreator {
@@ -65,7 +66,10 @@ namespace InstallerCreator {
             Aircraft = aircraft;
             Slot = slot;
             Type = type;
+			SlotName = ParseSlotName();
         }
+
+		public string SlotName {get; private set;}
 
         public string RawValue { get; }
 
@@ -74,15 +78,25 @@ namespace InstallerCreator {
         public string Slot { get; }
         public string Type { get; }
 
-        public string GetSlotName() {
-            var knownName = _slotNames.TryGetValue(Slot, out var name);
+		private string ParseSlotName() {
+			var knownName = _slotNames.TryGetValue(Slot, out var name);
             if (knownName) {
                 return name;
             } else {
-                return Regex.IsMatch(Slot, @"[a-z]")
-                    ? $"NPC {Slot}"
-                    : $"0{(int.TryParse(Slot, out var num) ? (num + 1).ToString() : Slot)}";
+				var npcRex = new Regex(@"(\d{2})(\w{1})");
+				if (npcRex.IsMatch(Slot)) {
+					var match = npcRex.Match(Slot);
+					var baseSlot = match.Groups[1].Value;
+					var baseMatch = _slotNames.TryGetValue(baseSlot, out name);
+					return $"NPC {(baseMatch ? name : baseSlot)} {match.Groups[2].Value}";
+				}
+                return $"0{(int.TryParse(Slot, out var num) ? (num + 1).ToString() : Slot)}";
             }
+		}
+
+        public string GetSlotName() {
+			SlotName ??= ParseSlotName();
+			return SlotName;
         }
 
         public string GetAircraftName() {

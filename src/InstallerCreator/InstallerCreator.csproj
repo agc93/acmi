@@ -18,8 +18,8 @@
   <ItemGroup>
     <PackageReference Include="Inquirer.cs" Version="3.0.1" />
     <PackageReference Include="Semver" Version="2.0.6" />
-    <PackageReference Include="Spectre.Cli" Version="0.36.0" />
-    <PackageReference Include="spectre.cli.extensions.dependencyinjection" Version="0.2.0" />
+    <PackageReference Include="Spectre.Cli" Version="0.37.0" />
+    <PackageReference Include="spectre.cli.extensions.dependencyinjection" Version="0.3.0-alpha0013" />
     <PackageReference Include="spectre.console" Version="0.14.0" />
   </ItemGroup>
 
