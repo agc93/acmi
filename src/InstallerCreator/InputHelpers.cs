@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using InquirerCS;
+// using InquirerCS;
 using InstallerCreator.Commands;
 using Semver;
 using Sharprompt;
@@ -52,7 +52,7 @@ namespace InstallerCreator
     }
 
 
-    public class InquirerPrompts : IOptionsPrompt<BuildCommand.Settings>
+    /* public class InquirerPrompts : IOptionsPrompt<BuildCommand.Settings>
     {
         public BuildCommand.Settings PromptMissing(BuildCommand.Settings settings, bool isUnattended = false) {
             if (!settings.Title.IsSet) {
@@ -84,5 +84,5 @@ namespace InstallerCreator
             System.Console.WriteLine();
             return settings;
         }
-    }
+    } */
 }

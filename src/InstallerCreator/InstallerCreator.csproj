@@ -17,7 +17,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Inquirer.cs" Version="3.0.1" />
     <PackageReference Include="Semver" Version="2.0.6" />
     <PackageReference Include="Sharprompt" Version="2.0.0" />
     <PackageReference Include="Spectre.Cli" Version="0.37.0" />
