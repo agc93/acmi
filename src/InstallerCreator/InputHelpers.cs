@@ -38,7 +38,7 @@ namespace InstallerCreator
             }
             if (!settings.DetectMultipleSkins.IsSet && !isUnattended) {
                 AnsiConsole.MarkupLine("If your pak files contain more than one skin, we can scan the [bold]whole[/] file instead of just the headers.");
-                AnsiConsole.MarkupLine("However, this will take an [itralic red]extremely[/] long time compared to just using the first texture we find.");
+                AnsiConsole.MarkupLine("However, this will take an [italic red]extremely[/] long time compared to just using the first texture we find.");
                 settings.DetectMultipleSkins.Value = Prompt.Confirm("Do any of your files contain more than one skin?", false);
                 settings.DetectMultipleSkins.IsSet = true;
             }
