@@ -20,7 +20,7 @@ namespace InstallerCreator
             foreach (var file in pakFiles)
             {
                 var relPath = Path.GetRelativePath(rootPath, file.FullName);
-                if (allowMultiple || file.Name.Contains('^')) {
+                if (allowMultiple || file.Name.Contains('^') || file.Name.Contains("MULTI")) {
                     var idents = reader.ReadAllSkinSlots(file.FullName);
                     if (idents == null || !idents.Any()) {
                         files.ExtraFiles.Add(relPath);
