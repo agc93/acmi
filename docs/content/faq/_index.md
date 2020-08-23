@@ -27,6 +27,8 @@ The short version is that ACMI will scan through the mod root (defaults to the c
   - If there's only one `.png`/`.jpg` in the root folder, we'll use that. If there's more than one, we'll use the first one we find with "preview" in the name.
 - If you want to also have pictures for your skin files, just include a `.png` or `.jpg` with the _same name_ as the `.pak` file, beside it.
   - For example, for a file at `Skins\UntoldGalmPack_F15C_F15ACipher1994_MageSlot.pak`, we would check for a `Skins\UntoldGalmPack_F15C_F15ACipher1994_MageSlot.png` file and use that if it's found.
+- If your `.pak` file has more than one skin in it, you need to _either_ enable scanning the full file when you run ACMI (not recommended), or include a `^` character anywhere in the file name.
+  - This dramatically slows down the build process but should correctly pull *all* included skins out, not just the first.
 
 ### Will it affect other users?
 

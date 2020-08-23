@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using AceCore;
+using static InstallerCreator.ModInstaller.XmlHelpers;
 
 namespace InstallerCreator.ModInstaller {
     public class ModInstallerBuilder {
@@ -35,11 +37,11 @@ namespace InstallerCreator.ModInstaller {
             return xdoc;
         }
 
-        public XDocument GenerateModuleConfigXml(Dictionary<string, SkinIdentifier> skins, IEnumerable<string> extraPaks) {
+        public XDocument GenerateModuleConfigXml(SkinPack skins) {
             string MakeSafePath(string input) {
                 return Path.GetInvalidFileNameChars().Aggregate(input, (current, c) => current.Replace(c, '-'));
             }
-            var aircraftLookup = skins.ToLookup(k => k.Value.GetAircraftName());
+            var aircraftLookup = skins.Skins.ToLookup(k => k.Value.GetAircraftName());
             var moduleChildren = new List<XElement> {
                 new XElement("moduleName", _title),
             };
@@ -47,29 +49,22 @@ namespace InstallerCreator.ModInstaller {
             if (image != null) {
                 moduleChildren.Add(new XElement("moduleImage", new XAttribute("path", image)));
             }
-            var readmes = checkForReadme();
-            if (readmes.Count > 0) {
-                moduleChildren.Add(new XElement("requiredInstallFiles", readmes.Select(r => new XElement("file", new XAttribute("source", r), new XAttribute("destination", Path.Combine(MakeSafePath(_title), new FileInfo(r).Name))))));
+            if (skins.ReadmeFiles.Count > 0) {
+                moduleChildren.Add(new XElement("requiredInstallFiles", skins.ReadmeFiles.Select(r => new XElement("file", new XAttribute("source", r), new XAttribute("destination", Path.Combine(MakeSafePath(_title), new FileInfo(r).Name))))));
             }
-            moduleChildren.Add(GenerateStepsXml(aircraftLookup, extraPaks.ToList()));
+            moduleChildren.Add(GenerateStepsXml(aircraftLookup, skins.ExtraFiles.ToList(), skins.MultiSkinFiles));
             XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
             var xdoc = new XDocument(new XElement("config", new XAttribute(XNamespace.Xmlns + "xsi", xsi), new XAttribute(xsi + "noNamespaceSchemaLocation", "http://qconsulting.ca/fo3/ModConfig5.0.xsd"), moduleChildren));
             return xdoc;
         }
 
-        public XElement GenerateStepsXml(ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, List<string> extraPaks) {
-            XElement OptionalTypeDescriptor() {
-                return new XElement("typeDescriptor", new XElement("type", new XAttribute("name", "Optional")));
-            }
-            XElement EmptyDescription() {
-                return new XElement("description", string.Empty);
-            }
-            XElement GetNonePlugin() {
-                return new XElement("plugin", new XAttribute("name", "None"), EmptyDescription(), OptionalTypeDescriptor());
-            }
-            XElement GetPluginElement(string fileName) {
+        private XElement GenerateStepsXml(ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, List<string> extraPaks, Dictionary<string, IEnumerable<SkinIdentifier>> multiSkins = null) {
+            
+            
+            
+            XElement GetPluginElement(string fileName, string description = null) {
                 var children = new List<XElement> {
-                    EmptyDescription(),
+                    Description(description),
                 };
                 var matchingImage = GetImagePath(fileName);
                 if (!string.IsNullOrWhiteSpace(matchingImage)) {
@@ -82,12 +77,15 @@ namespace InstallerCreator.ModInstaller {
             var steps = new List<XElement>();
             steps.Add(new XElement("installStep", new XAttribute("name", "Introduction"), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), new XElement("group", new XAttribute("name", "Introduction"), new XAttribute("type", "SelectAll"), new XElement("plugins", new XAttribute("order", "Explicit"), new XElement("plugin", new XAttribute("name", "Introduction"), new XElement("description", GetDescription()), OptionalTypeDescriptor()))))));
             foreach (var aircraft in lookup) {
-                steps.Add(new XElement("installStep", new XAttribute("name", aircraft.Key), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), aircraft.GroupBy(a => a.Value.GetSlotName()).Select(gs => new XElement("group", new XAttribute("name", gs.Key), new XAttribute("type", "SelectExactlyOne"), new XElement("plugins", new XAttribute("order", "Explicit"), GetNonePlugin(), gs.Select(ssf => GetPluginElement(ssf.Key))))))));
+                steps.Add(new XElement("installStep", new XAttribute("name", aircraft.Key), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), aircraft.GroupBy(a => a.Value.GetSlotName()).Select(gs => new XElement("group", new XAttribute("name", gs.Key), new XAttribute("type", "SelectExactlyOne"), new XElement("plugins", new XAttribute("order", "Explicit"), NonePlugin(), gs.Select(ssf => GetPluginElement(ssf.Key))))))));
+            }
+            if (multiSkins != null && multiSkins.Count > 0) {
+                steps.Add(new XElement("installStep", new XAttribute("name", "Merged Files"), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name("Combination Skin Files"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), multiSkins.Select(ms => GetPluginElement(ms.Key, string.Join(System.Environment.NewLine, ms.Value.Select(v => v.ToString())))))))));
             }
             if (extraPaks != null && extraPaks.Any()) {
                 steps.Add(new XElement("installStep", new XAttribute("name", "Other Files"), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), new XElement("group", new XAttribute("name", "Other mod files"), new XAttribute("type", "SelectAny"), new XElement("plugins", new XAttribute("order", "Explicit"), extraPaks.Select(ep => GetPluginElement(ep)))))));
             }
-            return new XElement("installSteps", new XAttribute("order", "Explicit"), steps);
+            return new XElement("installSteps", ExplicitOrder(), steps);
         }
 
         private string GetImagePath(string fileName) {

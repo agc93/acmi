@@ -12,8 +12,6 @@ namespace InstallerCreator {
                           Directory.EnumerateFiles(path, searchPattern, searchOption));
         }
 
-        public static string CleanPath(this string rootPath) {
-            return rootPath.Trim('\"', '/', '\\');
-        }
+        
     }
 }

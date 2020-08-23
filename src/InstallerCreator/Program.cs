@@ -13,6 +13,8 @@ namespace InstallerCreator
         static async Task<int> Main(string[] args)
         {
             var services = new ServiceCollection();
+            services.AddSingleton<IOptionsPrompt<BuildCommand.Settings>, SharpromptOptionsPrompt>();
+            services.AddSingleton<FileService>();
             var app = new CommandApp(new DependencyInjectionRegistrar(services));
             app.SetDefaultCommand<BuildCommand>();
             app.Configure(c => {

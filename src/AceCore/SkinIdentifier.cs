@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace InstallerCreator {
+namespace AceCore
+{
     public class SkinIdentifier {
         private Dictionary<string, string> _slotNames = new Dictionary<string, string> {
             ["00"] = "Osea",
@@ -106,6 +106,10 @@ namespace InstallerCreator {
             } else {
                 return Aircraft.ToUpper();
             }
+        }
+
+        public override string ToString() {
+            return $"{GetAircraftName()} ({GetSlotName()})";
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
+using AceCore;
 using Spectre.Cli;
 
 namespace InstallerCreator.Commands
