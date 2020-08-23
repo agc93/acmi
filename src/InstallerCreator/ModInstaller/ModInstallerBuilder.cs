@@ -89,7 +89,7 @@ namespace InstallerCreator.ModInstaller {
         }
 
         private string GetImagePath(string fileName) {
-            var skinFileName = Path.GetFileNameWithoutExtension(fileName);
+            var skinFileName = Path.GetFileNameWithoutExtension(fileName).TrimEnd('_', '.');
             var pakFileLocation = new FileInfo(Path.Combine(_rootPath, fileName)).Directory;
             var possibleImages = new[] {".png", ".jpg"}.Select(e => Path.Join(pakFileLocation.FullName, skinFileName + e));
             var firstValid = possibleImages.FirstOrDefault(pi => File.Exists(pi));
