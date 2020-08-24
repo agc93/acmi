@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace AceCore
 {
-    public class SkinIdentifier {
+    public class SkinIdentifier : Identifier {
         private Dictionary<string, string> _slotNames = new Dictionary<string, string> {
             ["00"] = "Osea",
             ["01"] = "Erusea",
@@ -71,7 +71,7 @@ namespace AceCore
 
 		public string SlotName {get; private set;}
 
-        public string RawValue { get; }
+        
 
         public string Aircraft { get; }
 
@@ -94,7 +94,7 @@ namespace AceCore
             }
 		}
 
-        public string GetSlotName() {
+        public override string GetSlotName() {
 			SlotName ??= ParseSlotName();
 			return SlotName;
         }

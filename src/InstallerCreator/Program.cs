@@ -5,6 +5,8 @@ using Spectre.Cli.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using InstallerCreator.Commands;
 using System.Threading.Tasks;
+using AceCore.Parsers;
+using AceCore;
 
 namespace InstallerCreator
 {
@@ -14,7 +16,13 @@ namespace InstallerCreator
         {
             var services = new ServiceCollection();
             services.AddSingleton<IOptionsPrompt<BuildCommand.Settings>, SharpromptOptionsPrompt>();
-            services.AddSingleton<FileService>();
+            services.AddSingleton<IFileService, AdvancedFileService>();
+            services.AddSingleton<IIdentifierParser, PortraitParser>();
+            services.AddSingleton<IIdentifierParser, CrosshairParser>();
+            services.AddSingleton<IIdentifierParser, SkinParser>();
+            services.AddSingleton<IIdentifierParser, WeaponParser>();
+            services.AddSingleton<IIdentifierParser, EffectsParser>();
+            services.AddSingleton<PakReader>();
             var app = new CommandApp(new DependencyInjectionRegistrar(services));
             app.SetDefaultCommand<BuildCommand>();
             app.Configure(c => {

@@ -14,9 +14,9 @@ namespace InstallerCreator.Commands
     public class BuildCommand : Command<BuildCommand.Settings>
     {
         private readonly IOptionsPrompt<Settings> _prompt;
-        private readonly FileService _fileService;
+        private readonly IFileService _fileService;
 
-        public BuildCommand(IOptionsPrompt<BuildCommand.Settings> prompt, FileService fileService)
+        public BuildCommand(IOptionsPrompt<BuildCommand.Settings> prompt, IFileService fileService)
         {
             _prompt = prompt;
             _fileService = fileService;
@@ -35,16 +35,17 @@ namespace InstallerCreator.Commands
             AnsiConsole.MarkupLine("[dim]INFO[/]: Scanning and reading mod files. Please be patient!");
             var pack = _fileService.GetFiles(modRoot, settings.DetectMultipleSkins.Value);
             // var skins = FileHelpers.GetSkins(modRoot, out var extraFiles);
-            if (pack.Skins.Count == 0 && pack.MultiSkinFiles.Count == 0 && pack.ExtraFiles.Count == 0) {
+            if (pack.IsEmpty()) {
                 Console.WriteLine("Could not locate any PAK files");
                 return 204;
             }
-            AnsiConsole.MarkupLine($"[dim]INFO:[/] Building installer from [bold]{pack.Skins.Count}[/] detected skin mods ([bold]{pack.ExtraFiles.Count}[/] other mod files{(pack.MultiSkinFiles.Any() ? " and [bold]" + pack.MultiSkinFiles.Count + "[/] merged files" : string.Empty)}).");
+            AnsiConsole.MarkupLine($"[dim]INFO:[/] Building installer from [bold]{pack.GetFileCount()}[/] detected mods ([bold]{pack.ExtraFiles.Count}[/] other mod files).");
             // Console.WriteLine($"INFO: Building installer from {pack.Skins.Count} detected skin mods ({pack.ExtraFiles.Count} other mod files{(pack.MultiSkinFiles.Any() ? " and " + pack.MultiSkinFiles.Count + "merged files" : string.Empty)}).");
             var builder = new ModInstallerBuilder(modRoot, settings.Title.Value, settings.Description.IsSet ? settings.Description.Value : null);
             var info = builder.GenerateInfoXml(settings.Author.Value, settings.Version.Value, settings.Groups, settings.Description.Value);
             
             var moduleConfig = builder.GenerateModuleConfigXml(pack);
+            PrintSummaryTable(pack);
             builder.WriteToInstallerFiles(info, moduleConfig);
             Console.WriteLine($"INFO: Mod Installer files have been written to the {Path.Combine(modRoot, "fomod")} directory!");
             if (!isUnattended) {
@@ -54,6 +55,33 @@ namespace InstallerCreator.Commands
             return 0;
         }
 
+        private void PrintSummaryTable(SkinPack files) {
+            var table = new Table();
+            table.AddColumn(new TableColumn("[u]Type[/]"));
+            table.AddColumn(new TableColumn("[u]Count[/]"));
+            if (files.Skins.Keys.Any()) {
+                table.AddRow("Skins", files.Skins.Count.ToString());
+            }
+            if (files.MultiSkinFiles.Keys.Any()) {
+                table.AddRow("Merged Skins", files.MultiSkinFiles.Count.ToString());
+            }
+            if (files.Portraits.Keys.Any()) {
+                table.AddRow("Portraits", files.Portraits.Count.ToString());
+            }
+            if (files.Weapons.Keys.Any()) {
+                table.AddRow("Weapons", files.Weapons.Count.ToString());
+            }
+            if (files.Effects.Keys.Any()) {
+                table.AddRow("Effects", files.Effects.Count.ToString());
+            }
+            if (files.Crosshairs.Keys.Any()) {
+                table.AddRow("Crosshairs", files.Crosshairs.Count.ToString());
+            }
+            if (files.ExtraFiles.Any()) {
+                table.AddRow("Extra Files", files.ExtraFiles.Count.ToString());
+            }
+            AnsiConsole.Render(table);
+        }
         public class Settings : AppSettings {
             [CommandOption("--author [VALUE]")]
             [Description("Name and/or username to use as the author in installer files. Only affects the installer.")]

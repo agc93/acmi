@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Xml.Linq;
 
 namespace InstallerCreator.ModInstaller {
@@ -24,6 +25,10 @@ namespace InstallerCreator.ModInstaller {
 
         internal static XElement NonePlugin() {
             return new XElement("plugin", new XAttribute("name", "None"), Description(), OptionalTypeDescriptor());
+        }
+
+        internal static string Includes(System.Collections.Generic.IEnumerable<string> ids) {
+            return $"Includes:{System.Environment.NewLine}" + ids.Distinct().JoinLines();
         }
 
         internal enum SelectType {
