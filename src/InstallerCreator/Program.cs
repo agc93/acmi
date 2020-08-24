@@ -16,7 +16,7 @@ namespace InstallerCreator
         {
             var services = new ServiceCollection();
             services.AddSingleton<IOptionsPrompt<BuildCommand.Settings>, SharpromptOptionsPrompt>();
-            services.AddSingleton<IFileService, AdvancedFileService>();
+            services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IIdentifierParser, PortraitParser>();
             services.AddSingleton<IIdentifierParser, CrosshairParser>();
             services.AddSingleton<IIdentifierParser, SkinParser>();
