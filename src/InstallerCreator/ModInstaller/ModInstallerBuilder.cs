@@ -7,6 +7,10 @@ using AceCore;
 using static InstallerCreator.ModInstaller.XmlHelpers;
 
 namespace InstallerCreator.ModInstaller {
+    internal class GroupedSet<T> where T : Identifier {
+        internal IEnumerable<KeyValuePair<string, List<T>>> UniqueSets {get;set;}
+        internal Dictionary<string, List<KeyValuePair<string, List<T>>>> Groups {get;set;}
+    }
     public class ModInstallerBuilder {
         private readonly string _rootPath;
         private readonly string _title;
@@ -58,10 +62,15 @@ namespace InstallerCreator.ModInstaller {
             return xdoc;
         }
 
+        private GroupedSet<T> GetSets<T>(Dictionary<string, List<T>> identifiers, string joinStr = " + ") where T : Identifier {
+                var pGroups = identifiers.ToList().GroupBy(g => g.Value.Select(s => s.GetSlotName()).JoinLines(joinStr));
+                var uniqueSets = pGroups.Where(g => g.Count() == 1).SelectMany(g => g.ToList());
+                var groupedSets = pGroups.Where(g => g.Count() != 1).ToDictionary(k => k.Key, v => v.ToList());
+                return new GroupedSet<T> { UniqueSets = uniqueSets, Groups = groupedSets};
+            }
+            
+
         private XElement GenerateStepsXml(ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, List<string> extraPaks, Dictionary<string, List<SkinIdentifier>> multiSkins = null, Dictionary<string, List<CrosshairIdentifier>> crosshairs = null, Dictionary<string, List<PortraitIdentifier>> portraits = null, Dictionary<string, List<WeaponIdentifier>> weapons = null, Dictionary<string, List<EffectsIdentifier>> effects = null, Dictionary<string, List<CanopyIdentifier>> canopies = null) {
-            
-            
-            
             XElement GetPluginElement(string fileName, string description = null) {
                 var children = new List<XElement> {
                     Description(description),
@@ -73,6 +82,20 @@ namespace InstallerCreator.ModInstaller {
                 children.Add(new XElement("files", new XElement("file", new XAttribute("source", fileName), new XAttribute("destination", new FileInfo(fileName).Name), new XAttribute("priority", "0"))));
                 children.Add(OptionalTypeDescriptor());
                 return new XElement("plugin", new XAttribute("name", new FileInfo(fileName).Name), children);
+            }
+            List<XElement> BuildGroups<T>(GroupedSet<T> groupedSet, string topName) where T : Identifier {
+                var groups = new List<XElement>();
+                var uniqueSets = groupedSet.UniqueSets;
+                if (uniqueSets.Any() && uniqueSets.All(s => s.Value.Any())) {
+                    var canopyGeneralGroup = new XElement("group", Name(topName), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), uniqueSets.Select(s => GetPluginElement(s.Key, Includes(s.Value.Select(pi => pi.GetSlotName()))))));
+                    groups.Add(canopyGeneralGroup);
+                }
+                var groupedSets = groupedSet.Groups;
+                if (groupedSets.Any() && groupedSets.All(s => s.Value.Any())) {
+                    var groupedGroups = groupedSets.Select(gs => new XElement("group", Name(gs.Key), Type(SelectType.SelectExactlyOne), new XElement("plugins", ExplicitOrder(), NonePlugin(), gs.Value.Select(gsi => GetPluginElement(gsi.Key, Includes(gsi.Value.Select(i => i.GetSlotName())))))));
+                    groups.AddRange(groupedGroups);
+                }
+                return groups;
             }
             var steps = new List<XElement>();
             steps.Add(new XElement("installStep", new XAttribute("name", "Introduction"), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), new XElement("group", new XAttribute("name", "Introduction"), new XAttribute("type", "SelectAll"), new XElement("plugins", new XAttribute("order", "Explicit"), new XElement("plugin", new XAttribute("name", "Introduction"), new XElement("description", GetDescription()), OptionalTypeDescriptor()))))));
@@ -86,55 +109,22 @@ namespace InstallerCreator.ModInstaller {
                 steps.Add(new XElement("installStep", Name("Crosshairs"), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name("Crosshair Mods"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), crosshairs.Select(cm => GetPluginElement(cm.Key, Includes(cm.Value.Select(v => v.ToString())))))))));
             }
             if (portraits != null && portraits.Any()) {
-                // var ports = portraits.ToList();
-                var pGroups = portraits.ToList().GroupBy(g => g.Value.Select(s => s.GetSlotName()).JoinLines(" + "));
-                var groups = new List<XElement>();
-                var uniqueSets = pGroups.Where(g => g.Count() == 1).SelectMany(g => g.ToList());
-                if (uniqueSets.Any() && uniqueSets.All(s => s.Value.Any())) {
-                    var portraitPackGroup = new XElement("group", Name("Portrait Packs"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), uniqueSets.Select(s => GetPluginElement(s.Key, Includes(s.Value.Select(pi => pi.GetSlotName()))))));
-                    groups.Add(portraitPackGroup);
-                }
-                var groupedSets = pGroups.Where(g => g.Count() != 1).ToDictionary(k => k.Key, v => v.ToList());
-                if (groupedSets.Any() && groupedSets.All(s => s.Value.Any())) {
-                    var groupedGroup = groupedSets.Select(gs => new XElement("group", Name(gs.Key), Type(SelectType.SelectExactlyOne), new XElement("plugins", ExplicitOrder(), NonePlugin(), gs.Value.Select(gsi => GetPluginElement(gsi.Key, Includes(gsi.Value.Select(i => i.GetSlotName())))))));
-                    groups.AddRange(groupedGroup);
-                }
+                var pSets = GetSets(portraits);
+                var groups = BuildGroups(pSets, "Portrait Packs");
                 if (groups.Any()) {
                     steps.Add(new XElement("installStep", Name("Portraits"), new XElement("optionalFileGroups", ExplicitOrder(), groups)));
                 }
             }
             if (weapons != null && weapons.Any()) {
-                var wGroups = weapons.ToList().GroupBy(g => g.Value.Select(s => s.GetSlotName()).JoinLines(" + "));
-
-                var groups = new List<XElement>();
-                var uniqueSets = wGroups.Where(g => g.Count() == 1).SelectMany(g => g.ToList());
-                if (uniqueSets.Any() && uniqueSets.All(s => s.Value.Any())) {
-                    var weaponGeneralGroup = new XElement("group", Name("Weapon Mods"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), uniqueSets.Select(s => GetPluginElement(s.Key, Includes(s.Value.Select(pi => pi.GetSlotName()))))));
-                    groups.Add(weaponGeneralGroup);
-                }
-                var groupedSets = wGroups.Where(g => g.Count() != 1).ToDictionary(k => k.Key, v => v.ToList());
-                if (groupedSets.Any() && groupedSets.All(s => s.Value.Any())) {
-                    var groupedGroups = groupedSets.Select(gs => new XElement("group", Name(gs.Key), Type(SelectType.SelectExactlyOne), new XElement("plugins", ExplicitOrder(), NonePlugin(), gs.Value.Select(gsi => GetPluginElement(gsi.Key, Includes(gsi.Value.Select(i => i.GetSlotName())))))));
-                    groups.AddRange(groupedGroups);
-                }
+                var wSets = GetSets(weapons);
+                var groups = BuildGroups(wSets, "Weapon Mods");
                 if (groups.Any()) {
                     steps.Add(new XElement("installStep", Name("Weapons"), new XElement("optionalFileGroups", ExplicitOrder(), groups)));
                 }
             }
             if (canopies != null && canopies.Any()) {
-                var cGroups = canopies.ToList().GroupBy(g => g.Value.Select(s => s.GetSlotName()).JoinLines(" + "));
-
-                var groups = new List<XElement>();
-                var uniqueSets = cGroups.Where(g => g.Count() == 1).SelectMany(g => g.ToList());
-                if (uniqueSets.Any() && uniqueSets.All(s => s.Value.Any())) {
-                    var canopyGeneralGroup = new XElement("group", Name("Canopy Mods"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), uniqueSets.Select(s => GetPluginElement(s.Key, Includes(s.Value.Select(pi => pi.GetSlotName()))))));
-                    groups.Add(canopyGeneralGroup);
-                }
-                var groupedSets = cGroups.Where(g => g.Count() != 1).ToDictionary(k => k.Key, v => v.ToList());
-                if (groupedSets.Any() && groupedSets.All(s => s.Value.Any())) {
-                    var groupedGroups = groupedSets.Select(gs => new XElement("group", Name(gs.Key), Type(SelectType.SelectExactlyOne), new XElement("plugins", ExplicitOrder(), NonePlugin(), gs.Value.Select(gsi => GetPluginElement(gsi.Key, Includes(gsi.Value.Select(i => i.GetSlotName())))))));
-                    groups.AddRange(groupedGroups);
-                }
+                var cSets = GetSets(canopies);
+                var groups = BuildGroups(cSets, "Canopy Mods");
                 if (groups.Any()) {
                     steps.Add(new XElement("installStep", Name("Canopy"), new XElement("optionalFileGroups", ExplicitOrder(), groups)));
                 }
