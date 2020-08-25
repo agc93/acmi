@@ -20,6 +20,11 @@ namespace InstallerCreator {
             return input.ToDictionary(k => k.Key, v => v.Value.ToList());
         }
 
-        
+        internal static string NormalizeName(this FileInfo fi) {
+            var fn = fi.Name;
+            return Path.GetFileNameWithoutExtension(fn).EndsWith("_P")
+                ? fn
+                : Path.GetFileNameWithoutExtension(fn) + "_P.pak";
+        }
     }
 }

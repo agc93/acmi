@@ -79,7 +79,7 @@ namespace InstallerCreator.ModInstaller {
                 if (!string.IsNullOrWhiteSpace(matchingImage)) {
                     children.Add(new XElement("image", new XAttribute("path", Path.GetRelativePath(_rootPath, matchingImage))));
                 }
-                children.Add(new XElement("files", new XElement("file", new XAttribute("source", fileName), new XAttribute("destination", new FileInfo(fileName).Name), new XAttribute("priority", "0"))));
+                children.Add(new XElement("files", new XElement("file", new XAttribute("source", fileName), new XAttribute("destination", new FileInfo(fileName).NormalizeName()), new XAttribute("priority", "0"))));
                 children.Add(OptionalTypeDescriptor());
                 return new XElement("plugin", new XAttribute("name", new FileInfo(fileName).Name), children);
             }
