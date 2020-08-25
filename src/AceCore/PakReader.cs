@@ -20,16 +20,6 @@ namespace AceCore {
 
         public IEnumerable<Identifier> ReadFile(string filePath, bool readWholeFile = false) {
             var headerFound = false;
-            Identifier ParseMatchExplicit(string rawString) {
-                if (SkinIdentifier.TryParse(rawString, out var skinId) && skinId.Type == "D") {
-                    return skinId;
-                } else if (PortraitIdentifier.TryParse(rawString, out var hudId)) {
-                    return hudId;
-                } else if (CrosshairIdentifier.TryParse(rawString, out var chId)) {
-                    return chId;
-                }
-                return null;
-            }
             Identifier ParseMatch(string rawString) {
                 var matched = _parsers.Select(p => p.TryParse(rawString)).FirstOrDefault(m => m.IsValid);
                 if (matched.identifier != null) {
@@ -105,15 +95,7 @@ namespace AceCore {
                         pos = 0;
                         yield return rawString;
                     }
-                    // var offset = stream.Position;
-
-
-
-                    // stream.Seek(64, SeekOrigin.Current)
                 }
-
-                /* if (stream.Position == stream.Length) // we went through the entire stream without finding the key
-                    throw new KeyNotFoundException("Could not find key '" + key + "' in pak file"); */
             }
             yield break;
         }
