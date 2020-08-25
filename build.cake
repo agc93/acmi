@@ -106,15 +106,8 @@ Task("Run-Unit-Tests")
 	}
 });
 
-Task("Post-Build")
-	.IsDependentOn("Build")
-	.Does(() =>
-{
-	CopyFiles(GetFiles("./Dockerfile*"), artifacts);
-});
-
 Task("Publish-Runtime")
-	.IsDependentOn("Post-Build")
+	.IsDependentOn("Build")
 	.Does(() =>
 {
 	var projectDir = $"{artifacts}publish";
@@ -135,7 +128,8 @@ Task("Publish-Runtime")
 			Configuration = configuration,
 			OutputDirectory = runtimeDir,
 			PublishSingleFile = true,
-			PublishTrimmed = true
+			PublishTrimmed = true,
+			ArgumentCustomization = args => args.Append($"/p:Version={packageVersion}")
 		};
 		DotNetCorePublish("./src/InstallerCreator/InstallerCreator.csproj", settings);
 		CreateDirectory($"{artifacts}archive");
@@ -144,7 +138,7 @@ Task("Publish-Runtime")
 });
 
 Task("Default")
-    .IsDependentOn("Post-Build");
+    .IsDependentOn("Build");
 
 Task("Publish")
 	.IsDependentOn("Publish-Runtime");

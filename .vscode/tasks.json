@@ -9,7 +9,8 @@
                 "build",
                 "${workspaceFolder}/src/InstallerCreator/InstallerCreator.csproj",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary",
+                "/p:Version=0.2.1"
             ],
             "problemMatcher": "$msCompile"
         },
