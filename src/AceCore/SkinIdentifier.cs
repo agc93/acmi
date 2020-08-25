@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace AceCore
 {
-    public class SkinIdentifier {
+    public class SkinIdentifier : Identifier {
         private Dictionary<string, string> _slotNames = new Dictionary<string, string> {
             ["00"] = "Osea",
             ["01"] = "Erusea",
@@ -52,7 +52,7 @@ namespace AceCore
         };
 
         public static bool TryParse(string value, out SkinIdentifier ident) {
-            var rex = new System.Text.RegularExpressions.Regex(@"([a-z0-9]+?)_(v?\d+a?\w{1}?)_(\w).*");
+            var rex = new System.Text.RegularExpressions.Regex(@"([a-z0-9]+?)_(v?\d+a?\w{1}?)_(\w)(?!\.u[^a]).*");
             var match = rex.Match(value);
             if (match != null && match.Groups.Count >= 2) {
                 ident = new SkinIdentifier(match.Groups[0].Value, match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
@@ -71,7 +71,7 @@ namespace AceCore
 
 		public string SlotName {get; private set;}
 
-        public string RawValue { get; }
+        
 
         public string Aircraft { get; }
 
@@ -94,7 +94,7 @@ namespace AceCore
             }
 		}
 
-        public string GetSlotName() {
+        public override string GetSlotName() {
 			SlotName ??= ParseSlotName();
 			return SlotName;
         }

@@ -52,13 +52,13 @@ namespace InstallerCreator.ModInstaller {
             if (skins.ReadmeFiles.Count > 0) {
                 moduleChildren.Add(new XElement("requiredInstallFiles", skins.ReadmeFiles.Select(r => new XElement("file", new XAttribute("source", r), new XAttribute("destination", Path.Combine(MakeSafePath(_title), new FileInfo(r).Name))))));
             }
-            moduleChildren.Add(GenerateStepsXml(aircraftLookup, skins.ExtraFiles.ToList(), skins.MultiSkinFiles));
+            moduleChildren.Add(GenerateStepsXml(aircraftLookup, skins.ExtraFiles.ToList(), skins.MultiSkinFiles.EnumerateDictionary(), skins.Crosshairs.EnumerateDictionary(), skins.Portraits.EnumerateDictionary(), skins.Weapons.EnumerateDictionary(), skins.Effects.EnumerateDictionary()));
             XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
             var xdoc = new XDocument(new XElement("config", new XAttribute(XNamespace.Xmlns + "xsi", xsi), new XAttribute(xsi + "noNamespaceSchemaLocation", "http://qconsulting.ca/fo3/ModConfig5.0.xsd"), moduleChildren));
             return xdoc;
         }
 
-        private XElement GenerateStepsXml(ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, List<string> extraPaks, Dictionary<string, IEnumerable<SkinIdentifier>> multiSkins = null) {
+        private XElement GenerateStepsXml(ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, List<string> extraPaks, Dictionary<string, List<SkinIdentifier>> multiSkins = null, Dictionary<string, List<CrosshairIdentifier>> crosshairs = null, Dictionary<string, List<PortraitIdentifier>> portraits = null, Dictionary<string, List<WeaponIdentifier>> weapons = null, Dictionary<string, List<EffectsIdentifier>> effects = null) {
             
             
             
@@ -81,6 +81,48 @@ namespace InstallerCreator.ModInstaller {
             }
             if (multiSkins != null && multiSkins.Count > 0) {
                 steps.Add(new XElement("installStep", new XAttribute("name", "Merged Files"), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name("Combination Skin Files"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), multiSkins.Select(ms => GetPluginElement(ms.Key, string.Join(System.Environment.NewLine, ms.Value.Select(v => v.ToString())))))))));
+            }
+            if (crosshairs != null && crosshairs.Any()) {
+                steps.Add(new XElement("installStep", Name("Crosshairs"), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name("Crosshair Mods"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), crosshairs.Select(cm => GetPluginElement(cm.Key, Includes(cm.Value.Select(v => v.ToString())))))))));
+            }
+            if (portraits != null && portraits.Any()) {
+                // var ports = portraits.ToList();
+                var pGroups = portraits.ToList().GroupBy(g => g.Value.Select(s => s.GetSlotName()).JoinLines(" + "));
+                var groups = new List<XElement>();
+                var uniqueSets = pGroups.Where(g => g.Count() == 1).SelectMany(g => g.ToList());
+                if (uniqueSets.Any() && uniqueSets.All(s => s.Value.Any())) {
+                    var portraitPackGroup = new XElement("group", Name("Portrait Packs"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), uniqueSets.Select(s => GetPluginElement(s.Key, Includes(s.Value.Select(pi => pi.GetSlotName()))))));
+                    groups.Add(portraitPackGroup);
+                }
+                var groupedSets = pGroups.Where(g => g.Count() != 1).ToDictionary(k => k.Key, v => v.ToList());
+                if (groupedSets.Any() && groupedSets.All(s => s.Value.Any())) {
+                    var groupedGroup = groupedSets.Select(gs => new XElement("group", Name(gs.Key), Type(SelectType.SelectExactlyOne), new XElement("plugins", ExplicitOrder(), NonePlugin(), gs.Value.Select(gsi => GetPluginElement(gsi.Key, Includes(gsi.Value.Select(i => i.GetSlotName())))))));
+                    groups.AddRange(groupedGroup);
+                }
+                if (groups.Any()) {
+                    steps.Add(new XElement("installStep", Name("Portraits"), new XElement("optionalFileGroups", ExplicitOrder(), groups)));
+                }
+            }
+            if (weapons != null && weapons.Any()) {
+                var wGroups = weapons.ToList().GroupBy(g => g.Value.Select(s => s.GetSlotName()).JoinLines(" + "));
+
+                var groups = new List<XElement>();
+                var uniqueSets = wGroups.Where(g => g.Count() == 1).SelectMany(g => g.ToList());
+                if (uniqueSets.Any() && uniqueSets.All(s => s.Value.Any())) {
+                    var weaponGeneralGroup = new XElement("group", Name("Weapon Mods"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), uniqueSets.Select(s => GetPluginElement(s.Key, Includes(s.Value.Select(pi => pi.GetSlotName()))))));
+                    groups.Add(weaponGeneralGroup);
+                }
+                var groupedSets = wGroups.Where(g => g.Count() != 1).ToDictionary(k => k.Key, v => v.ToList());
+                if (groupedSets.Any() && groupedSets.All(s => s.Value.Any())) {
+                    var groupedGroups = groupedSets.Select(gs => new XElement("group", Name(gs.Key), Type(SelectType.SelectExactlyOne), new XElement("plugins", ExplicitOrder(), NonePlugin(), gs.Value.Select(gsi => GetPluginElement(gsi.Key, Includes(gsi.Value.Select(i => i.GetSlotName())))))));
+                    groups.AddRange(groupedGroups);
+                }
+                if (groups.Any()) {
+                    steps.Add(new XElement("installStep", Name("Weapons"), new XElement("optionalFileGroups", ExplicitOrder(), groups)));
+                }
+            }
+            if (effects != null && effects.Any()) {
+                steps.Add(new XElement("installStep", Name("Effects"), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name("Visual Effects"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), effects.Select(cm => GetPluginElement(cm.Key, Includes(cm.Value.Select(v => v.ToString())))))))));
             }
             if (extraPaks != null && extraPaks.Any()) {
                 steps.Add(new XElement("installStep", new XAttribute("name", "Other Files"), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), new XElement("group", new XAttribute("name", "Other mod files"), new XAttribute("type", "SelectAny"), new XElement("plugins", new XAttribute("order", "Explicit"), extraPaks.Select(ep => GetPluginElement(ep)))))));
@@ -106,7 +148,7 @@ namespace InstallerCreator.ModInstaller {
 
         private string GetDescription(string forceDescription = null) {
             var desc = forceDescription ?? _description ?? null;
-            return $"This installer will guide you through choosing which custom skins you want to install for each aircraft and each slot available in this archive. You can choose as few or as many skins as you want from the choices available, but be warned that your choices can still conflict with other mods you may have already installed!\n\n{(string.IsNullOrWhiteSpace(desc) ? string.Empty : desc)}";
+            return $"This installer will guide you through choosing which custom skins (and other files) you want to install for each aircraft and each slot available in this archive. You can choose as few or as many skins as you want from the choices available, but be warned that your choices can still conflict with other mods you may have already installed!\n\n{(string.IsNullOrWhiteSpace(desc) ? string.Empty : desc)}";
         }
 
         private List<string> checkForReadme() {

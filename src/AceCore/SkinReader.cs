@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace AceCore
-{
+namespace AceCore {
     public class SkinReader {
         public SkinReader() {
         }
@@ -59,14 +58,14 @@ namespace AceCore
             return idents;
         }
 
-        private string FindSkinIdent(string filePath, int start = 0) {
+        private string FindSkinIdent(string filePath, int maxBytes = 4096) {
             using (var stream = File.OpenRead(filePath))
             using (var reader = new BinaryReader(stream, Encoding.UTF8))
             {
                 const string key = "/Game/";
-                int pos = start;
+                int pos = 0;
 
-                while (stream.Position < stream.Length && pos < key.Length)
+                while (stream.Position < maxBytes && stream.Position < stream.Length && pos < key.Length)
                 {
                     if (reader.ReadByte() == key[pos]) pos++;
                     else pos = 0;
@@ -74,6 +73,10 @@ namespace AceCore
 
                 if (stream.Position == stream.Length) // we went through the entire stream without finding the key
                     throw new KeyNotFoundException("Could not find key '" + key + "' in pak file");
+
+                if (stream.Position == maxBytes) {
+                    throw new KeyNotFoundException($"Reached max buffer size at 4K without finding key '{key}'.");
+                }
 
                 // otherwise pos == key.Length, which means we found it
                 // int offset = 136 - key.Length - sizeof(int);

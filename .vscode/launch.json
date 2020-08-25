@@ -11,12 +11,15 @@
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/src/InstallerCreator/bin/Debug/netcoreapp3.1/acmi.dll",
-            "args": ["build"], 
+            // "args": ["build"], 
             // "args": ["build", "D:\\Mods\\SkiesUntoldHistoricGalm", "--author", "njmksr", "--title", "\"Skies Untold: Historic Galm Pack\"", "--version", "1.0.0"],
-            "cwd": "${workspaceFolder}/src/InstallerCreator", //you should change this to the folder with your mod files to test.
+            // "cwd": "${workspaceFolder}/src/InstallerCreator", //you should change this to the folder with your mod files to test.
+            "cwd": "D:\\Walkthrough",
+            "args": ["build", "D:\\Mods\\FOMOD_Tests\\SkiesUntold_HistoricWarlock.zip-764-v1-0-0-1596249289\\Skies Untold Warlock Pack"],
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "integratedTerminal",
-            "stopAtEntry": false
+            "stopAtEntry": false,
+            "env": {"ACMI_DEBUG": "true"}
         },
         {
             "name": ".NET Core Attach",
