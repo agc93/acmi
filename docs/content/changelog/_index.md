@@ -6,6 +6,10 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.2.1**
+  - Updated to support canopy files
+  - Will now add missing file name suffix if required
+  - Improved XML generation (under the covers)
 - **0.2.0**
   - Major update to add support for new object types: portraits, crosshairs, visual effects and weapons
   - Improvements to skin detection to handle more files
