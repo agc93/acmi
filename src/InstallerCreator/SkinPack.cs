@@ -15,6 +15,7 @@ namespace InstallerCreator
         public Dictionary<string, IEnumerable<PortraitIdentifier>> Portraits {get;set;} = new Dictionary<string, IEnumerable<PortraitIdentifier>>();
         public Dictionary<string, IEnumerable<WeaponIdentifier>> Weapons {get;set;} = new Dictionary<string, IEnumerable<WeaponIdentifier>>();
         public Dictionary<string, IEnumerable<EffectsIdentifier>> Effects {get;set;} = new Dictionary<string, IEnumerable<EffectsIdentifier>>();
+        public Dictionary<string, IEnumerable<CanopyIdentifier>> Canopies {get;set;} = new Dictionary<string, IEnumerable<CanopyIdentifier>>();
 
         public bool IsEmpty() {
             return Skins.Count == 0 && MultiSkinFiles.Keys.Count == 0 && ExtraFiles.Count == 0 && Crosshairs.Keys.Count == 0 && Portraits.Keys.Count == 0 && Weapons.Keys.Count == 0;
@@ -41,6 +42,8 @@ namespace InstallerCreator
                 Weapons.Add(relPath, idents.Cast<WeaponIdentifier>());
             } else if (ident is EffectsIdentifier) {
                 Effects.Add(relPath, idents.Cast<EffectsIdentifier>());
+            } else if (ident is CanopyIdentifier) {
+                Canopies.Add(relPath, idents.Cast<CanopyIdentifier>());
             }
         }
 

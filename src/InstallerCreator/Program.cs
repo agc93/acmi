@@ -23,6 +23,7 @@ namespace InstallerCreator {
             services.AddSingleton<IIdentifierParser, SkinParser>();
             services.AddSingleton<IIdentifierParser, WeaponParser>();
             services.AddSingleton<IIdentifierParser, EffectsParser>();
+            services.AddSingleton<IIdentifierParser, CanopyParser>();
             services.AddSingleton<PakReader>();
             services.AddLogging(logging => {
                 logging.SetMinimumLevel(LogLevel.Debug);

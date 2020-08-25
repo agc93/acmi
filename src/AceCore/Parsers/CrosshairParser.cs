@@ -37,4 +37,11 @@ namespace AceCore.Parsers
             return (parsed, ident);
         }
     }
+
+    public class CanopyParser : IIdentifierParser {
+        public (bool IsValid, Identifier identifier) TryParse(string value) {
+            var parsed = CanopyIdentifier.TryParse(value, out var ident);
+            return (parsed, ident);
+        }
+    }
 }

@@ -7,5 +7,14 @@ namespace AceCore
             return RawValue;
         }
         public override abstract string ToString();
+
+        protected string GetAircraftName(string aircraftCode) {
+            var knownName = Constants.AircraftNames.TryGetValue(aircraftCode, out var name);
+            if (knownName) {
+                return name;
+            } else {
+                return aircraftCode.ToUpper();
+            }
+        }
     }
 }

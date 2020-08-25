@@ -52,13 +52,13 @@ namespace InstallerCreator.ModInstaller {
             if (skins.ReadmeFiles.Count > 0) {
                 moduleChildren.Add(new XElement("requiredInstallFiles", skins.ReadmeFiles.Select(r => new XElement("file", new XAttribute("source", r), new XAttribute("destination", Path.Combine(MakeSafePath(_title), new FileInfo(r).Name))))));
             }
-            moduleChildren.Add(GenerateStepsXml(aircraftLookup, skins.ExtraFiles.ToList(), skins.MultiSkinFiles.EnumerateDictionary(), skins.Crosshairs.EnumerateDictionary(), skins.Portraits.EnumerateDictionary(), skins.Weapons.EnumerateDictionary(), skins.Effects.EnumerateDictionary()));
+            moduleChildren.Add(GenerateStepsXml(aircraftLookup, skins.ExtraFiles.ToList(), skins.MultiSkinFiles.EnumerateDictionary(), skins.Crosshairs.EnumerateDictionary(), skins.Portraits.EnumerateDictionary(), skins.Weapons.EnumerateDictionary(), skins.Effects.EnumerateDictionary(), skins.Canopies.EnumerateDictionary()));
             XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
             var xdoc = new XDocument(new XElement("config", new XAttribute(XNamespace.Xmlns + "xsi", xsi), new XAttribute(xsi + "noNamespaceSchemaLocation", "http://qconsulting.ca/fo3/ModConfig5.0.xsd"), moduleChildren));
             return xdoc;
         }
 
-        private XElement GenerateStepsXml(ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, List<string> extraPaks, Dictionary<string, List<SkinIdentifier>> multiSkins = null, Dictionary<string, List<CrosshairIdentifier>> crosshairs = null, Dictionary<string, List<PortraitIdentifier>> portraits = null, Dictionary<string, List<WeaponIdentifier>> weapons = null, Dictionary<string, List<EffectsIdentifier>> effects = null) {
+        private XElement GenerateStepsXml(ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, List<string> extraPaks, Dictionary<string, List<SkinIdentifier>> multiSkins = null, Dictionary<string, List<CrosshairIdentifier>> crosshairs = null, Dictionary<string, List<PortraitIdentifier>> portraits = null, Dictionary<string, List<WeaponIdentifier>> weapons = null, Dictionary<string, List<EffectsIdentifier>> effects = null, Dictionary<string, List<CanopyIdentifier>> canopies = null) {
             
             
             
@@ -119,6 +119,24 @@ namespace InstallerCreator.ModInstaller {
                 }
                 if (groups.Any()) {
                     steps.Add(new XElement("installStep", Name("Weapons"), new XElement("optionalFileGroups", ExplicitOrder(), groups)));
+                }
+            }
+            if (canopies != null && canopies.Any()) {
+                var cGroups = canopies.ToList().GroupBy(g => g.Value.Select(s => s.GetSlotName()).JoinLines(" + "));
+
+                var groups = new List<XElement>();
+                var uniqueSets = cGroups.Where(g => g.Count() == 1).SelectMany(g => g.ToList());
+                if (uniqueSets.Any() && uniqueSets.All(s => s.Value.Any())) {
+                    var canopyGeneralGroup = new XElement("group", Name("Canopy Mods"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), uniqueSets.Select(s => GetPluginElement(s.Key, Includes(s.Value.Select(pi => pi.GetSlotName()))))));
+                    groups.Add(canopyGeneralGroup);
+                }
+                var groupedSets = cGroups.Where(g => g.Count() != 1).ToDictionary(k => k.Key, v => v.ToList());
+                if (groupedSets.Any() && groupedSets.All(s => s.Value.Any())) {
+                    var groupedGroups = groupedSets.Select(gs => new XElement("group", Name(gs.Key), Type(SelectType.SelectExactlyOne), new XElement("plugins", ExplicitOrder(), NonePlugin(), gs.Value.Select(gsi => GetPluginElement(gsi.Key, Includes(gsi.Value.Select(i => i.GetSlotName())))))));
+                    groups.AddRange(groupedGroups);
+                }
+                if (groups.Any()) {
+                    steps.Add(new XElement("installStep", Name("Canopy"), new XElement("optionalFileGroups", ExplicitOrder(), groups)));
                 }
             }
             if (effects != null && effects.Any()) {

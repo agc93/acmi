@@ -88,6 +88,9 @@ namespace InstallerCreator.Commands
             if (files.ExtraFiles.Any()) {
                 table.AddRow("Extra Files", files.ExtraFiles.Count.ToString());
             }
+            if (files.Canopies.Any()) {
+                table.AddRow("Canopies", files.Canopies.Count.ToString());
+            }
             AnsiConsole.Render(table);
         }
         public class Settings : AppSettings {

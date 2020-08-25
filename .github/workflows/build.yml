@@ -42,6 +42,8 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         body: |
+          Check out all the details at [acmi.modding.app](https://acmi.modding.app) (including the [changelog](https://acmi.modding.app/#changelog))
+          
           Download and unpack the archive for your system (Windows/Linux) from below.
         files: |
           ./dist/archive/*.zip
