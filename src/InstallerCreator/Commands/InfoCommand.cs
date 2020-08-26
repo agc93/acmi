@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
 using AceCore.Parsers;
 using Microsoft.Extensions.Logging;
 using Spectre.Cli;
 using Spectre.Console;
-using System.Text.Json;
-using System.IO;
 
 namespace InstallerCreator.Commands
 {
@@ -19,26 +16,26 @@ namespace InstallerCreator.Commands
     {
         private readonly List<IIdentifierParser> _parsers;
         private readonly ILogger<InfoCommand> _logger;
+        private readonly AppInfoService _infoService;
 
-        public InfoCommand(ILogger<InfoCommand> logger, IEnumerable<IIdentifierParser> parsers)
+        public InfoCommand(ILogger<InfoCommand> logger, IEnumerable<IIdentifierParser> parsers, AppInfoService infoService)
         {
             _parsers = parsers?.ToList() ?? new List<IIdentifierParser>();
             _logger = logger;
+            _infoService = infoService;
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, Settings settings) {
-            var exAss = Assembly.GetExecutingAssembly();
-            var aVersion = exAss.GetName().Version;
-            var version = $"v{aVersion.Major}.{aVersion.Minor}.{aVersion.Build}";
-            var path = Path.GetDirectoryName(exAss.Location);
+            var version = _infoService.GetAppVersion();
+            var path = _infoService.GetAppPath();
             var table = new Table();
             table.AddColumn("Version");
             table.AddColumn("Runtime");
             table.AddColumn("OS");
             table.AddRow(
                 version,
-                Assembly.GetEntryAssembly()?.GetCustomAttribute<System.Runtime.Versioning.TargetFrameworkAttribute>()?.FrameworkName ?? "Unknown",
-                System.Runtime.InteropServices.RuntimeInformation.OSDescription
+                _infoService.GetRuntimeName(),
+                _infoService.OperatingSystemName
             );
             AnsiConsole.Render(table);
             AnsiConsole.WriteLine();
@@ -51,7 +48,6 @@ namespace InstallerCreator.Commands
                     {
                         client.DefaultRequestHeaders.Add("User-Agent", $"ACMI/{version}");
                         var resp = await client.GetStringAsync("https://api.github.com/repos/agc93/acmi/tags?per_page=1");
-                        // var deser = new Json
                         var dict = System.Text.Json.JsonSerializer.Deserialize<List<Dictionary<string, object>>>(resp);
                         var latest = dict.First()["name"].ToString();
                         if (latest != version) {

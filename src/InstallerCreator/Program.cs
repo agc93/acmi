@@ -33,7 +33,7 @@ namespace InstallerCreator {
             services.AddSingleton<IIdentifierParser, EffectsParser>();
             services.AddSingleton<IIdentifierParser, CanopyParser>();
             services.AddSingleton<PakReader>();
-            services.AddSingleton<IAppTimer, AppTimer>();
+            services.AddSingleton<AppInfoService>();
             services.AddLogging(logging => {
                 logging.SetMinimumLevel(LogLevel.Trace);
                 logging.AddInlineSpectreConsole(c => {
