@@ -23,7 +23,7 @@
     <PackageReference Include="Spectre.Cli" Version="0.37.0" />
     <PackageReference Include="spectre.cli.extensions.dependencyinjection" Version="0.3.0-alpha0013" />
     <PackageReference Include="spectre.console" Version="0.14.0" />
-    <PackageReference Include="Spectre.Console.Extensions.Logging" Version="0.1.0-alpha0004" />
+    <PackageReference Include="Spectre.Console.Extensions.Logging" Version="0.1.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -17,15 +17,18 @@ namespace InstallerCreator.Commands
         private readonly IOptionsPrompt<Settings> _prompt;
         private readonly IFileService _fileService;
         private readonly ILogger<BuildCommand> _logger;
+        private readonly IAppTimer _timer;
 
-        public BuildCommand(IOptionsPrompt<BuildCommand.Settings> prompt, IFileService fileService, ILogger<BuildCommand> logger)
+        public BuildCommand(IOptionsPrompt<BuildCommand.Settings> prompt, IFileService fileService, ILogger<BuildCommand> logger, IAppTimer timer)
         {
             _prompt = prompt;
             _fileService = fileService;
             _logger = logger;
+            _timer = timer;
         }
         public override int Execute(CommandContext context, Settings settings)
         {
+            _timer.Start();
             var isUnattended = settings.Author.IsSet && settings.Version.IsSet && settings.Title.IsSet;
             var rootPath = new ModRootPath(settings.ModRootPath);
             settings.ModRootPath = rootPath.RootPath;
@@ -34,13 +37,16 @@ namespace InstallerCreator.Commands
                 _logger.LogCritical("The specified mod root doesn't appear to exist!");
                 return 1;
             }
+            _timer.Pause();
             settings = _prompt.PromptMissing(settings, isUnattended);
+            _timer.Start();
+            
             _logger.LogInformation("Scanning and reading mod files. Please be patient!");
             if (settings.DetectMultipleSkins) {
                 _logger.LogWarning("If your pak files contain more than one skin, we can scan the [bold]whole[/] file instead of just the headers.");
                 _logger.LogWarning("However, this will take an [italic red]extremely[/] long time compared to just using the first texture we find.");
             }
-            _logger.LogDebug("Testing debug message");
+            _logger.LogTrace($"{_timer.GetCurrent()}: Starting GetFiles");
             var pack = _fileService.GetFiles(modRoot, settings.DetectMultipleSkins);
             // var skins = FileHelpers.GetSkins(modRoot, out var extraFiles);
             if (pack.IsEmpty()) {
@@ -49,11 +55,15 @@ namespace InstallerCreator.Commands
             }
             _logger.LogInformation($"Building installer from [bold]{pack.GetFileCount()}[/] detected mods ([bold]{pack.ExtraFiles.Count}[/] other mod files).");
             // Console.WriteLine($"INFO: Building installer from {pack.Skins.Count} detected skin mods ({pack.ExtraFiles.Count} other mod files{(pack.MultiSkinFiles.Any() ? " and " + pack.MultiSkinFiles.Count + "merged files" : string.Empty)}).");
+            _logger.LogTrace($"{_timer.GetCurrent()}: Creating ModInstallerBuilder");
             var builder = new ModInstallerBuilder(modRoot, settings.Title.Value, settings.Description.IsSet ? settings.Description.Value : null);
+            _logger.LogTrace($"{_timer.GetCurrent()}: Generating info xml");
             var info = builder.GenerateInfoXml(settings.Author.Value, settings.Version.Value, settings.Groups, settings.Description.Value);
-            
+            _logger.LogTrace($"{_timer.GetCurrent()}: Generating module config xml");
             var moduleConfig = builder.GenerateModuleConfigXml(pack);
+            _logger.LogTrace($"{_timer.GetCurrent()}: Module Config completed!");
             PrintSummaryTable(pack);
+            _logger.LogDebug($"Generated {pack.GetFileCount()} files in {_timer.GetCurrent()} seconds");
             builder.WriteToInstallerFiles(info, moduleConfig);
             _logger.LogInformation($"Mod Installer files have been written to the {Path.Combine(modRoot, "fomod")} directory!");
             if (!isUnattended) {

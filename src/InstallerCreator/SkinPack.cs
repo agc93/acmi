@@ -18,10 +18,12 @@ namespace InstallerCreator
         public Dictionary<string, IEnumerable<CanopyIdentifier>> Canopies {get;set;} = new Dictionary<string, IEnumerable<CanopyIdentifier>>();
 
         public bool IsEmpty() {
-            return Skins.Count == 0 && MultiSkinFiles.Keys.Count == 0 && ExtraFiles.Count == 0 && Crosshairs.Keys.Count == 0 && Portraits.Keys.Count == 0 && Weapons.Keys.Count == 0;
+            return GetFileCount(true) == 0;
         }
 
-        public void Add(IEnumerable<Identifier> idents, string relPath) {
+        
+
+        public void Add(List<Identifier> idents, string relPath) {
             var ident = idents.FirstOrDefault();
             if (ident == null) {
                 ExtraFiles.Add(relPath);
@@ -48,7 +50,7 @@ namespace InstallerCreator
         }
 
         public int GetFileCount(bool includeExtra = false) {
-            var detected = Skins.Keys.Count + MultiSkinFiles.Count + Portraits.Keys.Count + Crosshairs.Keys.Count + Weapons.Keys.Count + Effects.Keys.Count;
+            var detected = Skins.Keys.Count + MultiSkinFiles.Count + Portraits.Keys.Count + Crosshairs.Keys.Count + Weapons.Keys.Count + Effects.Keys.Count + Canopies.Keys.Count;
             return includeExtra 
                 ? detected + ExtraFiles.Count
                 : detected;

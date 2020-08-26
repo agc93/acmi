@@ -14,6 +14,14 @@ namespace InstallerCreator {
             var envVar = System.Environment.GetEnvironmentVariable("ACMI_DEBUG");
             return !string.IsNullOrWhiteSpace(envVar) && envVar.ToLower() == "true";
         }
+        private static LogLevel GetLogLevel() {
+            var envVar = System.Environment.GetEnvironmentVariable("ACMI_DEBUG");
+            return string.IsNullOrWhiteSpace(envVar) 
+                ? LogLevel.Information
+                :  envVar.ToLower() == "trace"
+                    ? LogLevel.Trace
+                    : LogLevel.Debug;
+        }
         static async Task<int> Main(string[] args) {
             var services = new ServiceCollection();
             services.AddSingleton<IOptionsPrompt<BuildCommand.Settings>, SharpromptOptionsPrompt>();
@@ -25,10 +33,11 @@ namespace InstallerCreator {
             services.AddSingleton<IIdentifierParser, EffectsParser>();
             services.AddSingleton<IIdentifierParser, CanopyParser>();
             services.AddSingleton<PakReader>();
+            services.AddSingleton<IAppTimer, AppTimer>();
             services.AddLogging(logging => {
-                logging.SetMinimumLevel(LogLevel.Debug);
+                logging.SetMinimumLevel(LogLevel.Trace);
                 logging.AddInlineSpectreConsole(c => {
-                    c.LogLevel = IsDebugEnabled() ? LogLevel.Trace : LogLevel.Information;
+                    c.LogLevel = GetLogLevel();
                 });
             });
             var app = new CommandApp(new DependencyInjectionRegistrar(services));

@@ -22,9 +22,10 @@ namespace InstallerCreator {
 
         internal static string NormalizeName(this FileInfo fi) {
             var fn = fi.Name;
-            return Path.GetFileNameWithoutExtension(fn).EndsWith("_P")
+            return fn;
+            /* return Path.GetFileNameWithoutExtension(fn).EndsWith("_P")
                 ? fn
-                : Path.GetFileNameWithoutExtension(fn) + "_P.pak";
+                : Path.GetFileNameWithoutExtension(fn) + "_P.pak"; */
         }
     }
 }

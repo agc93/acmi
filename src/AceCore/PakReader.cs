@@ -44,7 +44,7 @@ namespace AceCore {
                     }
                 }
                 if (!headerFound) {
-                    foreach (var match in FindIdents(filePath, new SearchOptions() { MaxBytes = 8192, Key = "Nimbus/" }, seekAction: () => (-8192, SeekOrigin.End))) {
+                    foreach (var match in FindIdents(filePath, new SearchOptions() { MaxBytes = 8192, Key = "Nimbus/Content/" }, seekAction: () => (-8192, SeekOrigin.End))) {
                         var ident = ParseMatch(match);
                         if (ident != null) {
                             headerFound = true;
@@ -74,9 +74,15 @@ namespace AceCore {
             using (var stream = File.OpenRead(filePath))
             using (var reader = new BinaryReader(stream, Encoding.UTF8)) {
                 opts ??= new SearchOptions();
+                if (stream.Length == 0) {
+                    yield break;
+                }
                 var key = opts.Key;
                 if (seekAction != null) {
                     var seek = seekAction();
+                    /* var offset = seek.offset < stream.Length
+                        ? stream.Length
+                        : seek.offset; */
                     stream.Seek(seek.offset, seek.origin);
                     opts.MaxBytes = Convert.ToInt32(stream.Position) + opts.MaxBytes;
                 }
