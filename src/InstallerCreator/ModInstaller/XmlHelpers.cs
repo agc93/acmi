@@ -31,6 +31,10 @@ namespace InstallerCreator.ModInstaller {
             return $"Includes:{System.Environment.NewLine}" + ids.Distinct().JoinLines();
         }
 
+        internal static string Replaces(System.Collections.Generic.IEnumerable<string> ids) {
+            return $"Replaces:{System.Environment.NewLine}" + ids.Distinct().JoinLines();
+        }
+
         internal enum SelectType {
             SelectAny,
             SelectAll,

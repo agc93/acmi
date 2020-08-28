@@ -21,7 +21,7 @@ namespace AceCore {
 
         public static bool TryParse(string value, out EffectsIdentifier ident) {
             // var rex = new System.Text.RegularExpressions.Regex(@"\/Weapons\/w_(\w+_\w+)");
-            var rex = new System.Text.RegularExpressions.Regex(@"\/VFX\/(\w+?)\/(\w+\/?)(\w+\/)(.*?)\.ua");
+            var rex = new System.Text.RegularExpressions.Regex(@"VFX\/(\w+?)\/(\w+\/?)(\w+\/)(.*?)\.ua");
             var match = rex.Match(value);
             if (match != null && match.Groups.Count >= 4) {
                 ident = new EffectsIdentifier(match.Groups[0].Value, match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value, match.Groups[4].Value);

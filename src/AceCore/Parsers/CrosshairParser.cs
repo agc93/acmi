@@ -44,4 +44,11 @@ namespace AceCore.Parsers
             return (parsed, ident);
         }
     }
+
+    public class EmblemParser : IIdentifierParser {
+        public (bool IsValid, Identifier identifier) TryParse(string value) {
+            var parsed = EmblemIdentifier.TryParse(value, out var ident);
+            return (parsed, ident);
+        }
+    }
 }

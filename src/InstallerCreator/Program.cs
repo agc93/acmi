@@ -32,6 +32,7 @@ namespace InstallerCreator {
             services.AddSingleton<IIdentifierParser, WeaponParser>();
             services.AddSingleton<IIdentifierParser, EffectsParser>();
             services.AddSingleton<IIdentifierParser, CanopyParser>();
+            services.AddSingleton<IIdentifierParser, EmblemParser>();
             services.AddSingleton<PakReader>();
             services.AddSingleton<AppInfoService>();
             services.AddLogging(logging => {

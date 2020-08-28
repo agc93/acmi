@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -62,7 +63,7 @@ namespace InstallerCreator.ModInstaller {
             if (skins.ReadmeFiles.Count > 0) {
                 moduleChildren.Add(new XElement("requiredInstallFiles", skins.ReadmeFiles.Select(r => new XElement("file", new XAttribute("source", r), new XAttribute("destination", Path.Combine(MakeSafePath(_title), new FileInfo(r).Name))))));
             }
-            moduleChildren.Add(GenerateStepsXml(aircraftLookup, skins.ExtraFiles.ToList(), skins.MultiSkinFiles.EnumerateDictionary(), skins.Crosshairs.EnumerateDictionary(), skins.Portraits.EnumerateDictionary(), skins.Weapons.EnumerateDictionary(), skins.Effects.EnumerateDictionary(), skins.Canopies.EnumerateDictionary()));
+            moduleChildren.Add(GenerateStepsXml(aircraftLookup, skins.ExtraFiles.ToList(), skins.MultiSkinFiles.EnumerateDictionary(), skins.Crosshairs.EnumerateDictionary(), skins.Portraits.EnumerateDictionary(), skins.Weapons.EnumerateDictionary(), skins.Effects.EnumerateDictionary(), skins.Canopies.EnumerateDictionary(), skins.Emblems.EnumerateDictionary()));
             XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
             var xdoc = new XDocument(GetCreatedComment(), new XElement("config", new XAttribute(XNamespace.Xmlns + "xsi", xsi), new XAttribute(xsi + "noNamespaceSchemaLocation", "http://qconsulting.ca/fo3/ModConfig5.0.xsd"), moduleChildren));
             return xdoc;
@@ -76,7 +77,7 @@ namespace InstallerCreator.ModInstaller {
             }
             
 
-        private XElement GenerateStepsXml(ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, List<string> extraPaks, Dictionary<string, List<SkinIdentifier>> multiSkins = null, Dictionary<string, List<CrosshairIdentifier>> crosshairs = null, Dictionary<string, List<PortraitIdentifier>> portraits = null, Dictionary<string, List<WeaponIdentifier>> weapons = null, Dictionary<string, List<EffectsIdentifier>> effects = null, Dictionary<string, List<CanopyIdentifier>> canopies = null) {
+        private XElement GenerateStepsXml(ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, List<string> extraPaks, Dictionary<string, List<SkinIdentifier>> multiSkins = null, Dictionary<string, List<CrosshairIdentifier>> crosshairs = null, Dictionary<string, List<PortraitIdentifier>> portraits = null, Dictionary<string, List<WeaponIdentifier>> weapons = null, Dictionary<string, List<EffectsIdentifier>> effects = null, Dictionary<string, List<CanopyIdentifier>> canopies = null, Dictionary<string, List<EmblemIdentifier>> emblems = null) {
             XElement GetPluginElement(string fileName, string description = null) {
                 var children = new List<XElement> {
                     Description(description),
@@ -102,6 +103,10 @@ namespace InstallerCreator.ModInstaller {
                     groups.AddRange(groupedGroups);
                 }
                 return groups;
+            }
+            XElement GetSelectionStep<T> (Dictionary<string, List<T>> idents, string title, string groupName, Func<List<T>, string> descriptionFunc = null) where T : Identifier {
+                descriptionFunc ??= (s) => string.Empty;
+                return new XElement("installStep", Name(title), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name(groupName), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), idents.Select(cm => GetPluginElement(cm.Key, descriptionFunc(cm.Value)))))));
             }
             var steps = new List<XElement>();
             steps.Add(new XElement("installStep", new XAttribute("name", "Introduction"), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), new XElement("group", new XAttribute("name", "Introduction"), new XAttribute("type", "SelectAll"), new XElement("plugins", new XAttribute("order", "Explicit"), new XElement("plugin", new XAttribute("name", "Introduction"), new XElement("description", GetDescription()), OptionalTypeDescriptor()))))));
@@ -150,6 +155,10 @@ namespace InstallerCreator.ModInstaller {
             if (effects != null && effects.Any()) {
                 steps.Add(new XElement("installStep", Name("Effects"), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name("Visual Effects"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), effects.Select(cm => GetPluginElement(cm.Key, Includes(cm.Value.Select(v => v.ToString())))))))));
             }
+            if (emblems != null && emblems.Any()) {
+                steps.Add(GetSelectionStep(emblems, "Emblems", "Emblems", (ids) => Replaces(ids.Select(i => i.ToString()))));
+                // steps.Add(new XElement("installStep", Name("Emblems"), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name("Emblems"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), emblems.Select(ce => GetPluginElement(ce.Key, Replaces(ce.Value.Select(v => v.ToString())))))))));
+            }
             if (extraPaks != null && extraPaks.Any()) {
                 steps.Add(new XElement("installStep", new XAttribute("name", "Other Files"), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), new XElement("group", new XAttribute("name", "Other mod files"), new XAttribute("type", "SelectAny"), new XElement("plugins", new XAttribute("order", "Explicit"), extraPaks.Select(ep => GetPluginElement(ep)))))));
             }
@@ -159,7 +168,11 @@ namespace InstallerCreator.ModInstaller {
         private string GetImagePath(string fileName) {
             var skinFileName = Path.GetFileNameWithoutExtension(fileName).TrimEnd('_', '.');
             var pakFileLocation = new FileInfo(Path.Combine(_rootPath, fileName)).Directory;
-            var possibleImages = new[] {".png", ".jpg"}.Select(e => Path.Join(pakFileLocation.FullName, skinFileName + e));
+            var exts = new[] { ".png", ".jpg"};
+            var possibleImages = exts.Select(e => Path.Join(pakFileLocation.FullName, skinFileName + e));
+            possibleImages = possibleImages
+                .Concat(exts.Select(e => Path.Join(pakFileLocation.FullName, "Screenshots", skinFileName + e)))
+                .Concat(exts.Select(e => Path.Join(_rootPath, "Screenshots", skinFileName + e)));
             var firstValid = possibleImages.FirstOrDefault(pi => File.Exists(pi));
             return firstValid;
         }

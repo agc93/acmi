@@ -16,6 +16,7 @@ namespace InstallerCreator
         public Dictionary<string, IEnumerable<WeaponIdentifier>> Weapons {get;set;} = new Dictionary<string, IEnumerable<WeaponIdentifier>>();
         public Dictionary<string, IEnumerable<EffectsIdentifier>> Effects {get;set;} = new Dictionary<string, IEnumerable<EffectsIdentifier>>();
         public Dictionary<string, IEnumerable<CanopyIdentifier>> Canopies {get;set;} = new Dictionary<string, IEnumerable<CanopyIdentifier>>();
+        public Dictionary<string, IEnumerable<EmblemIdentifier>> Emblems {get;set;} = new Dictionary<string, IEnumerable<EmblemIdentifier>>();
 
         public bool IsEmpty() {
             return GetFileCount(true) == 0;
@@ -46,11 +47,13 @@ namespace InstallerCreator
                 Effects.Add(relPath, idents.Cast<EffectsIdentifier>());
             } else if (ident is CanopyIdentifier) {
                 Canopies.Add(relPath, idents.Cast<CanopyIdentifier>());
+            } else if (ident is EmblemIdentifier) {
+                Emblems.Add(relPath, idents.Cast<EmblemIdentifier>());
             }
         }
 
         public int GetFileCount(bool includeExtra = false) {
-            var detected = Skins.Keys.Count + MultiSkinFiles.Count + Portraits.Keys.Count + Crosshairs.Keys.Count + Weapons.Keys.Count + Effects.Keys.Count + Canopies.Keys.Count;
+            var detected = Skins.Keys.Count + MultiSkinFiles.Count + Portraits.Keys.Count + Crosshairs.Keys.Count + Weapons.Keys.Count + Effects.Keys.Count + Canopies.Keys.Count + Emblems.Keys.Count;
             return includeExtra 
                 ? detected + ExtraFiles.Count
                 : detected;

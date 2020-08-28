@@ -98,6 +98,9 @@ namespace InstallerCreator.Commands
             if (files.Canopies.Any()) {
                 table.AddRow("Canopies", files.Canopies.Count.ToString());
             }
+            if (files.Emblems.Any()) {
+                table.AddRow("Emblems", files.Emblems.Count.ToString());
+            }
             AnsiConsole.Render(table);
         }
         public class Settings : AppSettings {
