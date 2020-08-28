@@ -22,6 +22,23 @@
              "env": {"ACMI_DEBUG": "true"}
          },
          {
+            "name": ".NET Core Launch (pack)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-pack",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceFolder}/src/PackCreator/bin/Debug/netcoreapp3.1/acmi-pack.dll",
+            // "args": ["build"], 
+            // "args": ["build", "D:\\Mods\\SkiesUntoldHistoricGalm", "--author", "njmksr", "--title", "\"Skies Untold: Historic Galm Pack\"", "--version", "1.0.0"],
+            // "cwd": "${workspaceFolder}/src/InstallerCreator", //you should change this to the folder with your mod files to test.
+            "cwd": "D:\\Mods\\FOMOD_Tests",
+            "args": ["pack", "D:\\TEMP\\unpacked"],
+            // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+            "console": "integratedTerminal",
+            "stopAtEntry": true,
+            "env": {"ACMI_DEBUG": "true"}
+        },
+         {
              "name": ".NET Core Attach",
              "type": "coreclr",
              "request": "attach",

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>acmi-pack</AssemblyName>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- <PackageReference Include="ExecEngine" Version="0.1.0" /> -->
+    <PackageReference Include="Sharprompt" Version="2.0.0" />
+    <PackageReference Include="Spectre.Cli" Version="0.37.0" />
+    <PackageReference Include="Spectre.Cli.AppInfo" Version="0.1.4" />
+    <PackageReference Include="Spectre.Cli.Extensions.DependencyInjection" Version="0.2.1" />
+    <PackageReference Include="Spectre.Console" Version="0.14.0" />
+    <PackageReference Include="Spectre.Console.Extensions.Logging" Version="0.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Other\ExecEngine\src\ExecEngine\ExecEngine.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstallerCreator", "Install
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AceCore", "AceCore\AceCore.csproj", "{FD1DC331-C22C-413B-B61F-DE69C7F97081}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackCreator", "PackCreator\PackCreator.csproj", "{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{FD1DC331-C22C-413B-B61F-DE69C7F97081}.Release|x64.Build.0 = Release|Any CPU
 		{FD1DC331-C22C-413B-B61F-DE69C7F97081}.Release|x86.ActiveCfg = Release|Any CPU
 		{FD1DC331-C22C-413B-B61F-DE69C7F97081}.Release|x86.Build.0 = Release|Any CPU
+		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Debug|x64.Build.0 = Debug|Any CPU
+		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Debug|x86.Build.0 = Debug|Any CPU
+		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Release|x64.ActiveCfg = Release|Any CPU
+		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Release|x64.Build.0 = Release|Any CPU
+		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Release|x86.ActiveCfg = Release|Any CPU
+		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
