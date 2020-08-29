@@ -39,7 +39,7 @@ namespace PackCreator
             if (string.IsNullOrWhiteSpace(sourcePath)) {
                 throw new InvalidDirectoryException("Could not locate Nimbus folder!");
             }
-            using (var ctx = await _scriptService.GetScriptContext(filesDirectory))
+            using (var ctx = await _scriptService.GetScriptContext(di.Name == "Nimbus" ? Directory.GetParent(di.FullName).FullName : di.FullName))
             {
                 var args = new List<string> {ctx.CurrentPath.ToArgument(), "pack", targetFileName.ToArgument(), sourcePath.ToArgument()};
                 var output = _runner.SetWorkingDirectory(ctx.WorkingDirectory).RunCommand(args);

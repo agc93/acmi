@@ -112,7 +112,33 @@ Task("Publish-Runtime")
 {
 	var projectDir = $"{artifacts}publish";
 	CreateDirectory(projectDir);
-    DotNetCorePublish("./src/InstallerCreator/InstallerCreator.csproj", new DotNetCorePublishSettings {
+	foreach (var projPath in new[] {"./src/InstallerCreator/InstallerCreator.csproj", "./src/PackCreator/PackCreator.csproj"})
+	{
+		DotNetCorePublish(projPath, new DotNetCorePublishSettings {
+        OutputDirectory = projectDir + "/dotnet-any",
+		Configuration = configuration,
+        PublishSingleFile = false,
+        PublishTrimmed = false
+    });
+    var runtimes = new[] { "linux-x64", "win-x64"};
+    foreach (var runtime in runtimes) {
+		var runtimeDir = $"{projectDir}/{runtime}";
+		CreateDirectory(runtimeDir);
+		Information("Publishing for {0} runtime", runtime);
+		var settings = new DotNetCorePublishSettings {
+			Runtime = runtime,
+			Configuration = configuration,
+			OutputDirectory = runtimeDir,
+			PublishSingleFile = true,
+			PublishTrimmed = true,
+			ArgumentCustomization = args => args.Append($"/p:Version={packageVersion}")
+		};
+		DotNetCorePublish(projPath, settings);
+		CreateDirectory($"{artifacts}archive");
+		Zip(runtimeDir, $"{artifacts}archive/acmi-{runtime}.zip");
+    }
+	}
+    /* DotNetCorePublish("./src/InstallerCreator/InstallerCreator.csproj", new DotNetCorePublishSettings {
         OutputDirectory = projectDir + "/dotnet-any",
 		Configuration = configuration,
         PublishSingleFile = false,
@@ -134,7 +160,7 @@ Task("Publish-Runtime")
 		DotNetCorePublish("./src/InstallerCreator/InstallerCreator.csproj", settings);
 		CreateDirectory($"{artifacts}archive");
 		Zip(runtimeDir, $"{artifacts}archive/acmi-{runtime}.zip");
-    }
+    } */
 });
 
 Task("Default")

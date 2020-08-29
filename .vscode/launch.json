@@ -32,7 +32,7 @@
             // "args": ["build", "D:\\Mods\\SkiesUntoldHistoricGalm", "--author", "njmksr", "--title", "\"Skies Untold: Historic Galm Pack\"", "--version", "1.0.0"],
             // "cwd": "${workspaceFolder}/src/InstallerCreator", //you should change this to the folder with your mod files to test.
             "cwd": "D:\\Mods\\FOMOD_Tests",
-            "args": ["pack", "D:\\TEMP\\unpacked"],
+            "args": ["pack", "D:\\TEMP\\unpacked\\Nimbus"],
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "integratedTerminal",
             "stopAtEntry": true,
