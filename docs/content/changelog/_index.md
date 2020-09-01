@@ -6,6 +6,10 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.2.3**
+  - Basic support for emblem detection (mostly untested!)
+  - Improved app info commands and performance
+  - XML files will now include metadata comments
 - **0.2.2**
   - A whole bunch of improvements to canopy detection. Thanks Cherry!
   - Minor performance improvements (100+ file packages should now take around ~5s)
