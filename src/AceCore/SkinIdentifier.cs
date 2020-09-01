@@ -61,5 +61,7 @@ namespace AceCore
         }
 
         public string GetAircraftName() => base.GetAircraftName(Aircraft);
+
+        public string GetObjectName() => $"{Aircraft}_{Slot}_{Type}";
     }
 }
