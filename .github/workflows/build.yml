@@ -50,6 +50,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   nexus:
+    needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
@@ -68,10 +69,19 @@ jobs:
     - name: Set version output
       id: vars
       run: echo ::set-output name=tag::${GITHUB_REF#refs/tags/v}
-    - name: Run Nexus Uploader
+    - name: Validate unex config
       shell: bash
       run: |
-        unex upload 787 ./upload/acmi-win-x64.zip -v ${{ steps.vars.outputs.tag }}
+        dotnet unex check -c
       env:
         UNEX_APIKEY: ${{ secrets.NEXUS_TOKEN }}
         UNEX_COOKIES: ${{ secrets.NEXUS_COOKIES }}
+        UNEX_DEBUG: true
+    - name: Run Nexus uploader
+      shell: bash
+      run: |
+        dotnet unex upload 787 ./assets/acmi-win-x64.zip -v ${{ steps.vars.outputs.tag }}
+      env:
+        UNEX_APIKEY: ${{ secrets.NEXUS_TOKEN }}
+        UNEX_COOKIES: ${{ secrets.NEXUS_COOKIES }}
+        UNEX_DEBUG: true
