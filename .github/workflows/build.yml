@@ -36,7 +36,7 @@ jobs:
       name: Upload Artifacts
       with:
         name: acmi-cli
-        path: dist/publish/
+        path: dist/archive/
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
@@ -49,3 +49,29 @@ jobs:
           ./dist/archive/*.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  nexus:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.101'
+    - name: Restore Tools
+      shell: bash
+      run: |
+          dotnet tool install NexusUploader
+    - uses: actions/download-artifact@v1
+      with:
+        name: acmi-cli
+        path: assets
+    - name: Set version output
+      id: vars
+      run: echo ::set-output name=tag::${GITHUB_REF#refs/tags/v}
+    - name: Run Nexus Uploader
+      shell: bash
+      run: |
+        unex upload 787 ./upload/acmi-win-x64.zip -v ${{ steps.vars.outputs.tag }}
+      env:
+        UNEX_APIKEY: ${{ secrets.NEXUS_TOKEN }}
+        UNEX_COOKIES: ${{ secrets.NEXUS_COOKIES }}
