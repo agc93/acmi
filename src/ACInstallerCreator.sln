@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AceCore", "AceCore\AceCore.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackCreator", "PackCreator\PackCreator.csproj", "{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AceCore.Tests", "AceCore.Tests\AceCore.Tests.csproj", "{9E137060-364C-45B4-93F4-03F43195EDEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,5 +60,17 @@ Global
 		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Release|x64.Build.0 = Release|Any CPU
 		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Release|x86.ActiveCfg = Release|Any CPU
 		{DEA503DD-8F5C-4FE9-B1EA-3C75CA9E6403}.Release|x86.Build.0 = Release|Any CPU
+		{9E137060-364C-45B4-93F4-03F43195EDEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E137060-364C-45B4-93F4-03F43195EDEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E137060-364C-45B4-93F4-03F43195EDEA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9E137060-364C-45B4-93F4-03F43195EDEA}.Debug|x64.Build.0 = Debug|Any CPU
+		{9E137060-364C-45B4-93F4-03F43195EDEA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9E137060-364C-45B4-93F4-03F43195EDEA}.Debug|x86.Build.0 = Debug|Any CPU
+		{9E137060-364C-45B4-93F4-03F43195EDEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E137060-364C-45B4-93F4-03F43195EDEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E137060-364C-45B4-93F4-03F43195EDEA}.Release|x64.ActiveCfg = Release|Any CPU
+		{9E137060-364C-45B4-93F4-03F43195EDEA}.Release|x64.Build.0 = Release|Any CPU
+		{9E137060-364C-45B4-93F4-03F43195EDEA}.Release|x86.ActiveCfg = Release|Any CPU
+		{9E137060-364C-45B4-93F4-03F43195EDEA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

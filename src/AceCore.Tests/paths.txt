@@ -1,0 +1,13 @@
+/Game/Vehicles/Vessels/alcn/Textures/alcn_a_D.uasset
+/Game/Vehicles/Vessels/alcn/Textures/alcn_a_MREC.uasset
+/Game/Vehicles/Vessels/alcn/Textures/alcn_b_D.uasset
+/Game/Vehicles/Vessels/alcn/Textures/alcn_b_MREC.uasset
+/Game/Vehicles/Vessels/alcn/Textures/ex01_alcn_a_MREC.uasset
+/Game/Vehicles/Vessels/arle/Textures/arle_D.uasset
+/Game/Vehicles/Vessels/kuzn/Textures/kuzn_D.uasset
+/Game/Vehicles/Vessels/kuzn/Textures/kuzn_MREC.uasset
+/Game/Vehicles/Weapons/w_dptk_a0/Textures/w_dptk_a0_D.uasset
+/Game/Vehicles/Weapons/w_4agm_r0/Textures/w_4agm_r0_D.uasset
+/Game/Vehicles/Weapons/w_aam_a0/Materials/w_aam_a0_Inst.uasset
+/Game/Vehicles/Weapons/w_laam_a0/Textures/w_laam_a0_MREC.uasset
+/Game/Vehicles/Weapons/w_icbm/Materials/w_icbm_Inst.uasset
