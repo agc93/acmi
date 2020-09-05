@@ -30,5 +30,13 @@ namespace AceCore
         public static List<Vehicles.VesselSlot> GetVessels(this IEnumerable<VehicleSlot> vehicles) {
             return vehicles.Where(v => v.Type == VehicleType.Vessel).Cast<VesselSlot>().ToList();
         }
+
+        public static string GetFriendlyName(this string objectName) {
+            return Constants.AllItemNames.TryGetValue(objectName, out var fn) ? fn : objectName;
+        }
+
+        public static string OrDefault(this string value, string defaultValue) {
+            return string.IsNullOrWhiteSpace(value) ? defaultValue : value;
+        }
     }
 }

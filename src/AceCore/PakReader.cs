@@ -16,7 +16,7 @@ namespace AceCore {
         public IEnumerable<Identifier> ReadFile(string filePath, bool readWholeFile = false) {
             var headerFound = false;
             Identifier ParseMatch(string rawString) {
-                var matched = _parsers.Select(p => p.TryParse(rawString)).FirstOrDefault(m => m.IsValid);
+                var matched = _parsers.Select(p => p.TryParse(rawString, true)).FirstOrDefault(m => m.IsValid);
                 if (matched.identifier != null) {
                     return matched.identifier;
                 }

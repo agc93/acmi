@@ -40,5 +40,7 @@ namespace AceCore
             ident = null;
             return false;
         }
+
+        public override string ObjectPath => base.ObjectPath + $"Vehicles/{_aircraft}/Materials";
     }
 }

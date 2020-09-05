@@ -1,6 +1,8 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AceCore;
+using AceCore.Parsers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Cli;
@@ -55,12 +57,17 @@ namespace PackCreator
             services.AddSingleton<ExecEngine.CommandRunner>(provider => new ExecEngine.CommandRunner("python"));
             services.AddSingleton<AppInfoService>();
             services.AddSingleton<BuildContextFactory>();
+            services.AddSingleton<BuildService>();
             services.AddLogging(logging => {
                 logging.SetMinimumLevel(LogLevel.Trace);
                 logging.AddInlineSpectreConsole(c => {
                     c.LogLevel = Program.GetLogLevel();
                 });
             });
+            services.Scan(scan =>
+                scan.FromAssemblyOf<Identifier>()
+                    .AddClasses(classes => classes.AssignableTo(typeof(AceCore.Parsers.IIdentifierParser))).AsImplementedInterfaces().WithSingletonLifetime()
+            );
             return services;
         }
     }

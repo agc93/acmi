@@ -122,7 +122,7 @@ namespace AceCore
             ["w_ugb_r0"] = "UGB (Su-47)"
         };
         public static List<AircraftSlot> PlayerAircraft => new List<AircraftSlot> {
-            new AircraftSlot("a10a", "A-10C", new[] {"00a"}),
+            new AircraftSlot("a10a", "A-10C", new[] {"00a", "02a"}),
             new AircraftSlot("adf11f", "ADF-11F") { NPCSlots = new List<string>{"02a"} },
             new AircraftSlot("f02a", "F-2A") { NPCSlots = new List<string> {"01a", "02a"}},
             new AircraftSlot("f04e", "F-4E", new[] {"01a"}),

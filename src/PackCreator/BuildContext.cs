@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AceCore;
 using ExecEngine;
 using Microsoft.Extensions.Logging;
 
@@ -118,7 +119,14 @@ namespace PackCreator {
         public string FilePattern {get;set;}
 
         // public bool HasNpc => SourcePath.Name.Any(char.IsLetter) && SourcePath.Name.Any(char.IsDigit);
-        public bool HasNpc => SlotName == "ex" || Regex.IsMatch(string.IsNullOrWhiteSpace(PackTargetOverride) ? SourcePath.Name : PackTargetOverride, @"\d{2}[a-z]{1}(_|$)");
-        public bool HasPlayer => Regex.IsMatch(string.IsNullOrWhiteSpace(PackTargetOverride) ? SourcePath.Name : PackTargetOverride, @"[^a-z](\d{2}|x{1}\d{1})(?![a-z]{1})");
+        // public bool HasNpc => SlotName == "ex" || Regex.IsMatch(string.IsNullOrWhiteSpace(PackTargetOverride) ? SourcePath.Name : PackTargetOverride, @"\d{2}[a-z]{1}(_|$)");
+        // public bool HasPlayer => Regex.IsMatch(string.IsNullOrWhiteSpace(PackTargetOverride) ? SourcePath.Name : PackTargetOverride, @"[^a-z](\d{2}|x{1}\d{1})(?![a-z]{1})");
+    }
+
+    public class AssetContext<T> : AssetContext where T : Identifier{
+        public AssetContext(DirectoryInfo sourcePath, string targetOverride = null) : base(sourcePath, targetOverride) {
+        }
+
+        public List<T> Identifiers {get;set;} = new List<T>();
     }
 }

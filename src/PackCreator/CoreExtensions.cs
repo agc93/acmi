@@ -62,7 +62,7 @@ namespace PackCreator {
             Directory.CreateDirectory(target.FullName);
 
             // Copy each file into the new directory.
-            foreach (FileInfo fi in source.GetFiles(filter = "*")) {
+            foreach (FileInfo fi in source.GetFiles(filter ?? "*")) {
                 // System.Console.WriteLine(@"Copying {0}\{1}", target.FullName, fi.Name);
                 fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
             }
@@ -127,6 +127,34 @@ namespace PackCreator {
             }
 
             return commonPath;
+        }
+
+        internal static bool IsPlayable(this string name) {
+            return AceCore.Constants.PlayerAircraft.Any(a => a.ObjectName == name || a.Name == name);
+        }
+
+        internal static bool IsPlayable(this AceCore.SkinIdentifier skin) {
+            return skin.Aircraft.IsPlayable();
+        }
+
+        internal static void AddOrUpdate(this Dictionary<PackTarget, List<AssetContext>> roots, PackTarget target, IEnumerable<AssetContext> targetAssets) {
+            if (roots.Any(r => r.Key.TargetFileName == target.TargetFileName)) {
+                roots.First(r => r.Key.TargetFileName == target.TargetFileName).Value.AddRange(targetAssets.ToList());
+            } else {
+                roots.Add(target, targetAssets.ToList());
+            }
+        }
+
+        internal static void AddOrUpdate(this Dictionary<PackTarget, List<AssetContext>> roots, AceCore.SkinIdentifier skin, IEnumerable<AssetContext> targetAssets) {
+            roots.AddOrUpdate(new PackTarget($"{skin.GetAircraftName().MakeSafe(true)}_{skin.GetSlotName()}", skin.ObjectPath + "/" + skin.Aircraft), targetAssets);
+        }
+
+        internal static string ToObjectPath(this AceCore.SkinIdentifier skin) {
+            return skin.ObjectPath + "/" + skin.Aircraft;
+        }
+
+        internal static string ToObjectPath(this AceCore.VesselIdentifier vessel) {
+            return vessel.ObjectPath + "/" + vessel.ObjectPath;
         }
     }
 }

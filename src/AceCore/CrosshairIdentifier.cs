@@ -55,5 +55,7 @@ namespace AceCore
             _slotName ??= ParseSlotName();
 			return _slotName;
         }
+
+        public override string ObjectPath => base.ObjectPath + $"UI/HUD/{(Slot.Contains("Multi") ? "MultiLockon" : string.Empty)}";
     }
 }

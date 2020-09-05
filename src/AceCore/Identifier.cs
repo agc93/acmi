@@ -16,5 +16,16 @@ namespace AceCore
                 return aircraftCode.ToUpper();
             }
         }
+
+        protected string GetItemName(string vehicleCode) {
+            var knownName = Constants.AllItemNames.TryGetValue(vehicleCode, out var name);
+            if (knownName) {
+                return name;
+            } else {
+                return vehicleCode.ToUpper();
+            }
+        }
+
+        public virtual string ObjectPath => "Nimbus/Content/";
     }
 }

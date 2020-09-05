@@ -59,5 +59,7 @@ namespace AceCore
             _slotName ??= ParseSlotName();
 			return _slotName;
         }
+
+        public override string ObjectPath => base.ObjectPath + "UI/HUD/SubtitleSpeakerPortrait";
     }
 }
