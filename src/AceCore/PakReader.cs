@@ -23,7 +23,7 @@ namespace AceCore {
                 return null;
             }
             int GetOffsetLength(long fileSize) {
-                return (int)Math.Min(Math.Ceiling(fileSize * 0.025), 65536);
+                return (int)Math.Min(Math.Max(Math.Ceiling(fileSize * 0.025), 8192), 65536);
             }
             if (readWholeFile) {
                 /* foreach (var match in FindIdents(filePath, new SearchOptions() { MaxBytes = int.MaxValue })) {
