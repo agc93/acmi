@@ -27,13 +27,24 @@ namespace AceCore {
                 }
                 return null;
             }
+            int GetOffsetLength(long fileSize) {
+                return (int)Math.Min(Math.Ceiling(fileSize * 0.025), 65536);
+            }
             if (readWholeFile) {
-                foreach (var match in FindIdents(filePath, new SearchOptions() { MaxBytes = int.MaxValue })) {
+                /* foreach (var match in FindIdents(filePath, new SearchOptions() { MaxBytes = int.MaxValue })) {
                     var ident = ParseMatch(match);
                     if (ident != null) {
                         yield return ident;
                     }
-                }
+                } */ //this is just waaaaaaaaaaaaaayyyyyyyyyyyyyyyyy tooooooooooo ssslllllloooooooowwwwwwww
+                var searchLength = GetOffsetLength(new FileInfo(filePath).Length);
+                // foreach (var match in FindIdents(filePath, new SearchOptions() { MaxBytes = 16384, Key = "Nimbus/Content/" }, seekAction: () => (-16384, SeekOrigin.End))) {
+                foreach (var match in FindIdents(filePath, new SearchOptions() { MaxBytes = searchLength, Key = "Nimbus/Content/" }, seekAction: () => (-searchLength, SeekOrigin.End))) {
+                        var ident = ParseMatch(match);
+                        if (ident != null) {
+                            yield return ident;
+                        }
+                    }
             } else {
                 foreach (var match in FindIdents(filePath)) {
                     var ident = ParseMatch(match);

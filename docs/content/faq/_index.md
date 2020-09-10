@@ -32,7 +32,7 @@ At current, ACMI will fully detect and specifically handle skins, radio portrait
 - If you want to also have pictures for your skin files, just include a `.png` or `.jpg` with the _same name_ as the `.pak` file, beside it.
   - For example, for a file at `Skins\UntoldGalmPack_F15C_F15ACipher1994_MageSlot.pak`, we would check for a `Skins\UntoldGalmPack_F15C_F15ACipher1994_MageSlot.png` file and use that if it's found.
 - If your `.pak` file has more than one skin in it, you can include the exact string `MULTI` anywhere in the file name.
-  - This dramatically slows down the build process but should correctly pull *all* included skins out, not just the first.
+  - This slows down the build process but should correctly pull *all* included skins out, not just the first.
   - For example, `F15SMTD_Monarch_Skin1_P.pak` will only get scanned for one, but `Flashy_NPC_Aircraft_MULTI_P.pak` would get scanned for _any_ skins
 
 ### Will it affect other users?
