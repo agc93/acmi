@@ -92,11 +92,12 @@ namespace InstallerCreator.ModInstaller {
                 children.Add(OptionalTypeDescriptor());
                 return new XElement("plugin", new XAttribute("name", new FileInfo(fileName).Name), children);
             }
-            List<XElement> BuildGroups<T>(GroupedSet<T> groupedSet, string topName) where T : Identifier {
+            List<XElement> BuildGroups<T>(GroupedSet<T> groupedSet, string topName, Func<T, string> labelFunc = null) where T : Identifier {
                 var groups = new List<XElement>();
+                labelFunc ??= pn => pn.ToString();
                 var uniqueSets = groupedSet.UniqueSets;
                 if (uniqueSets.Any() && uniqueSets.All(s => s.Value.Any())) {
-                    var canopyGeneralGroup = new XElement("group", Name(topName), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), uniqueSets.Select(s => GetPluginElement(s.Key, Includes(s.Value.Select(pi => pi.GetSlotName()))))));
+                    var canopyGeneralGroup = new XElement("group", Name(topName), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), uniqueSets.Select(s => GetPluginElement(s.Key, Includes(s.Value.Select(pi => labelFunc(pi)))))));
                     groups.Add(canopyGeneralGroup);
                 }
                 var groupedSets = groupedSet.Groups;

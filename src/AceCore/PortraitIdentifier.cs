@@ -38,7 +38,7 @@ namespace AceCore
             return false;
         }
 
-        public string Slot { get; }
+        private string Slot { get; }
         private string _slotName;
 
 		private string ParseSlotName() {
@@ -61,5 +61,7 @@ namespace AceCore
         }
 
         public override string ObjectPath => base.ObjectPath + "UI/HUD/SubtitleSpeakerPortrait";
+
+        public override string BaseObjectName => Slot;
     }
 }

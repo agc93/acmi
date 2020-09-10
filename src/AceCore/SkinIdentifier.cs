@@ -29,7 +29,7 @@ namespace AceCore
             Type = type;
 			SlotName = ParseSlotName();
         }
-		public string SlotName {get; private set;}
+		private string SlotName {get; set;}
         public string Aircraft { get; }
         public string Slot { get; }
         public string Type { get; }
@@ -65,5 +65,6 @@ namespace AceCore
 
         public override string ObjectPath => base.ObjectPath + $"Vehicles/{Aircraft}/{Slot}";
         public bool IsNPC => Slot.Any(char.IsLetter);
+        public override string BaseObjectName => $"{Aircraft}_{Slot}";
     }
 }

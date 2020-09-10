@@ -3,32 +3,39 @@ using System.Linq;
 using static AceCore.Constants;
 
 namespace PackCreator {
-    public class PackTarget {
-        public PackTarget(string targetFileName, string objectPath)
-        {
-            TargetFileName = targetFileName;
-            ObjectPath = objectPath;
+    public class PackTarget<T> : PackTarget where T : AceCore.Identifier {
+        public PackTarget(string targetFileName, string objectName, string slot) : base(targetFileName, objectName) {
         }
 
-        public PackTarget(string targetFileName, AceCore.Vehicles.VehicleSlot slot, string slotName = null) : this(targetFileName, slot.PathRoot + slot.ObjectName)
+        public PackTarget(string targetFileName, T identifier) : base(targetFileName, identifier.BaseObjectName) {}
+
+        public T Identifier {get;set;}
+        public override string GetOutputPath() {
+            return base.GetOutputPath();
+        }
+    }
+    public class PackTarget {
+        public PackTarget(string targetFileName, string objectName)
         {
-            if (!string.IsNullOrWhiteSpace(slotName)) {
-                SlotName = slotName;
-            }
+            TargetFileName = targetFileName;
+            // TargetPath = objectPath;
+            ObjectName = objectName;
+            // Slot = slot;
         }
 
         public string TargetFileName { get; }
-        public string ObjectPath { get; }
-        public string SlotName {get;set;} = string.Empty;
+        // public string TargetPath { get; }
+        public string ObjectName {get;set;} = string.Empty;
+        // public string Slot {get;set;} = string.Empty;
 
-        public List<AssetContext> TargetAssets {get;} = new List<AssetContext>();
+        public List<AssetContext> ExtraAssets {get;} = new List<AssetContext>();
 
-        public string GetOutputPath() {
-            if (string.IsNullOrWhiteSpace(ObjectPath)) {
+        public virtual string GetOutputPath() {
+            /* if (string.IsNullOrWhiteSpace(TargetPath)) {
                 return "Mod Files";
             } else {
-                var objName = System.IO.Path.GetFileName(ObjectPath);
-                var previous = new System.IO.DirectoryInfo(ObjectPath).Parent.Name;
+                var objName = System.IO.Path.GetFileName(TargetPath);
+                var previous = new System.IO.DirectoryInfo(TargetPath).Parent.Name;
                 var segments = new List<string>();
                 segments.Add(AllItemNames.TryGetValue(previous, out var cat)
                     ? cat
@@ -39,13 +46,15 @@ namespace PackCreator {
                     ? fn
                     : string.Empty);
                 if (segments.All(s => string.IsNullOrWhiteSpace(s))) {
-                    return ObjectPath.Replace("Nimbus/", string.Empty);
+                    return TargetPath.Replace("Nimbus/", string.Empty);
                 } else {
                     return System.IO.Path.Join(segments.Select(f => f.MakeSafe(true)).ToArray()).Replace("\\", "/");
                 }
-            }
+            } */
+            return string.Empty;
         }
 
         public bool IsMerged {get;set;}
     }
 }
+

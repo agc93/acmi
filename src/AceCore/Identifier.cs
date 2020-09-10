@@ -3,6 +3,8 @@ namespace AceCore
     public abstract class Identifier
     {
         public string RawValue { get; protected set; }
+        public abstract string BaseObjectName {get; }
+        // public string Slot {get;protected set;}
         public virtual string GetSlotName() {
             return RawValue;
         }

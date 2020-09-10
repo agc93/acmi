@@ -149,10 +149,6 @@ namespace PackCreator {
             roots.AddOrUpdate(new PackTarget($"{skin.GetAircraftName().MakeSafe(true)}_{skin.GetSlotName()}", skin.ObjectPath + "/" + skin.Aircraft), targetAssets);
         }
 
-        internal static string ToObjectPath(this AceCore.SkinIdentifier skin) {
-            return skin.ObjectPath + "/" + skin.Aircraft;
-        }
-
         internal static string ToObjectPath(this AceCore.VesselIdentifier vessel) {
             return vessel.ObjectPath + "/" + vessel.ObjectPath;
         }

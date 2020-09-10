@@ -65,5 +65,7 @@ namespace AceCore
         public string GetObjectName() => $"{Vessel}{(string.IsNullOrWhiteSpace(Slot) ? string.Empty : "_" + Slot)}_{Type}";
 
         public override string ObjectPath => base.ObjectPath + $"Vehicles/Vessels/{Vessel}/Textures";
+
+        public override string BaseObjectName => Vessel;
     }
 }

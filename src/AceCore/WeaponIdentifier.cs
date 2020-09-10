@@ -24,7 +24,7 @@ namespace AceCore {
             ident = null;
             return false;
         }
-        public string Weapon;
+        public string Weapon {get;}
         private string _weaponName;
         private string _slotId;
         public string Type {get;} = "D";
@@ -54,5 +54,7 @@ namespace AceCore {
         public override string GetSlotName() => GetWeaponName();
 
         public override string ObjectPath => base.ObjectPath + $"Vehicles/Weapons/{RawValue}/Textures";
+
+        public override string BaseObjectName => Weapon;
     }
 }

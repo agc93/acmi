@@ -50,5 +50,7 @@ namespace AceCore
         public string Format { get; }
 
         public override string ObjectPath => base.ObjectPath + $"Emblem/{Format}";
+
+        public override string BaseObjectName => $"emblem_{_slotName}";
     }
 }

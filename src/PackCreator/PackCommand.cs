@@ -113,38 +113,46 @@ namespace PackCreator {
                 AnsiConsole.WriteLine($"Indexing mod files for {GetFriendlyName(obj)}");
                 foreach (var rawAsset in obj.Value)
                 {
-                    var targetAssets = new List<AssetContext>();
+                    /* var firstIdent = rawAsset.SourcePath.GetFiles("*.uasset", SearchOption.AllDirectories).Select(n => ParsePath(n)).FirstOrDefault(n => n != null);
+                    if (firstIdent != null && firstIdent is SkinIdentifier skin) {
+
+                    } */
+                    var extraAssets = new List<AssetContext>();
                     var ids = rawAsset.SourcePath.GetFiles("*", SearchOption.AllDirectories).Select(n => ParsePath(n)).Where(i => i != null).ToList();
                     //ids is now every recognised object in the current "root"
                     var skins = ids.Where(i => i is SkinIdentifier).Cast<SkinIdentifier>();
                     foreach (var skin in skins)
                     {
+                        // var extraAssets = new List<AssetContext>();
                         List<AssetContext> GetSkinAssets() {
                             return obj.Value.Select(a => {
                                                 a.FileFilter = $"{skin.Aircraft}_{skin.Slot}_*";
                                                 return a;
-                                            }).Concat(targetAssets).ToList();
+                                            }).Concat(GetExtraAssets()).ToList();
                         }
+                        IEnumerable<AssetContext> GetExtraAssets() {
+                            return extraAssets.Where(a => a.SourcePath.FullName.Contains(skin.Aircraft));
+                        }
+                        void AddSingleSlot() {
+                                    roots.AddOrUpdate(new PackTarget($"{skin.GetAircraftName().MakeSafe(true)}_{skin.GetSlotName()}", skin.BaseObjectName), GetSkinAssets().Concat(GetExtraAssets()).ToList());
+                                }
                         //a skin file in the current context
                         if (skin.Type.StartsWith("I") && skin.IsNPC) {
                             foreach (var mrecDir in rawAsset.SourcePath.Parent.GetDirectories().Where(d => d.Name.ToLower() == "ex"))
                             {
                                 // var slotId = regex.Match(instFile).Groups[1].Value;
-                                targetAssets.Add(new AssetContext(mrecDir) { FilePattern = $"_[0x]?{skin.Slot.TrimStart('0')}_MREC"});
+                                extraAssets.Add(new AssetContext(mrecDir) { FilePattern = $"_[0x]?{skin.Slot.TrimStart('0')}_MREC"});
                             }
                         }
                         if (skin.Type.StartsWith("D") && Constants.NonPlayableAircraft.Any(a => a.ObjectName == skin.Aircraft)) {
                             // Non-playable skin, default to bulk packing
                             var name = $"{skin.GetAircraftName().MakeSafe(true)}_NPC";
-                            roots.AddOrUpdate(new PackTarget(name, skin.ObjectPath.Replace("/" + skin.Slot, string.Empty)) { IsMerged = obj.Value.Count() > 1}, targetAssets.Concat(new[] {rawAsset}).ToList());
+                            roots.AddOrUpdate(new PackTarget(name, skin.Aircraft) { IsMerged = obj.Value.Count() > 1}, GetExtraAssets().Concat(new[] {rawAsset}).ToList());
                         } else if (skin.Type.StartsWith("D") && skin.Aircraft.IsPlayable()) {
                             var areNpcsAvailable = skins.Any(a => a.IsNPC);
                             if (areNpcsAvailable) {
                                 void AddMergedAssets(IEnumerable<AssetContext> assets) {
-                                    roots.AddOrUpdate(new PackTarget($"{skin.GetAircraftName().MakeSafe(true)}_NPC", skin.ToObjectPath()), assets.Concat(targetAssets).ToList());
-                                }
-                                void AddSingleSlot() {
-                                    roots.AddOrUpdate(new PackTarget($"{skin.GetAircraftName().MakeSafe(true)}_{skin.GetSlotName()}", skin.ToObjectPath()), GetSkinAssets().Concat(targetAssets).ToList());
+                                    roots.AddOrUpdate(new PackTarget($"{skin.GetAircraftName().MakeSafe(true)}_NPC", skin.Aircraft + "_NPC"), assets.Concat(GetExtraAssets()).ToList());
                                 }
                                 if (skins.Where(a => a.Type == "D" && a.IsNPC).Count() > 1) { 
                                     npcPackMode ??= Sharprompt.Prompt.Select<NPCPackMode>($"Should we pack all {GetFriendlyName(obj)} NPC slots together?", valueSelector: e => e.GetEnumDescription());
@@ -171,6 +179,8 @@ namespace PackCreator {
                                     // roots.AddOrUpdate(new PackTarget($"{skin.GetAircraftName().MakeSafe(true)}_{skin.GetSlotName()}", skin.ObjectPath + "/" + skin.Aircraft), obj.Value.Concat(targetAssets).ToList());
                                     AddSingleSlot();
                                 }
+                            } else {
+                                AddSingleSlot();
                             }
                             // add player slots
                         }
@@ -187,7 +197,7 @@ namespace PackCreator {
                                         ), obj.Value.Select(a => {
                                                 a.FileFilter = $"*{ship.Vessel}*";
                                                 return a;
-                                            }).Concat(targetAssets).ToList());
+                                            }).ToList());
                                 }
                         if (ship.Type == "D") {
                             AddSingleSlot();
@@ -199,10 +209,34 @@ namespace PackCreator {
                             new PackTarget(
                                 $"RadioPortraits",
                                 portraits.First().ObjectPath
-                            ), obj.Value.Concat(targetAssets).ToList());
+                            ), obj.Value.ToList());
                     }
                     var weapons = ids.Where(i => i is WeaponIdentifier).Cast<WeaponIdentifier>();
                     foreach (var weapon in weapons)
+                    {
+                        roots.AddOrUpdate(
+                            new PackTarget(
+                                $"{weapon.RawValue}",
+                                weapon.BaseObjectName
+                            ), obj.Value.Select(a => {
+                                a.FileFilter = $"*{weapon.BaseObjectName}*";
+                                return a;
+                            }).ToList());
+                    }
+                    var canopies = ids.Where(i => i is CanopyIdentifier).Cast<CanopyIdentifier>();
+                    foreach (var canopy in canopies)
+                    {
+                        roots.AddOrUpdate(
+                            new PackTarget(
+                                canopy.ToString().MakeSafe(),
+                                canopy.BaseObjectName
+                            ), obj.Value.Select(a => {
+                                a.FileFilter = $"*{canopy.BaseObjectName}_Canopy*";
+                                return a;
+                            }).ToList());
+                    }
+                    var crosshairs = ids.Where(i => i is CrosshairIdentifier).Cast<CrosshairIdentifier>();
+                    foreach (var crosshair in crosshairs)
                     {
                         
                     }
@@ -392,7 +426,8 @@ namespace PackCreator {
                     while (mergedTargets.Any() && mergedTargets.Where(r => !string.IsNullOrWhiteSpace(r.Key?.TargetFileName)).Any()) {
                         var candidates = Sharprompt.Prompt.MultiSelect<KeyValuePair<PackTarget, List<AssetContext>>>("Choose the paths to include in the next PAK file", mergedTargets, minimum: 0, valueSelector: t => t.Key?.TargetFileName);
                         if (candidates.Any()) {
-                            var commonRoot = candidates.Select(o => o.Key.ObjectPath).FindCommonPath("/");
+                            // var commonRoot = candidates.Select(o => o.Key).FindCommonPath("/");
+                            var commonRoot = candidates.SelectMany(o => o.Value).Select(o => o.GetTargetPath(rootInfo.FullName, s => s.Replace('\\', '/'))).FindCommonPath("/");
                             var selectedObjs = candidates;
                             var name = Sharprompt.Prompt.Input<string>("Enter a name for this pak file", defaultValue: Path.GetFileName(commonRoot), validators: new[] { FileValidators.ValidFileName()});
                             roots.Add(new PackTarget(name, commonRoot), selectedObjs.SelectMany(o => o.Value).ToList());

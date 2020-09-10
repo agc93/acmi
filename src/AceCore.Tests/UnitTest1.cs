@@ -21,6 +21,7 @@ namespace AceCore.Tests
             var parsed = WeaponIdentifier.TryParse(rawPath, out var ident);
             Assert.Equal(ident.RawValue, fullMatch);
             Assert.Equal(ident.Weapon, weaponName);
+            Assert.Equal(ident.BaseObjectName, weaponName);
             Assert.Equal(ident.Type, type);
         }
     }

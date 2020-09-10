@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace AceCore
 {
-    public class RecordIdentifier : Identifier
+    /* public class RecordIdentifier : Identifier
     {
         private RecordIdentifier(string rawValue, string slot)
         {
@@ -45,5 +45,5 @@ namespace AceCore
         }
 
         public override string ObjectPath => base.ObjectPath + "UI/HUD/SubtitleSpeakerPortrait";
-    }
+    } */
 }
