@@ -18,13 +18,15 @@ namespace InstallerCreator.Commands
         private readonly IFileService _fileService;
         private readonly ILogger<BuildCommand> _logger;
         private readonly AppInfoService _infoService;
+        private readonly ImageLocatorService _imageLocator;
 
-        public BuildCommand(IOptionsPrompt<BuildCommand.Settings> prompt, IFileService fileService, ILogger<BuildCommand> logger, AppInfoService infoService)
+        public BuildCommand(IOptionsPrompt<BuildCommand.Settings> prompt, IFileService fileService, ILogger<BuildCommand> logger, AppInfoService infoService, ImageLocatorService imageLocator)
         {
             _prompt = prompt;
             _fileService = fileService;
             _logger = logger;
             _infoService = infoService;
+            _imageLocator = imageLocator;
         }
         public override int Execute(CommandContext context, Settings settings)
         {
@@ -53,7 +55,7 @@ namespace InstallerCreator.Commands
             _logger.LogInformation($"Building installer from [bold]{pack.GetFileCount()}[/] detected mods ([bold]{pack.ExtraFiles.Count}[/] other mod files).");
             // Console.WriteLine($"INFO: Building installer from {pack.Skins.Count} detected skin mods ({pack.ExtraFiles.Count} other mod files{(pack.MultiSkinFiles.Any() ? " and " + pack.MultiSkinFiles.Count + "merged files" : string.Empty)}).");
             _logger.LogTrace($"{_infoService.GetCurrentTime()}: Creating ModInstallerBuilder");
-            var builder = new ModInstallerBuilder(modRoot, settings.Title.Value, settings.Description.IsSet ? settings.Description.Value : null, infoService: _infoService);
+            var builder = new ModInstallerBuilder(modRoot, settings.Title.Value, settings.Description.IsSet ? settings.Description.Value : null, infoService: _infoService, imageLocator: _imageLocator);
             _logger.LogTrace($"{_infoService.GetCurrentTime()}: Generating info xml");
             var info = builder.GenerateInfoXml(settings.Author.Value, settings.Version.Value, settings.Groups, settings.Description.Value);
             _logger.LogTrace($"{_infoService.GetCurrentTime()}: Generating module config xml");

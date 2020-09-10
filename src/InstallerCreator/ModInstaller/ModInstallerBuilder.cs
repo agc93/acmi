@@ -17,17 +17,19 @@ namespace InstallerCreator.ModInstaller {
         private readonly string _title;
         private string _description;
         private readonly AppInfoService _infoService;
+        private readonly ImageLocatorService _imageLocator;
 
         private XComment GetCreatedComment() {
             return new XComment($"Created with ACMI {_infoService?.GetAppVersion() ?? "v???"} [https://github.com/agc93/acmi]");
         }
 
-        public ModInstallerBuilder(string modRootPath, string title, string description = null, AppInfoService infoService = null)
+        public ModInstallerBuilder(string modRootPath, string title, string description = null, AppInfoService infoService = null, ImageLocatorService imageLocator = null)
         {
             _rootPath = modRootPath;
             _title = title;
             _description = description;
             _infoService = infoService;
+            _imageLocator = imageLocator;
         }
         public XDocument GenerateInfoXml(string author, string version, IEnumerable<string> groups, string description = null, string website = null) {
             var children = new List<XElement> {
@@ -82,9 +84,9 @@ namespace InstallerCreator.ModInstaller {
                 var children = new List<XElement> {
                     Description(description),
                 };
-                var matchingImage = GetImagePath(fileName);
+                var matchingImage = _imageLocator == null ? GetImagePath(fileName) : _imageLocator.GetImagePath(fileName, _rootPath);
                 if (!string.IsNullOrWhiteSpace(matchingImage)) {
-                    children.Add(new XElement("image", new XAttribute("path", Path.GetRelativePath(_rootPath, matchingImage))));
+                    children.Add(new XElement("image", new XAttribute("path", Path.IsPathRooted(matchingImage) ? Path.GetRelativePath(_rootPath, matchingImage) : matchingImage)));
                 }
                 children.Add(new XElement("files", new XElement("file", new XAttribute("source", fileName), new XAttribute("destination", new FileInfo(fileName).NormalizeName()), new XAttribute("priority", "0"))));
                 children.Add(OptionalTypeDescriptor());

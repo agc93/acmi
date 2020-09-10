@@ -35,6 +35,7 @@ namespace InstallerCreator {
             services.AddSingleton<IIdentifierParser, EmblemParser>();
             services.AddSingleton<PakReader>();
             services.AddSingleton<AppInfoService>();
+            services.AddSingleton<ModInstaller.ImageLocatorService>();
             services.AddLogging(logging => {
                 logging.SetMinimumLevel(LogLevel.Trace);
                 logging.AddInlineSpectreConsole(c => {
