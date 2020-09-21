@@ -6,6 +6,12 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.2.5**
+  - Minor improvements to canopy detection, including PA's insane inconsistencies
+- **0.2.4**
+  - Improved image support to cut down on duplicate images
+  - Dramatically improved multi-skin file support
+  - You should now be able to safely MULTI any file up to 2.5GB without taking hours to build
 - **0.2.3**
   - Basic support for emblem detection (mostly untested!)
   - Improved app info commands and performance
