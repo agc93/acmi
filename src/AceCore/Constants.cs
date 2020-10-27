@@ -47,7 +47,10 @@ namespace AceCore
             ["typn"] = "Typhoon",
             ["x02s"] = "X-02S",
             ["yf23"] = "YF-23",
-            ["zoef"] = "FALKEN"
+            ["zoef"] = "FALKEN",
+            ["fa44"] = "CFA-44",
+            ["fa27"] = "XFA-27",
+            ["asfx"] = "ASF-X"
         };
     }
 }
