@@ -28,6 +28,7 @@ namespace AceCore
             }
         }
 
-        public virtual string ObjectPath => "Nimbus/Content/";
+        public virtual string ObjectPath => Identifier.BaseObjectPath;
+        public static string BaseObjectPath => "Nimbus/Content/";
     }
 }

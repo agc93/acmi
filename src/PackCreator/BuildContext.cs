@@ -56,6 +56,16 @@ namespace PackCreator {
             return Directory.Exists(targetPath);
         }
 
+        public bool AddFile(string relPath, FileInfo sourceFile) {
+            var targetPath = Path.Combine(_workingDirectory.FullName, relPath);
+            var targetFilePath = Path.Combine(targetPath, sourceFile.Name);
+            if (!Directory.Exists(targetPath)) {
+                Directory.CreateDirectory(targetPath);
+            }
+            sourceFile.CopyTo(targetFilePath, true);
+            return File.Exists(targetFilePath);
+        }
+
         public bool AddFolder(string relPath, DirectoryInfo sourceDir, Func<FileInfo, bool> fileFilter) {
             var targetPath = Path.Combine(_workingDirectory.FullName, relPath);
             sourceDir.CopyTo(targetPath, fileFilter);
@@ -121,12 +131,5 @@ namespace PackCreator {
         // public bool HasNpc => SourcePath.Name.Any(char.IsLetter) && SourcePath.Name.Any(char.IsDigit);
         // public bool HasNpc => SlotName == "ex" || Regex.IsMatch(string.IsNullOrWhiteSpace(PackTargetOverride) ? SourcePath.Name : PackTargetOverride, @"\d{2}[a-z]{1}(_|$)");
         // public bool HasPlayer => Regex.IsMatch(string.IsNullOrWhiteSpace(PackTargetOverride) ? SourcePath.Name : PackTargetOverride, @"[^a-z](\d{2}|x{1}\d{1})(?![a-z]{1})");
-    }
-
-    public class AssetContext<T> : AssetContext where T : Identifier{
-        public AssetContext(DirectoryInfo sourcePath, string targetOverride = null) : base(sourcePath, targetOverride) {
-        }
-
-        public List<T> Identifiers {get;set;} = new List<T>();
     }
 }

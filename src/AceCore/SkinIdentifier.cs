@@ -23,9 +23,9 @@ namespace AceCore
         }
 
         private SkinIdentifier(string rawValue, string aircraft, string slot, string type) {
-            RawValue = rawValue.Trim('.');
+            RawValue = rawValue.Trim('.').Trim('\0').Replace(@"\0", string.Empty);
             Aircraft = aircraft;
-            Slot = slot;
+            Slot = slot.StartsWith('0') ? slot : $"0{slot}";
             Type = type;
 			SlotName = ParseSlotName();
         }
@@ -63,7 +63,7 @@ namespace AceCore
 
         public string GetObjectName() => $"{Aircraft}_{Slot}_{Type}";
 
-        public override string ObjectPath => base.ObjectPath + $"Vehicles/{Aircraft}/{Slot}";
+        public override string ObjectPath => base.ObjectPath + $"Vehicles/Aircraft/{Aircraft}/{Slot}";
         public bool IsNPC => Slot.Any(char.IsLetter);
         public override string BaseObjectName => $"{Aircraft}_{Slot}";
     }

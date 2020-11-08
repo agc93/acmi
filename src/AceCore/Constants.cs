@@ -10,6 +10,8 @@ namespace AceCore
         public static Dictionary<string, string> AllVehicleNames => new List<VehicleSlot>().Concat(NonPlayableAircraft).Concat(PlayerAircraft).Concat(Vessels).ToDictionary(k => k.ObjectName, v => v.Name);
         public static Dictionary<string, string> AllItemNames => new Dictionary<string, string>().Concat(AllVehicleNames).Concat(WeaponNames).ToDictionary(k => k.Key, v => v.Value);
         public static List<VehicleSlot> AllVehicles {get;} = new List<VehicleSlot>().Concat(NonPlayableAircraft).Concat(PlayerAircraft).Concat(Vessels).ToList();
+
+        public static Dictionary<string, string> AllNames => new Dictionary<string, string>().Concat(AllItemNames).Concat(SlotNames).Concat(ModTypes).Concat(Aces).ToDictionary(k => k.Key, v => v.Value);
         public static List<AircraftSlot> NonPlayableAircraft => new List<AircraftSlot> {
             new AircraftSlot("a130", "AC-130") {Factions = NPCFaction.Osea|NPCFaction.Erusea},
             new AircraftSlot("adfx10", "ADFX-10") { Factions = NPCFaction.Universal},
@@ -59,7 +61,7 @@ namespace AceCore
         };
 
         public static Dictionary<string, string> ModTypes = new Dictionary<string, string> {
-            ["SubtitleSpeakerPortraits"] = "Radio Portraits"
+            ["SubtitleSpeakerPortrait"] = "Radio Portraits"
         };
 
         public static Dictionary<string, string> WeaponNames = new Dictionary<string, string> {

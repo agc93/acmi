@@ -29,7 +29,7 @@ namespace PackCreator
         }
         public override async Task<int> ExecuteAsync(CommandContext context, Settings settings) {
             var di = new DirectoryInfo(settings.FolderPath);
-            if (di.Name != "Nimbus" && di.GetDirectories().Length == 0) {
+            if (di.Name != "Nimbus" && di.GetDirectories().Length == 0 && di.GetFiles().Length == 0) {
                 //time to init
                 var app = GetApp();
                 var args = new[] {"init", settings.FolderPath}.Concat(context.Remaining.Raw);
@@ -58,16 +58,18 @@ namespace PackCreator
             services.AddSingleton<AppInfoService>();
             services.AddSingleton<BuildContextFactory>();
             services.AddSingleton<BuildService>();
+            services.AddSingleton<FileNameService>();
             services.AddLogging(logging => {
                 logging.SetMinimumLevel(LogLevel.Trace);
                 logging.AddInlineSpectreConsole(c => {
                     c.LogLevel = Program.GetLogLevel();
                 });
             });
-            services.Scan(scan =>
-                scan.FromAssemblyOf<Identifier>()
-                    .AddClasses(classes => classes.AssignableTo(typeof(AceCore.Parsers.IIdentifierParser))).AsImplementedInterfaces().WithSingletonLifetime()
-            );
+            // services.Scan(scan =>
+            //     scan.FromAssemblyOf<Identifier>()
+            //         .AddClasses(classes => classes.AssignableTo(typeof(AceCore.Parsers.IIdentifierParser))).AsImplementedInterfaces().WithSingletonLifetime()
+            // );
+            services.AddSingleton<IIdentifierParser, AceCore.Parsers.SkinParser>();
             return services;
         }
     }

@@ -152,5 +152,10 @@ namespace PackCreator {
         internal static string ToObjectPath(this AceCore.VesselIdentifier vessel) {
             return vessel.ObjectPath + "/" + vessel.ObjectPath;
         }
+
+        internal static List<FileInfo> AddFiles(this List<FileInfo> files, DirectoryInfo rootPath, string pattern) {
+            files.AddRange(rootPath.GetFiles(pattern));
+            return files;
+        }
     }
 }

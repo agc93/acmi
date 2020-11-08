@@ -32,7 +32,7 @@
             // "args": ["build", "D:\\Mods\\SkiesUntoldHistoricGalm", "--author", "njmksr", "--title", "\"Skies Untold: Historic Galm Pack\"", "--version", "1.0.0"],
             // "cwd": "${workspaceFolder}/src/InstallerCreator", //you should change this to the folder with your mod files to test.
             "cwd": "D:\\Mods\\FOMOD_Tests",
-            "args": ["D:\\TEMP\\NewMods"],
+            "args": ["D:\\Mods\\Packer\\Build"],
             // "args": ["D:\\Mods\\Project iDOLIZATION Misc Mods-353-1-0-1575061063\\Misc"],
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "externalTerminal",
