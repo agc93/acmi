@@ -31,7 +31,7 @@ namespace AceCore
 
         public static bool TryParse(string value, out CanopyIdentifier ident) {
             // var rex = new System.Text.RegularExpressions.Regex(@"\/Weapons\/w_(\w+_\w+)");
-            var rex = new System.Text.RegularExpressions.Regex(@"\/(\w{4,6})_[Cc]anopy(\d{1})_Inst(?!\.u[^a])");
+            var rex = new System.Text.RegularExpressions.Regex(@"(\w{4,6})_[Cc]anopy(\d{1})_Inst(?!\.u[^a])");
             var match = rex.Match(value);
             if (match != null && match.Groups.Count >= 3) {
                 ident = new CanopyIdentifier(match.Groups[0].Value, match.Groups[1].Value, match.Groups[2].Value);

@@ -42,13 +42,6 @@ namespace PackCreator {
             _workingDirectory = targetPath;
             _logger = logger;
         }
-        
-        /* public static async Task<BuildContext> Create(ScriptDownloadService scriptSerice, string contextName = null) {
-            var targetPath = new DirectoryInfo(Path.Combine(Path.GetTempPath(), "acmi", contextName ?? Guid.NewGuid().ToString()));
-            targetPath.Create();
-            var scriptContext = await scriptSerice.GetScriptContext(targetPath.FullName);
-            return new BuildContext(scriptContext, targetPath);
-        } */
 
         public bool AddFolder(string relPath, DirectoryInfo sourceDir, string fileFilter = "*") {
             var targetPath = Path.Combine(_workingDirectory.FullName, relPath);

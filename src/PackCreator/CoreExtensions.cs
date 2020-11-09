@@ -154,7 +154,10 @@ namespace PackCreator {
         }
 
         internal static List<FileInfo> AddFiles(this List<FileInfo> files, DirectoryInfo rootPath, string pattern) {
-            files.AddRange(rootPath.GetFiles(pattern));
+            var matchFiles = rootPath.GetFiles(pattern);
+            if (matchFiles.Any()) {
+                files.AddRange(matchFiles);
+            }
             return files;
         }
     }

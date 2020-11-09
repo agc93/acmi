@@ -2,16 +2,15 @@ using System.Collections.Generic;
 using System.IO;
 using AceCore;
 
-namespace PackCreator
-{
+namespace PackCreator {
     public abstract class BuildInstruction {
         protected BuildInstruction()
         {
             
         }
         public string TargetPath {get;set;}
-        public string PackGroup {get;set;}
-        public string SourceGroup {get;set;}
+        // public string PackGroup {get;set;}
+        public SourceGroup SourceGroup {get;set;}
         public List<FileInfo> SourceFiles {get;set;} = new List<FileInfo>();
     }
 

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,20 +30,25 @@ namespace PackCreator
         }
         public override async Task<int> ExecuteAsync(CommandContext context, Settings settings) {
             var di = new DirectoryInfo(settings.FolderPath);
-            if (di.Name != "Nimbus" && di.GetDirectories().Length == 0 && di.GetFiles().Length == 0) {
+            /* if (di.Name != "Nimbus" && di.GetDirectories().Length == 0 && di.GetFiles().Length == 0) {
                 //time to init
                 var app = GetApp();
                 var args = new[] {"init", settings.FolderPath}.Concat(context.Remaining.Raw);
                 return await app.RunAsync(args);
-            } else {
+            } else { */
                 //time to pack boys
                 var app = GetApp();
                 var args = new[] { "pack", settings.FolderPath}.Concat(context.Remaining.Raw);
-                return await app.RunAsync(args);
-            }
-            
+                var result = await app.RunAsync(args);
+                if (result != 0) {
+                    Console.WriteLine("It looks like there might have been an error running the pack command!");
+                    Console.WriteLine("You can press <ENTER> to close, or copy/screenshot any errors you find above to help isolating any bugs.");
+                    Console.WriteLine(string.Empty.PadLeft(9) + "Press <ENTER> to continue...");
+                    Console.ReadLine();
+                }
+                return result;
+            // }
             // return await app.RunAsync(args);
-            return 0;
         }
 
         public class Settings : CommandSettings {
@@ -65,12 +71,12 @@ namespace PackCreator
                     c.LogLevel = Program.GetLogLevel();
                 });
             });
-            // services.Scan(scan =>
-            //     scan.FromAssemblyOf<Identifier>()
-            //         .AddClasses(classes => classes.AssignableTo(typeof(AceCore.Parsers.IIdentifierParser))).AsImplementedInterfaces().WithSingletonLifetime()
-            // );
-            services.AddSingleton<IIdentifierParser, AceCore.Parsers.SkinParser>();
-            services.AddSingleton<IIdentifierParser, AceCore.Parsers.PortraitParser>();
+            services.Scan(scan =>
+                scan.FromAssemblyOf<Identifier>()
+                    .AddClasses(classes => classes.AssignableTo(typeof(AceCore.Parsers.IIdentifierParser))).AsImplementedInterfaces().WithSingletonLifetime()
+            );
+            // services.AddSingleton<IIdentifierParser, AceCore.Parsers.SkinParser>();
+            // services.AddSingleton<IIdentifierParser, AceCore.Parsers.PortraitParser>();
             return services;
         }
     }

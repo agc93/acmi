@@ -94,38 +94,56 @@ namespace PackCreator {
                     var instr = new BuildInstruction<SkinIdentifier>(sIdent) {
                         SourceFiles = file.Directory.GetFiles($"{sIdent.BaseObjectName}_{sIdent.Type}.*").ToList()
                     };
-                    if (sIdent.Type == "MREC") {
+                    if (sIdent.Type == "MREC" || sIdent.Type == "N") {
                         continue;
                     } else if (sIdent.Type == "Inst") {
+                        void AddRelativeSource(BuildInstruction<SkinIdentifier> targetInstr, SkinIdentifier ident) {
+                            try
+                            {
+                                var rp = Path.GetRelativePath(instr.TargetPath, targetInstr.TargetPath);
+                                var absPath = Path.GetFullPath(Path.Combine(file.Directory.FullName, rp));
+                                if (rp != "." && Directory.Exists(absPath)) { // assume they're being added elsewhere for '.'
+                                    targetInstr.SourceFiles.AddFiles(new DirectoryInfo(absPath), ident.RawValue + ".*");
+                                }
+                            }
+                            catch (System.Exception)
+                            {
+                                _logger.LogDebug($"Error while searching for relative path: {instr.TargetPath}/{targetInstr.TargetPath}");
+                            }
+                        }
                         var iReader = new InstanceReader(_parsers);
                         var mrecs = iReader.FindMREC(file.FullName).ToList();
                         if (mrecs.Any()) {
                             var mrec = mrecs.First();
                             var mrecInstr = new BuildInstruction<SkinIdentifier>(mrec.Identifier);
                             mrecInstr.TargetPath = Identifier.BaseObjectPath + mrec.Path.TrimEnd('/');
-                            // mrecInstr.SourceFiles.AddFiles(file.Directory, Path.GetFileName(mrec.Path) + ".*");
                             mrecInstr.SourceFiles.AddFiles(file.Directory, mrec.Identifier.RawValue + ".*");
-                            try
-                            {
-                                var rp = Path.GetRelativePath(instr.TargetPath, mrecInstr.TargetPath);
-                                var absPath = Path.GetFullPath(Path.Combine(file.Directory.FullName, rp));
-                                mrecInstr.SourceFiles.AddFiles(new DirectoryInfo(absPath), mrec.Identifier.RawValue + ".*");
-                            }
-                            catch (System.Exception)
-                            {
-                                _logger.LogDebug($"Error while searching for MREC path: {instr.TargetPath}/{mrecInstr.TargetPath}");
-                            }
+                            AddRelativeSource(mrecInstr, mrec.Identifier);
                             instructions.Add(mrecInstr);
-                            // if (File.Exists(Path.GetFileName()))
+                        }
+                        var normals = iReader.FindNormal(file.FullName).ToList();
+                        if (normals.Any()) {
+                            var normal = normals.First();
+                            var normalInstr = new BuildInstruction<SkinIdentifier>(normal.Identifier);
+                            normalInstr.TargetPath = Identifier.BaseObjectPath + normal.Path.TrimEnd('/');
+                            normalInstr.SourceFiles.AddFiles(file.Directory, normal.Identifier.RawValue + ".*");
+                            AddRelativeSource(normalInstr, normal.Identifier);
+                            instructions.Add(normalInstr);
                         }
                         instructions.Add(instr);
-                    } else {
+                    } else if (sIdent.Type == "D") {
                         var mrecPath = Path.Combine(file.Directory.FullName, $"{sIdent.BaseObjectName}_MREC.uasset");
+                        var normPath = Path.Combine(file.Directory.FullName, $"{sIdent.BaseObjectName}_N.uasset");
                         var instPath = Path.Combine(file.Directory.FullName, $"{sIdent.BaseObjectName}_Inst.uasset");
                         if (File.Exists(mrecPath) && !File.Exists(instPath)) {
                             instr.SourceFiles.AddFiles(file.Directory, $"{sIdent.BaseObjectName}_MREC.*");
                         }
+                        if (File.Exists(normPath) && !File.Exists(instPath)) {
+                            instr.SourceFiles.AddFiles(file.Directory, $"{sIdent.BaseObjectName}_N.*");
+                        }
                         instructions.Add(instr);
+                    } else {
+                        _logger.LogWarning("[bold white on red]Found an unmatched skin mod file![/] This shouldn't happen!");
                     }
                 } else {
                     var instr = new BuildInstruction<Identifier>(ident) {
@@ -134,9 +152,8 @@ namespace PackCreator {
                     instructions.Add(instr);
                 }
             }
-            var groups = instructions.GroupBy(i => i.SourceGroup).ToList();
-            Console.WriteLine(groups.Count());
-            var packs = groups.ToDictionary(k => k.Key, v => v.ToList());
+            var groups = instructions.Where(i => i.SourceFiles.Any()).GroupBy(i => i.SourceGroup.GetName()).ToList();
+            var packs = groups.ToDictionary(k => new SourceGroup(k.Key), v => v.ToList());
             if (unhandledObjects.Any()) {
                 AnsiConsole.MarkupLine("[orange3]We found some objects that weren't automatically detected[/]. We can automatically pack these into a single PAK file, or multiple");
                 // AnsiConsole.MarkupLine("Select any paths below that should be packed [underline]together[/], then press [bold grey]<ENTER>[/].");
@@ -181,27 +198,31 @@ namespace PackCreator {
                 Directory.CreateDirectory(subDir);
             }
             if (packs.Count > 1) {
-                var mergeOptions = packs;
+                // var mergeOptions = packs;
+                // var mergeOptions = new Dictionary<SourceGroup, List<BuildInstruction>>();
+                var mergeOptions = packs.ToDictionary(k => k.Key, v => v.Value);
                 while (mergeOptions.Any())
                 {
                     AnsiConsole.MarkupLine("[deepskyblue2]Would you like to combine any of your mod files together?[/]");
-                    AnsiConsole.MarkupLine("Select any paths below that should be packed together, then press [bold grey]<ENTER>[/], or press [bold grey]<ENTER>[/] without selecting any to pack them individually.");
+                    AnsiConsole.MarkupLine("Select any paths below that should be packed together, then press [bold grey]<ENTER>[/], or press [bold grey]<ENTER>[/] without selecting any to pack the listed files individually.");
                     while (mergeOptions.Any()) {
-                        var candidates = Sharprompt.Prompt.MultiSelect<KeyValuePair<string, List<BuildInstruction>>>("Choose the paths to include in the next PAK file", mergeOptions, minimum: 0, valueSelector: t => t.Key);
+                        var candidates = Sharprompt.Prompt.MultiSelect<KeyValuePair<SourceGroup, List<BuildInstruction>>>("Choose the paths to include in the next PAK file", mergeOptions, minimum: 0, valueSelector: t => t.Key.GetName());
                         if (candidates.Any()) {
                             // var commonRoot = candidates.Select(o => o.Key).FindCommonPath("/");
                             var commonRoot = candidates.Select(o => o.Value).SelectMany(o => o.Select(oi => oi.TargetPath)).FindCommonPath();
                             var selectedObjs = candidates;
                             var name = Sharprompt.Prompt.Input<string>("Enter a name for this pak file", defaultValue: Path.GetFileName(commonRoot), validators: new[] { FileValidators.ValidFileName()});
-                            packs.Add(name, selectedObjs.SelectMany(o => o.Value).ToList());
-                            // roots.Add(new PackTarget(name, commonRoot), selectedObjs.SelectMany(o => o.Value).ToList());
                             foreach (var cand in candidates)
                             {
                                 packs.Remove(cand.Key);
                                 mergeOptions.Remove(cand.Key);
                             }
+                            // var getGroup = selectedObjs.GroupBy(x => x.Key).OrderBy(o => o.Count()).First().First().Key;
+                            var rawGroup = Path.GetFileName(commonRoot);
+                            packs.Add(new SourceGroup(rawGroup, name), selectedObjs.SelectMany(o => o.Value).ToList());
+                            // roots.Add(new PackTarget(name, commonRoot), selectedObjs.SelectMany(o => o.Value).ToList());
                         } else {
-                            mergeOptions = new Dictionary<string, List<BuildInstruction>>();
+                            mergeOptions = new Dictionary<SourceGroup, List<BuildInstruction>>();
                         }
                     }
                 }
