@@ -12,17 +12,20 @@ using Sharprompt.Validations;
 using AceCore.Parsers;
 using System.Text.RegularExpressions;
 using static PackCreator.PackingHelpers;
+using Microsoft.Extensions.Logging;
 
 namespace PackCreator {
     public class PackCommand : AsyncCommand<PackCommand.Settings>
     {
+        private readonly ILogger<PackCommand> _logger;
         private readonly PythonService _pyService;
         private readonly BuildService _buildService;
         private readonly IEnumerable<IIdentifierParser> _parsers;
         private readonly FileNameService _nameService;
 
-        public PackCommand(PythonService pyService, BuildService buildService, IEnumerable<IIdentifierParser> parser, FileNameService nameService)
+        public PackCommand(ILogger<PackCommand> logger, PythonService pyService, BuildService buildService, IEnumerable<IIdentifierParser> parser, FileNameService nameService)
         {
+            _logger = logger;
             _pyService = pyService;
             _buildService = buildService;
             _parsers = parser;
@@ -38,13 +41,6 @@ namespace PackCreator {
             }
 
         public override async Task<int> ExecuteAsync(CommandContext context, Settings settings) {
-            Identifier ParseMatch(string rawString) {
-                var matched = _parsers.Select(p => p.TryParse(rawString, false)).FirstOrDefault(m => m.IsValid);
-                if (matched.identifier != null) {
-                    return matched.identifier;
-                }
-                return null;
-            }
             var rootInfo = new DirectoryInfo(settings.FileRootPath);
             if (rootInfo.Name == "Nimbus") {
                 rootInfo = rootInfo.Parent;
@@ -64,9 +60,28 @@ namespace PackCreator {
             }
             var roots = new Dictionary<PackTarget, List<AssetContext>>();
             var instructions = new List<BuildInstruction>();
+            Identifier ParsePath(FileInfo file) {
+                var matched = _parsers.Select(p => p.TryParse(file.Name, false)).FirstOrDefault(m => m.IsValid);
+                if (matched.identifier != null) {
+                    return matched.identifier;
+                } else {
+                    var pathMatched = _parsers.Select(p => p.TryParse(Path.GetRelativePath(rootInfo.FullName, file.FullName).Replace('\\', '/'), false)).FirstOrDefault(m => m.IsValid);
+                    if (pathMatched.identifier != null) {
+                        return pathMatched.identifier;
+                    }
+                }
+                return null;
+            }
+            Identifier ParseMatch(string rawString) {
+                var matched = _parsers.Select(p => p.TryParse(rawString, false)).FirstOrDefault(m => m.IsValid);
+                if (matched.identifier != null) {
+                    return matched.identifier;
+                }
+                return null;
+            }
             foreach (var file in allFiles)
             {
-                var ident = ParseMatch(file.Name);
+                var ident = ParsePath(file);
                 if (ident == null) {
                     var gInstr = new GenericInstruction() {
                         SourceGroup = file.Directory.Name,
@@ -89,7 +104,17 @@ namespace PackCreator {
                             var mrecInstr = new BuildInstruction<SkinIdentifier>(mrec.Identifier);
                             mrecInstr.TargetPath = Identifier.BaseObjectPath + mrec.Path.TrimEnd('/');
                             // mrecInstr.SourceFiles.AddFiles(file.Directory, Path.GetFileName(mrec.Path) + ".*");
-                            mrecInstr.SourceFiles.AddFiles(file.Directory, mrec.Identifier.BaseObjectName + "_MREC.*");
+                            mrecInstr.SourceFiles.AddFiles(file.Directory, mrec.Identifier.RawValue + ".*");
+                            try
+                            {
+                                var rp = Path.GetRelativePath(instr.TargetPath, mrecInstr.TargetPath);
+                                var absPath = Path.GetFullPath(Path.Combine(file.Directory.FullName, rp));
+                                mrecInstr.SourceFiles.AddFiles(new DirectoryInfo(absPath), mrec.Identifier.RawValue + ".*");
+                            }
+                            catch (System.Exception)
+                            {
+                                _logger.LogDebug($"Error while searching for MREC path: {instr.TargetPath}/{mrecInstr.TargetPath}");
+                            }
                             instructions.Add(mrecInstr);
                             // if (File.Exists(Path.GetFileName()))
                         }
@@ -102,6 +127,11 @@ namespace PackCreator {
                         }
                         instructions.Add(instr);
                     }
+                } else {
+                    var instr = new BuildInstruction<Identifier>(ident) {
+                        SourceFiles = file.Directory.GetFiles($"{ident.BaseObjectName}.*").ToList()
+                    };
+                    instructions.Add(instr);
                 }
             }
             var groups = instructions.GroupBy(i => i.SourceGroup).ToList();

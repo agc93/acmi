@@ -70,6 +70,7 @@ namespace PackCreator
             //         .AddClasses(classes => classes.AssignableTo(typeof(AceCore.Parsers.IIdentifierParser))).AsImplementedInterfaces().WithSingletonLifetime()
             // );
             services.AddSingleton<IIdentifierParser, AceCore.Parsers.SkinParser>();
+            services.AddSingleton<IIdentifierParser, AceCore.Parsers.PortraitParser>();
             return services;
         }
     }

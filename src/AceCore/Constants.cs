@@ -156,7 +156,10 @@ namespace AceCore
             new AircraftSlot("typn", "Typhoon", new[] {"00b", "01a", "02a"}),
             new AircraftSlot("x02s", "X-02S", new[] {"02a"}),
             new AircraftSlot("yf23", "YF-23", new[] {"01a", "02a"}),
-            new AircraftSlot("zoef", "FALKEN")
+            new AircraftSlot("zoef", "FALKEN"),
+            new AircraftSlot("fa44", "CFA-44"),
+            new AircraftSlot("fa27", "XFA-27"),
+            new AircraftSlot("asfx", "ASF-X")
         };
         public static Dictionary<string, string> SlotNames {get;} = new Dictionary<string, string> {
             ["00"] = "Osea",

@@ -7,6 +7,7 @@ namespace AceCore
         {
             RawValue = rawValue;
             Slot = slot;
+            _fileName = System.IO.Path.GetFileNameWithoutExtension(RawValue);
             _slotName = GetSlotName();
         }
 
@@ -28,7 +29,7 @@ namespace AceCore
 
 
         public static bool TryParse(string value, out PortraitIdentifier ident) {
-            var rex = new System.Text.RegularExpressions.Regex(@"\/SubtitleSpeakerPortrait\/\b\d{2}_([a-zA-Z_]+)(\d{2}|_)?\.ua");
+            var rex = new System.Text.RegularExpressions.Regex(@"SubtitleSpeakerPortrait\/\b\d{2}_([a-zA-Z_]+)(\d{2}|_)?\.ua.*");
             var match = rex.Match(value);
             if (match != null && match.Groups.Count >= 2) {
                 ident = new PortraitIdentifier(match.Groups[0].Value, match.Groups[1].Value);
@@ -39,6 +40,8 @@ namespace AceCore
         }
 
         private string Slot { get; }
+
+        private readonly string _fileName;
         private string _slotName;
 
 		private string ParseSlotName() {
@@ -62,6 +65,6 @@ namespace AceCore
 
         public override string ObjectPath => base.ObjectPath + "UI/HUD/SubtitleSpeakerPortrait";
 
-        public override string BaseObjectName => Slot;
+        public override string BaseObjectName => _fileName;
     }
 }
