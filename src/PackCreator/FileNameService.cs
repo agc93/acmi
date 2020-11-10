@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using AceCore;
 
@@ -6,10 +7,19 @@ namespace PackCreator {
         public string GetNameFromGroup(SourceGroup sourceGroup, string prefix = null, string separator = "_") {
             var segments = (sourceGroup.Name ?? sourceGroup.RawValue).Split('_');
             var parts = segments.Select(s => Constants.AllNames.TryGetValue(s, out var name) ? name : s).ToList();
-            if (!string.IsNullOrWhiteSpace(prefix)) {
-                parts.Add(prefix);
-            }
+            parts.AddIfSet(prefix);
             return string.Join(separator, parts);
+        }
+
+        public string GetNameFromGroup<T>(SourceGroup sourceGroup, T ident, string prefix = null, string separator = "_") where T : Identifier {
+
+            if (ident is SkinIdentifier sIdent) {
+                var parts = new List<string> {sIdent.GetAircraftName(), $"Skin{sIdent.Slot.GetSlotNumber()}"};
+                parts.AddIfSet(prefix);
+                return string.Join(separator, parts);
+            } else {
+                return GetNameFromGroup(sourceGroup, prefix, separator);
+            }
         }
 
         public string GetOutputPathForGroup(string sourceGroup, string prefix = null) {

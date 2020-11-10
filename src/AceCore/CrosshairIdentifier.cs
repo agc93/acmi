@@ -49,7 +49,7 @@ namespace AceCore
 
         public override string ToString() {
             var name = GetSlotName();
-            return $"HUD: {(string.IsNullOrWhiteSpace(name) ? Slot : name)}";
+            return $"HUD: {name.OrDefault(Slot)}";
         }
 
         public override string GetSlotName() {

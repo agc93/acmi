@@ -38,5 +38,18 @@ namespace AceCore
         public static string OrDefault(this string value, string defaultValue) {
             return string.IsNullOrWhiteSpace(value) ? defaultValue : value;
         }
+
+        public static string GetSlotNumber(this string slotValue, int padLength = 0) {
+            return int.TryParse(slotValue, out var i)
+                ? (i + 1).ToString($"D{padLength}")
+                : slotValue;
+        }
+
+        public static List<string> AddIfSet(this List<string> collection, string value) {
+            if (!string.IsNullOrWhiteSpace(value)) {
+                collection.Add(value);
+            }
+            return collection;
+        }
     }
 }
