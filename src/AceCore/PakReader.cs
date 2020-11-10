@@ -72,7 +72,6 @@ namespace AceCore {
 
         private void _FindIdents() {
             var searcher = new BoyerMooreBinarySearch(System.Text.Encoding.UTF8.GetBytes("/Game/"));
-
         }   
     }
 }

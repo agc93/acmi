@@ -129,13 +129,13 @@ namespace PackCreator {
             return commonPath;
         }
 
-        internal static bool IsPlayable(this string name) {
+        /* internal static bool IsPlayable(this string name) {
             return AceCore.Constants.PlayerAircraft.Any(a => a.ObjectName == name || a.Name == name);
         }
 
         internal static bool IsPlayable(this AceCore.SkinIdentifier skin) {
             return skin.Aircraft.IsPlayable();
-        }
+        } */
 
         internal static void AddOrUpdate(this Dictionary<PackTarget, List<AssetContext>> roots, PackTarget target, IEnumerable<AssetContext> targetAssets) {
             if (roots.Any(r => r.Key.TargetFileName == target.TargetFileName)) {
