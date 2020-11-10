@@ -83,14 +83,17 @@ namespace PackCreator {
             {
                 var ident = ParsePath(file);
                 if (ident == null) {
+                    var relPath = Path.GetRelativePath(rootInfo.FullName, file.Directory.FullName);
+                    _logger.LogTrace($"Adding {file.Name} as generic build instruction with target path: {relPath}");
                     var gInstr = new GenericInstruction() {
                         SourceGroup = file.Directory.Name,
-                        TargetPath = Path.GetRelativePath(rootInfo.FullName, file.Directory.FullName),
+                        TargetPath = relPath,
                         SourceFiles = file.Directory.GetFiles($"{Path.GetFileNameWithoutExtension(file.FullName)}.*").ToList()
                     };
                     instructions.Add(gInstr);
                     //follow earlier notes, this is an unknown
                 } else if (ident is SkinIdentifier sIdent) {
+                    _logger.LogTrace($"Detected {file.Name} as skin file: {sIdent.ToString()} for {sIdent.BaseObjectName}");
                     var instr = new BuildInstruction<SkinIdentifier>(sIdent) {
                         SourceFiles = file.Directory.GetFiles($"{sIdent.BaseObjectName}_{sIdent.Type}.*").ToList()
                     };
@@ -115,6 +118,7 @@ namespace PackCreator {
                         var mrecs = iReader.FindMREC(file.FullName).ToList();
                         if (mrecs.Any()) {
                             var mrec = mrecs.First();
+                            _logger.LogTrace($"Detected MREC for {mrec.Identifier.BaseObjectName} at {mrec.Path}");
                             var mrecInstr = new BuildInstruction<SkinIdentifier>(mrec.Identifier);
                             mrecInstr.TargetPath = Identifier.BaseObjectPath + mrec.Path.TrimEnd('/');
                             mrecInstr.SourceFiles.AddFiles(file.Directory, mrec.Identifier.RawValue + ".*");
@@ -124,6 +128,7 @@ namespace PackCreator {
                         var normals = iReader.FindNormal(file.FullName).ToList();
                         if (normals.Any()) {
                             var normal = normals.First();
+                            _logger.LogTrace($"Detected Normals for {normal.Identifier.BaseObjectName} at {normal.Path}");
                             var normalInstr = new BuildInstruction<SkinIdentifier>(normal.Identifier);
                             normalInstr.TargetPath = Identifier.BaseObjectPath + normal.Path.TrimEnd('/');
                             normalInstr.SourceFiles.AddFiles(file.Directory, normal.Identifier.RawValue + ".*");
@@ -132,6 +137,7 @@ namespace PackCreator {
                         }
                         instructions.Add(instr);
                     } else if (sIdent.Type == "D") {
+                        _logger.LogTrace($"Detected Diffuse for {sIdent.BaseObjectName} at {file.Name}");
                         var mrecPath = Path.Combine(file.Directory.FullName, $"{sIdent.BaseObjectName}_MREC.uasset");
                         var normPath = Path.Combine(file.Directory.FullName, $"{sIdent.BaseObjectName}_N.uasset");
                         var instPath = Path.Combine(file.Directory.FullName, $"{sIdent.BaseObjectName}_Inst.uasset");
@@ -152,8 +158,10 @@ namespace PackCreator {
                     instructions.Add(instr);
                 }
             }
+            _logger.LogDebug($"Grouping {instructions.Count} build instructions by source group");
             var groups = instructions.Where(i => i.SourceFiles.Any()).GroupBy(i => i.SourceGroup.GetName()).ToList();
             var packs = groups.ToDictionary(k => new SourceGroup(k.Key), v => v.ToList());
+            _logger.LogDebug($"Preparing to build {packs.Count} packs");
             if (unhandledObjects.Any()) {
                 AnsiConsole.MarkupLine("[orange3]We found some objects that weren't automatically detected[/]. We can automatically pack these into a single PAK file, or multiple");
                 // AnsiConsole.MarkupLine("Select any paths below that should be packed [underline]together[/], then press [bold grey]<ENTER>[/].");
@@ -228,9 +236,11 @@ namespace PackCreator {
                 }
             }
             var finalFiles = new List<string>();
+            _logger.LogTrace($"Final build set ready for {packs.Count} packs");
             foreach (var pakBuild in packs)
             {
                 var ctxName = pakBuild.Key;
+                _logger.LogDebug($"Running asset build for {ctxName}");
                 // buildRoot.Key.TargetAssets.AddRange(metaObjects);
                 var bResult = await _buildService.RunBuild(ctxName, rootInfo.FullName, pakBuild.Value.ToArray());
                 if (bResult == null) {
@@ -288,10 +298,6 @@ namespace PackCreator {
             [CommandOption("--target [fileName]")]
             [Description("The target pak file to generate.")]
             public FlagValue<string> TargetFilePath {get;set;}
-
-            [CommandOption("--allow-any")]
-            [Description("Allows any folder to be packed, not just 'Nimbus'")]
-            public bool AllowNonNimbus {get;set;} = false;
         }
     }
 }

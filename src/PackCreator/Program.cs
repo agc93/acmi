@@ -12,7 +12,8 @@ namespace PackCreator
     {
         internal static LogLevel GetLogLevel() {
             var envVar = System.Environment.GetEnvironmentVariable("ACMI_DEBUG");
-            return string.IsNullOrWhiteSpace(envVar) 
+            if (System.IO.File.Exists(@"C:\acmi-debug.txt")) envVar = "trace";
+            return string.IsNullOrWhiteSpace(envVar)
                 ? LogLevel.Information
                 :  envVar.ToLower() == "trace"
                     ? LogLevel.Trace
