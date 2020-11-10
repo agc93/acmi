@@ -25,7 +25,7 @@ namespace AceCore
         public static bool TryParse(string value, out CrosshairIdentifier ident) {
             // var rex = new System.Text.RegularExpressions.Regex(@"\/Crosshairs\/hud_(\w+[\d{2}-]?)");
             // var rex = new System.Text.RegularExpressions.Regex(@"\/HUD\/(MultiLockon\/)?hud_(\w+[\d{2}-])(?=[^.\d]|.ua)");
-            var rex = new System.Text.RegularExpressions.Regex(@"\/HUD\/(?:MultiLockon\/)?hud_([\w-]+)+(?=[^.\d]|.ua)");
+            var rex = new System.Text.RegularExpressions.Regex(@"HUD\/(?:MultiLockon\/)?hud_([\w-]+)+(?=[^.\d]|.ua)");
             var match = rex.Match(value);
             if (match != null && match.Groups.Count >= 2) {
                 ident = new CrosshairIdentifier(match.Groups[0].Value, match.Groups[1].Value);
