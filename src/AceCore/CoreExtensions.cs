@@ -51,5 +51,14 @@ namespace AceCore
             }
             return collection;
         }
+
+        public static List<string> AddIfNotExists(this List<string> collection, string value) {
+            if (string.IsNullOrWhiteSpace(value) || collection.Contains(value)) {
+                return collection;
+            } else {
+                collection.Add(value);
+                return collection;
+            }
+        }
     }
 }

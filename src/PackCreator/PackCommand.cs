@@ -42,10 +42,11 @@ namespace PackCreator {
 
         public override async Task<int> ExecuteAsync(CommandContext context, Settings settings) {
             var rootInfo = new DirectoryInfo(settings.FileRootPath);
+            var buildSettings = new BuildSettings();
             if (rootInfo.Name == "Nimbus") {
                 rootInfo = rootInfo.Parent;
             }
-            var prefix = Sharprompt.Prompt.Input<string>("Please enter a title/name for your new mod/pack", rootInfo.Name, validators: new[] { FileValidators.ValidFileName()});
+            buildSettings.Prefix = Sharprompt.Prompt.Input<string>("Please enter a title/name for your new mod/pack", rootInfo.Name, validators: new[] { FileValidators.ValidFileName()});
             var allFiles = rootInfo.EnumerateFiles("*.uasset", SearchOption.AllDirectories);
             // var vehicles = rootInfo.GetModFileNodes("Nimbus").ToList();
             var metaObjects = rootInfo.GetModFileNodes("_meta").Select(fn => new AssetContext(fn) { PackTargetOverride = "Nimbus/Content"} ).ToList();
@@ -60,6 +61,7 @@ namespace PackCreator {
             }
             var roots = new Dictionary<PackTarget, List<AssetContext>>();
             var instructions = new List<BuildInstruction>();
+            
             Identifier ParsePath(FileInfo file) {
                 var matched = _parsers.Select(p => p.TryParse(file.Name, false)).FirstOrDefault(m => m.IsValid);
                 if (matched.identifier != null) {
@@ -94,7 +96,7 @@ namespace PackCreator {
                     //follow earlier notes, this is an unknown
                 } else if (ident is SkinIdentifier sIdent) {
                     _logger.LogTrace($"Detected {file.Name} as skin file: {sIdent.ToString()} for {sIdent.BaseObjectName}");
-                    var instr = new BuildInstruction<SkinIdentifier>(sIdent) {
+                    var instr = new SkinInstruction(sIdent) {
                         SourceFiles = file.Directory.GetFiles($"{sIdent.BaseObjectName}_{sIdent.Type}.*").ToList()
                     };
                     if (sIdent.Type == "MREC" || sIdent.Type == "N") {
@@ -119,7 +121,7 @@ namespace PackCreator {
                         if (mrecs.Any()) {
                             var mrec = mrecs.First();
                             _logger.LogTrace($"Detected MREC for {mrec.Identifier.BaseObjectName} at {mrec.Path}");
-                            var mrecInstr = new BuildInstruction<SkinIdentifier>(mrec.Identifier);
+                            var mrecInstr = new SkinInstruction(mrec.Identifier);
                             mrecInstr.TargetPath = Identifier.BaseObjectPath + mrec.Path.TrimEnd('/');
                             mrecInstr.SourceFiles.AddFiles(file.Directory, mrec.Identifier.RawValue + ".*");
                             AddRelativeSource(mrecInstr, mrec.Identifier);
@@ -129,7 +131,7 @@ namespace PackCreator {
                         if (normals.Any()) {
                             var normal = normals.First();
                             _logger.LogTrace($"Detected Normals for {normal.Identifier.BaseObjectName} at {normal.Path}");
-                            var normalInstr = new BuildInstruction<SkinIdentifier>(normal.Identifier);
+                            var normalInstr = new SkinInstruction(normal.Identifier);
                             normalInstr.TargetPath = Identifier.BaseObjectPath + normal.Path.TrimEnd('/');
                             normalInstr.SourceFiles.AddFiles(file.Directory, normal.Identifier.RawValue + ".*");
                             AddRelativeSource(normalInstr, normal.Identifier);
@@ -198,9 +200,9 @@ namespace PackCreator {
                     }
                 }
             }
-            OutputModes output = Sharprompt.Prompt.Select<OutputModes>("Choose how you'd like the PAK files to be output", valueSelector: e => e.GetEnumDescription());
+            buildSettings.OutputMode = Sharprompt.Prompt.Select<OutputModes>("Choose how you'd like the PAK files to be output", valueSelector: e => e.GetEnumDescription());
             var subDir = string.Empty;
-            if (output == OutputModes.SubDirectory) {
+            if (buildSettings.OutputMode == OutputModes.SubDirectory) {
                 subDir = Sharprompt.Prompt.Input<string>("What folder name should the output file be put in", "Output Files");
                 subDir = Path.Combine(rootInfo.FullName, subDir);
                 Directory.CreateDirectory(subDir);
@@ -237,6 +239,7 @@ namespace PackCreator {
             }
             var finalFiles = new List<string>();
             _logger.LogTrace($"Final build set ready for {packs.Count} packs");
+            // buildSettings.UseSlotNames = Sharprompt.Prompt.Confirm("Do you want to use detailed slot names instead of slot numbers?", false);
             foreach (var pakBuild in packs)
             {
                 var ctxName = pakBuild.Key;
@@ -247,13 +250,14 @@ namespace PackCreator {
                     AnsiConsole.MarkupLine($"[bold white on red]ERROR[/]: Failed to build the pak file for {ctxName}! This can mean a lot of things, including an incorrect folder structure or failed build.");
                     //well shit
                 } else {
-                    var finalName = $"{_nameService.GetNameFromGroup(pakBuild.Key, prefix)}_P.pak";
+                    
+                    var finalName = $"{_nameService.GetNameFromBuildGroup(pakBuild, buildSettings)}_P.pak";
                     string NestedFolders(string finalName) {
                         var targetDir = Path.Combine(rootInfo.FullName, "Packed Files", _nameService.GetOutputPathForGroup(pakBuild.Key));
                         Directory.CreateDirectory(targetDir);
                         return targetDir;
                     }
-                    var finalTarget = output switch {
+                    var finalTarget = buildSettings.OutputMode switch {
                         OutputModes.SubDirectory => subDir,
                         OutputModes.NestedFolders => NestedFolders(finalName),
                         _ => rootInfo.FullName
@@ -269,6 +273,7 @@ namespace PackCreator {
                 AnsiConsole.MarkupLine($"- {generatedFile}");
             }
             Console.WriteLine();
+            AnsiConsole.MarkupLine("Make any changes you want to your PAK files and remember to run your mod files through [green]acmi.exe[/] [bold]before[/] uploading!");
             Console.WriteLine(string.Empty.PadLeft(9) + "Press <ENTER> to continue...");
             Console.ReadLine();
             return 0;

@@ -26,7 +26,14 @@ namespace AceCore
         private SkinIdentifier(string rawValue, string aircraft, string slot, string type) {
             RawValue = rawValue.Trim('.').Trim('\0').Replace(@"\0", string.Empty);
             Aircraft = aircraft;
-            Slot = slot.All(char.IsDigit) ? slot.StartsWith('0') ? slot : $"0{slot}" : slot;
+            var slotNum = new string(slot.TakeWhile(char.IsDigit).ToArray());
+            slotNum = int.TryParse(slotNum, out var i)
+                    ? i.ToString("D2")
+                    : slot;
+            Slot = slotNum + new string(slot.SkipWhile(char.IsDigit).ToArray());
+            // Slot = slot.All(char.IsDigit) 
+            //     ? 
+            //     : slot;
             Type = type;
 			SlotName = ParseSlotName();
         }
@@ -54,6 +61,17 @@ namespace AceCore
         public override string GetSlotName() {
 			SlotName ??= ParseSlotName();
 			return SlotName;
+        }
+
+        public string GetSlotNumber(string prefix = null) {
+            var s = Slot;
+            var npcRex = new Regex(@"(\d{2})(\w{1})");
+            if (npcRex.IsMatch(s)) {
+                var match = npcRex.Match(s);
+                var baseSlot = match.Groups[1].Value;
+                return $"NPC {baseSlot.GetSlotNumber()}{match.Groups[2].Value}";
+            }
+            return (s.Length > 0 && char.IsDigit(s[0])) ? $"{prefix.OrDefault(string.Empty)}{s.GetSlotNumber()}" : s;
         }
 
         public override string ToString() {
