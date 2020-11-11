@@ -40,4 +40,17 @@ namespace AceCore.Tests
             Assert.Equal(ident.Type, type);
         }
     }
+
+    public class EFfectsParserTests {
+        [Theory]
+        [JsonFileData("paths.json", "Effects")]
+        public void Should_Parse_Effects_Path(string rawPath, string fullMatch, string objectPath, string objectName, string friendlyName) {
+            var parsed = EffectsIdentifier.TryParse(rawPath, out var ident);
+            Assert.True(parsed);
+            // Assert.Equal(ident.RawValue, fullMatch);
+            Assert.Equal(objectPath, ident.ObjectPath);
+            Assert.Equal(objectName, ident.BaseObjectName);
+            Assert.Equal(friendlyName, ident.EffectsObject);
+        }
+    }
 }

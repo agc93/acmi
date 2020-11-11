@@ -71,7 +71,8 @@ namespace InstallerCreator.ModInstaller {
             return xdoc;
         }
 
-        private GroupedSet<T> GetSets<T>(Dictionary<string, List<T>> identifiers, string joinStr = " + ") where T : Identifier {
+        private GroupedSet<T> GetSets<T>(Dictionary<string, List<T>> identifiers, string joinStr = " + ", Func<T, string> groupFunc = null) where T : Identifier {
+                groupFunc ??= s => s.GetSlotName();
                 var pGroups = identifiers.ToList().GroupBy(g => g.Value.Select(s => s.GetSlotName()).JoinLines(joinStr));
                 var uniqueSets = pGroups.Where(g => g.Count() == 1).SelectMany(g => g.ToList());
                 var groupedSets = pGroups.Where(g => g.Count() != 1).ToDictionary(k => k.Key, v => v.ToList());
@@ -156,7 +157,12 @@ namespace InstallerCreator.ModInstaller {
                 }
             }
             if (effects != null && effects.Any()) {
-                steps.Add(new XElement("installStep", Name("Effects"), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name("Visual Effects"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), effects.Select(cm => GetPluginElement(cm.Key, Includes(cm.Value.Select(v => v.ToString())))))))));
+                var eSets = GetSets(effects, groupFunc: e => e.EffectsObject);
+                var groups = BuildGroups(eSets, "Visual Effects");
+                if (groups.Any()) {
+                    steps.Add(new XElement("installStep", Name("Effects"), new XElement("optionalFileGroups", ExplicitOrder(), groups)));
+                }
+                // steps.Add(new XElement("installStep", Name("Effects"), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name("Visual Effects"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), effects.Select(cm => GetPluginElement(cm.Key, Includes(cm.Value.Select(v => v.ToString())))))))));
             }
             if (emblems != null && emblems.Any()) {
                 steps.Add(GetSelectionStep(emblems, "Emblems", "Emblems", (ids) => Replaces(ids.Select(i => i.ToString()))));

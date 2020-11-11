@@ -50,7 +50,8 @@ namespace AceCore {
                     }
                 }
                 if (!headerFound) {
-                    foreach (var match in FindIdents(filePath, new SearchOptions() { MaxBytes = 8192, Key = "Nimbus/Content/" }, seekAction: () => (-8192, SeekOrigin.End))) {
+                    var opts = new SearchOptions {MaxBytes = 8192, Key = "Nimbus/Content/", RewindOnMatch = true, Window = 96};
+                    foreach (var match in FindIdents(filePath, opts, seekAction: () => (-8192, SeekOrigin.End))) {
                         var ident = ParseMatch(match);
                         if (ident != null) {
                             headerFound = true;

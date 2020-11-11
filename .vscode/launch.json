@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
          {
-             "name": ".NET Core Launch (console)",
+             "name": ".NET Core Launch (installer)",
              "type": "coreclr",
              "request": "launch",
              "preLaunchTask": "build",
@@ -15,9 +15,9 @@
              // "args": ["build", "D:\\Mods\\SkiesUntoldHistoricGalm", "--author", "njmksr", "--title", "\"Skies Untold: Historic Galm Pack\"", "--version", "1.0.0"],
              // "cwd": "${workspaceFolder}/src/InstallerCreator", //you should change this to the folder with your mod files to test.
              "cwd": "D:\\Mods\\FOMOD_Tests",
-             "args": ["build", "TestPack"],
+             "args": ["build", "TestPack\\EffectsTest"],
              // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
-             "console": "integratedTerminal",
+             "console": "externalTerminal",
              "stopAtEntry": false,
              "env": {"ACMI_DEBUG": "true"}
          },
