@@ -81,7 +81,7 @@ namespace InstallerCreator.ModInstaller {
             
 
         private XElement GenerateStepsXml(ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, List<string> extraPaks, Dictionary<string, List<SkinIdentifier>> multiSkins = null, Dictionary<string, List<CrosshairIdentifier>> crosshairs = null, Dictionary<string, List<PortraitIdentifier>> portraits = null, Dictionary<string, List<WeaponIdentifier>> weapons = null, Dictionary<string, List<EffectsIdentifier>> effects = null, Dictionary<string, List<CanopyIdentifier>> canopies = null, Dictionary<string, List<EmblemIdentifier>> emblems = null) {
-            XElement GetPluginElement(string fileName, string description = null) {
+            XElement GetPluginElement(string fileName, string description = null, string name = null) {
                 var children = new List<XElement> {
                     Description(description),
                 };
@@ -91,7 +91,7 @@ namespace InstallerCreator.ModInstaller {
                 }
                 children.Add(new XElement("files", new XElement("file", new XAttribute("source", fileName), new XAttribute("destination", new FileInfo(fileName).NormalizeName()), new XAttribute("priority", "0"))));
                 children.Add(OptionalTypeDescriptor());
-                return new XElement("plugin", new XAttribute("name", new FileInfo(fileName).Name), children);
+                return new XElement("plugin", new XAttribute("name", name ?? new FileInfo(fileName).Name), children);
             }
             List<XElement> BuildGroups<T>(GroupedSet<T> groupedSet, string topName, Func<T, string> labelFunc = null) where T : Identifier {
                 var groups = new List<XElement>();
@@ -116,7 +116,19 @@ namespace InstallerCreator.ModInstaller {
             steps.Add(new XElement("installStep", new XAttribute("name", "Introduction"), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), new XElement("group", new XAttribute("name", "Introduction"), new XAttribute("type", "SelectAll"), new XElement("plugins", new XAttribute("order", "Explicit"), new XElement("plugin", new XAttribute("name", "Introduction"), new XElement("description", GetDescription()), OptionalTypeDescriptor()))))));
             foreach (var aircraft in lookup)
             {
-                steps.Add(new XElement("installStep", new XAttribute("name", aircraft.Key), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), aircraft.GroupBy(a => a.Value.GetSlotName()).Select(gs => new XElement("group", new XAttribute("name", gs.Key), new XAttribute("type", "SelectExactlyOne"), new XElement("plugins", new XAttribute("order", "Explicit"), NonePlugin(), gs.Select(ssf => GetPluginElement(ssf.Key))))))));
+                var aSlots = aircraft.GroupBy(a => a.Value.GetSlotName());
+                var singleSlotOptions = aSlots.All(sl => sl.Count() == 1);
+                if (singleSlotOptions) {
+                    var allSlots = aSlots.Select(sl => sl.First());
+                    steps.Add(new XElement("installStep", Name(aircraft.Key), 
+                        new XElement("optionalFileGroups", ExplicitOrder(), 
+                            new XElement("group", Name(aircraft.Key), Type(SelectType.SelectAny), 
+                                new XElement("plugins", ExplicitOrder(), allSlots.Select(ssf => GetPluginElement(ssf.Key, ssf.Key, ssf.Value.GetSlotName()))))))); 
+
+                } else {
+                    steps.Add(new XElement("installStep", new XAttribute("name", aircraft.Key), 
+                        new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), aSlots.Select(gs => new XElement("group", new XAttribute("name", gs.Key), new XAttribute("type", "SelectExactlyOne"), new XElement("plugins", new XAttribute("order", "Explicit"), NonePlugin(), gs.Select(ssf => GetPluginElement(ssf.Key))))))));
+                }
             }
             // the below implementation is planned for future changes
             // that being said, it should not be keyed on there only being one aircraft, but there only being one option per slot

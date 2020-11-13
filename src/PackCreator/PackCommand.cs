@@ -218,19 +218,27 @@ namespace PackCreator {
                     while (mergeOptions.Any()) {
                         var candidates = Sharprompt.Prompt.MultiSelect<KeyValuePair<SourceGroup, List<BuildInstruction>>>("Choose the paths to include in the next PAK file", mergeOptions, minimum: 0, valueSelector: t => t.Key.GetName());
                         if (candidates.Any()) {
+                            if (candidates.Count() == 1) {
+                                var selection = candidates.First();
+                                var name = Sharprompt.Prompt.Input<string>("Enter a name for this pak file", defaultValue: selection.Key.RawValue.MakeSafe(), validators: new[] { FileValidators.ValidFileName()});
+                                packs.Remove(selection.Key);
+                                mergeOptions.Remove(selection.Key);
+                                selection.Key.Name = name;
+                                packs.Add(selection.Key, selection.Value);
+                            } else {
                             // var commonRoot = candidates.Select(o => o.Key).FindCommonPath("/");
-                            var commonRoot = candidates.Select(o => o.Value).SelectMany(o => o.Select(oi => oi.TargetPath)).FindCommonPath();
-                            var selectedObjs = candidates;
-                            var name = Sharprompt.Prompt.Input<string>("Enter a name for this pak file", defaultValue: Path.GetFileName(commonRoot), validators: new[] { FileValidators.ValidFileName()});
-                            foreach (var cand in candidates)
-                            {
-                                packs.Remove(cand.Key);
-                                mergeOptions.Remove(cand.Key);
+                                var commonRoot = candidates.Select(o => o.Value).SelectMany(o => o.Select(oi => oi.TargetPath)).FindCommonPath();
+                                var selectedObjs = candidates;
+                                var name = Sharprompt.Prompt.Input<string>("Enter a name for this pak file", defaultValue: Path.GetFileName(commonRoot), validators: new[] { FileValidators.ValidFileName()});
+                                foreach (var cand in candidates)
+                                {
+                                    packs.Remove(cand.Key);
+                                    mergeOptions.Remove(cand.Key);
+                                }
+                                // var getGroup = selectedObjs.GroupBy(x => x.Key).OrderBy(o => o.Count()).First().First().Key;
+                                var rawGroup = Path.GetFileName(commonRoot);
+                                packs.Add(new SourceGroup(rawGroup, name), selectedObjs.SelectMany(o => o.Value).ToList());
                             }
-                            // var getGroup = selectedObjs.GroupBy(x => x.Key).OrderBy(o => o.Count()).First().First().Key;
-                            var rawGroup = Path.GetFileName(commonRoot);
-                            packs.Add(new SourceGroup(rawGroup, name), selectedObjs.SelectMany(o => o.Value).ToList());
-                            // roots.Add(new PackTarget(name, commonRoot), selectedObjs.SelectMany(o => o.Value).ToList());
                         } else {
                             mergeOptions = new Dictionary<SourceGroup, List<BuildInstruction>>();
                         }
