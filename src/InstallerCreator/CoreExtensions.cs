@@ -27,5 +27,11 @@ namespace InstallerCreator {
                 ? fn
                 : Path.GetFileNameWithoutExtension(fn) + "_P.pak"; */
         }
+
+        public static string MakeSafe(this string input, bool removeChars = false) {
+            return removeChars
+                ? Path.GetInvalidFileNameChars().Aggregate(input, (current, c) => current.IndexOf(c) == -1 ? current : current.Remove(current.IndexOf(c), 1))
+                : Path.GetInvalidFileNameChars().Aggregate(input, (current, c) => current.Replace(c, '-'));
+        }
     }
 }

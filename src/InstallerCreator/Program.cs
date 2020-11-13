@@ -33,6 +33,7 @@ namespace InstallerCreator {
             services.AddSingleton<IIdentifierParser, EffectsParser>();
             services.AddSingleton<IIdentifierParser, CanopyParser>();
             services.AddSingleton<IIdentifierParser, EmblemParser>();
+            services.AddSingleton<ArchiveService>();
             services.AddSingleton<PakReader>();
             services.AddSingleton<AppInfoService>();
             services.AddSingleton<ModInstaller.ImageLocatorService>();

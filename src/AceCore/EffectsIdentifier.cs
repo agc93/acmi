@@ -5,7 +5,7 @@ namespace AceCore {
         private readonly string _object;
         private readonly string _assetPath;
         private readonly string _asset;
-        private readonly string _type;
+        // private readonly string _type;
 
         public override string BaseObjectName => _asset;
         public string EffectsObject => _object;

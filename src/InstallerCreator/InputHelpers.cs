@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
-// using InquirerCS;
 using InstallerCreator.Commands;
 using Semver;
 using Sharprompt;
@@ -14,13 +14,38 @@ namespace InstallerCreator
 
     public interface IOptionsPrompt<T> where T : CommandSettings {
         T PromptMissing(T settings, bool isUnattended = false);
+        bool Confirm(string prompt, bool? defaultValue = null);
+        string PromptFileName(string prompt, string defaultValue = null, bool validate = true);
     }
 
     public class SharpromptOptionsPrompt : IOptionsPrompt<BuildCommand.Settings> {
+        public static class FileValidators {
+            internal static Func<object, ValidationResult> ValidFileName() => (obj) => {
+                return string.IsNullOrWhiteSpace(obj.ToString()) || FilePathHasInvalidChars(obj.ToString())
+                    ? new ValidationResult("Name contains invalid characters!")
+                    : null;
+            };
+
+            private static bool FilePathHasInvalidChars(string path) {
+
+                return (!string.IsNullOrEmpty(path) && path.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0);
+            }
+        }
+
         private Func<object, Sharprompt.Validations.ValidationResult> SemVerValid = (raw) => {
             var valid = (string.IsNullOrWhiteSpace(raw as string)) || (raw is string input && SemVersion.TryParse(input, out var _));
             return valid ? null : new ValidationResult($"{raw.ToString()} is not a valid version number!");
         };
+
+        public bool Confirm(string prompt, bool? defaultValue = null) {
+            var confirm = Prompt.Confirm(prompt, defaultValue);
+            return confirm;
+        }
+
+        public string PromptFileName(string prompt, string defaultValue = null, bool validate = true) {
+            var response = Prompt.Input<string>(prompt, defaultValue: defaultValue, validators: validate ? new List<Func<object, ValidationResult>>() : new[] { FileValidators.ValidFileName()});
+            return response;
+        }
 
         public BuildCommand.Settings PromptMissing(BuildCommand.Settings settings, bool isUnattended = false) {
             if (!settings.Title.IsSet) {
@@ -50,39 +75,4 @@ namespace InstallerCreator
             return settings;
         }
     }
-
-
-    /* public class InquirerPrompts : IOptionsPrompt<BuildCommand.Settings>
-    {
-        public BuildCommand.Settings PromptMissing(BuildCommand.Settings settings, bool isUnattended = false) {
-            if (!settings.Title.IsSet) {
-                settings.Title.Value = Question.Input("Please enter your mod name")
-                    .WithDefaultValue(new DirectoryInfo(settings.ModRootPath).Name)
-                    .Prompt();
-                settings.Title.IsSet = true;
-            }
-            if (!settings.Author.IsSet) {
-                settings.Author.Value = Question.Input("Please enter your name")
-                    .WithDefaultValue(System.Environment.UserName)
-                    .Prompt();
-                settings.Author.IsSet = true;
-            }
-            if (!settings.Version.IsSet) {
-                settings.Version.Value = Question.Input("Please enter a valid version number")
-                    .WithDefaultValue("1.0.0")
-                    .WithValidation(input => SemVersion.TryParse(input, out var _), (input) => $"{input} is not a valid version number")
-                    .WithConvertToString(input => SemVersion.Parse(input).ToString())
-                    .Prompt();
-                settings.Version.IsSet = true;
-            }
-            if (!settings.Description.IsSet && !isUnattended) {
-                settings.Description.Value = Question.Input("Optionally enter a description")
-                    .WithDefaultValue(string.Empty)
-                    .Prompt();
-                settings.Description.IsSet = !string.IsNullOrWhiteSpace(settings.Description.Value);
-            }
-            System.Console.WriteLine();
-            return settings;
-        }
-    } */
 }
