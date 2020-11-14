@@ -3,8 +3,8 @@ using Sharprompt.Validations;
 
 namespace PackCreator {
     public static class FileValidators {
-        internal static Func<object, ValidationResult> ValidFileName() => (obj) => {
-            return string.IsNullOrWhiteSpace(obj.ToString()) || FilePathHasInvalidChars(obj.ToString())
+        internal static Func<object, ValidationResult> ValidFileName(bool allowEmpty = false) => (obj) => {
+            return (!allowEmpty && string.IsNullOrWhiteSpace(obj.ToString())) || FilePathHasInvalidChars(obj.ToString())
                 ? new ValidationResult("Name contains invalid characters!")
                 : null;
         };

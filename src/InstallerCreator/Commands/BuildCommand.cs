@@ -76,10 +76,12 @@ namespace InstallerCreator.Commands
             if (!isUnattended) {
                 var toZip = _prompt.Confirm("Do you want to immediately zip up your mod files?", true);
                 if (toZip) {
+                    var defaultName = settings.Title.IsSet ? settings.Title.Value.MakeSafe() : Path.GetDirectoryName(System.Environment.CurrentDirectory);
                     var fn = _prompt.PromptFileName(
                         "What name should the zip file have?", 
-                        defaultValue: settings.Title.IsSet ? settings.Title.Value.MakeSafe() : Path.GetDirectoryName(System.Environment.CurrentDirectory)
+                        defaultValue: defaultName
                     );
+                    fn = (string.IsNullOrWhiteSpace(fn) ? defaultName : fn).MakeSafe();
                     var op = _archiveService.MakeZip(rootPath, fn);
                     if (op.Success) {
                         _logger.LogInformation($"[bold green]Success![/] Your new archive file (ready for upload) has been created at {op.Result.FullName}");

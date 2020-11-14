@@ -20,8 +20,8 @@ namespace InstallerCreator
 
     public class SharpromptOptionsPrompt : IOptionsPrompt<BuildCommand.Settings> {
         public static class FileValidators {
-            internal static Func<object, ValidationResult> ValidFileName() => (obj) => {
-                return string.IsNullOrWhiteSpace(obj.ToString()) || FilePathHasInvalidChars(obj.ToString())
+            internal static Func<object, ValidationResult> ValidFileName(bool allowEmpty = false) => (obj) => {
+                return (!allowEmpty && string.IsNullOrWhiteSpace(obj.ToString())) || FilePathHasInvalidChars(obj.ToString())
                     ? new ValidationResult("Name contains invalid characters!")
                     : null;
             };
@@ -43,7 +43,7 @@ namespace InstallerCreator
         }
 
         public string PromptFileName(string prompt, string defaultValue = null, bool validate = true) {
-            var response = Prompt.Input<string>(prompt, defaultValue: defaultValue, validators: validate ? new Func<object, ValidationResult>[0] : new[] { FileValidators.ValidFileName()});
+            var response = Prompt.Input<string>(prompt, defaultValue: defaultValue, validators: validate ? new Func<object, ValidationResult>[0] : new[] { FileValidators.ValidFileName(true)});
             return response;
         }
 

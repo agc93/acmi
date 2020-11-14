@@ -46,7 +46,10 @@ namespace PackCreator {
             if (rootInfo.Name == "Nimbus") {
                 rootInfo = rootInfo.Parent;
             }
-            buildSettings.Prefix = Sharprompt.Prompt.Input<string>("Please enter a title/name for your new mod/pack", rootInfo.Name, validators: new[] { FileValidators.ValidFileName()});
+            // _logger.LogInformation($"Starting packing for {rootInfo.Name}");
+            var prefixName = Sharprompt.Prompt.Input<string>("Please enter a title/name for your new mod/pack", rootInfo.Name.MakeSafe(), validators: new[] { FileValidators.ValidFileName(true)});
+            prefixName = prefixName.OrDefault(rootInfo.Name.MakeSafe()); //workaround for shibayan/Sharprompt#84
+            buildSettings.Prefix = prefixName;
             var allFiles = rootInfo.EnumerateFiles("*.uasset", SearchOption.AllDirectories);
             // var vehicles = rootInfo.GetModFileNodes("Nimbus").ToList();
             var metaObjects = rootInfo.GetModFileNodes("_meta").Select(fn => new AssetContext(fn) { PackTargetOverride = "Nimbus/Content"} ).ToList();
@@ -164,42 +167,6 @@ namespace PackCreator {
             var groups = instructions.Where(i => i.SourceFiles.Any()).GroupBy(i => i.SourceGroup.GetName()).ToList();
             var packs = groups.ToDictionary(k => new SourceGroup(k.Key), v => v.ToList());
             _logger.LogDebug($"Preparing to build {packs.Count} packs");
-            if (unhandledObjects.Any()) {
-                AnsiConsole.MarkupLine("[orange3]We found some objects that weren't automatically detected[/]. We can automatically pack these into a single PAK file, or multiple");
-                // AnsiConsole.MarkupLine("Select any paths below that should be packed [underline]together[/], then press [bold grey]<ENTER>[/].");
-                AnsiConsole.MarkupLine("If you want to the remaining files to be packed [underline]separately[/], press [bold grey]<ENTER>[/] without selecting any options");
-                var fileIndex = 1;
-                while (unhandledObjects.Any()) {
-                    var candidates = Sharprompt.Prompt.MultiSelect<string>("Select any paths below that should be packed together[/], then press <ENTER>", unhandledObjects.Keys, minimum: 0);
-                    if (candidates.Any()) {
-                        var selectedObjs = candidates.ToDictionary(c => c, c => unhandledObjects[c]);
-                        var commonRoot = selectedObjs.Select(o => o.Key).FindCommonPath("\\");
-                        var commonDi = new DirectoryInfo(commonRoot);
-                        var name = string.Empty;
-                        if (commonDi.Name == "Content" || commonDi.Parent.Name == "Content") {
-                            name = Sharprompt.Prompt.Input<string>("Enter a name for this pak file", validators: new[] { Validators.Required(), FileValidators.ValidFileName()});
-                        } else {
-                            name = $"{commonDi.Parent.Name}_{commonDi.Name}_{fileIndex}";
-                        }
-                        fileIndex++;
-                        roots.Add(new PackTarget(name, commonRoot), selectedObjs.SelectMany(o => o.Value).ToList());
-                        foreach (var cand in candidates)
-                        {
-                            unhandledObjects.Remove(cand);
-                        }
-                    } else {
-                        foreach (var unhandled in unhandledObjects)
-                        {
-                            var objName = Path.GetFileName(unhandled.Key);
-                            var name = Constants.AllItemNames.TryGetValue(objName, out var _name)
-                                ? _name
-                                : objName;
-                            roots.Add(new PackTarget(name, unhandled.Key), unhandled.Value);
-                        }
-                        break;
-                    }
-                }
-            }
             buildSettings.OutputMode = Sharprompt.Prompt.Select<OutputModes>("Choose how you'd like the PAK files to be output", valueSelector: e => e.GetEnumDescription());
             var subDir = string.Empty;
             if (buildSettings.OutputMode == OutputModes.SubDirectory) {
@@ -220,7 +187,8 @@ namespace PackCreator {
                         if (candidates.Any()) {
                             if (candidates.Count() == 1) {
                                 var selection = candidates.First();
-                                var name = Sharprompt.Prompt.Input<string>("Enter a name for this pak file", defaultValue: selection.Key.RawValue.MakeSafe(), validators: new[] { FileValidators.ValidFileName()});
+                                var name = Sharprompt.Prompt.Input<string>("Enter a name for this pak file", defaultValue: selection.Key.RawValue.MakeSafe(), validators: new[] { FileValidators.ValidFileName(true)});
+                                name = name.OrDefault(selection.Key.RawValue).MakeSafe(true);
                                 packs.Remove(selection.Key);
                                 mergeOptions.Remove(selection.Key);
                                 selection.Key.Name = name;
@@ -229,7 +197,8 @@ namespace PackCreator {
                             // var commonRoot = candidates.Select(o => o.Key).FindCommonPath("/");
                                 var commonRoot = candidates.Select(o => o.Value).SelectMany(o => o.Select(oi => oi.TargetPath)).FindCommonPath();
                                 var selectedObjs = candidates;
-                                var name = Sharprompt.Prompt.Input<string>("Enter a name for this pak file", defaultValue: Path.GetFileName(commonRoot), validators: new[] { FileValidators.ValidFileName()});
+                                var name = Sharprompt.Prompt.Input<string>("Enter a name for this pak file", defaultValue: Path.GetFileName(commonRoot), validators: new[] { FileValidators.ValidFileName(true)});
+                                name = name.OrDefault(Path.GetFileName(commonRoot)).MakeSafe(true);
                                 foreach (var cand in candidates)
                                 {
                                     packs.Remove(cand.Key);
