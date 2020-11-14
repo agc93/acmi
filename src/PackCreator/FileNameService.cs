@@ -13,7 +13,7 @@ namespace PackCreator {
             var segments = (sourceGroup.Name ?? sourceGroup.RawValue).Split('_');
             var parts = segments.Select(s => Constants.AllItemNames.TryGetValue(s, out var name) ? name : s).ToList();
             parts.AddIfSet(bSettings.Prefix);
-            return string.Join(separator, parts).MakeSafe();
+            return string.Join(separator, parts).MakeSafe(true);
         }
 
         public string GetNameFromGroup<T>(SourceGroup sourceGroup, T ident, BuildSettings settings, string separator = "_") where T : Identifier {
@@ -21,7 +21,7 @@ namespace PackCreator {
             if (ident is SkinIdentifier sIdent) {
                 var parts = new List<string> {sIdent.GetAircraftName(), $"Skin{sIdent.Slot.GetSlotNumber()}"};
                 parts.AddIfSet(settings.Prefix);
-                return string.Join(separator, parts).MakeSafe();
+                return string.Join(separator, parts).MakeSafe(true);
             } else {
                 return GetNameFromGroup(sourceGroup, settings, separator);
             }
@@ -47,7 +47,7 @@ namespace PackCreator {
         public string GetOutputPathForGroup(string sourceGroup, string prefix = null) {
             // var raw = (sourceGroup.Name ?? sourceGroup.RawValue).Split('_').SkipWhile(c => c.All(char.IsDigit)).First();
             var raw = sourceGroup.Split('_').SkipWhile(c => c.All(char.IsDigit)).First();
-            return (Constants.AllNames.TryGetValue(raw, out var name) ? name : raw).MakeSafe();
+            return (Constants.AllNames.TryGetValue(raw, out var name) ? name : raw).MakeSafe(true);
         }
     }
 }

@@ -261,7 +261,7 @@ namespace PackCreator {
                     
                     var finalName = $"{_nameService.GetNameFromBuildGroup(pakBuild, buildSettings)}_P.pak";
                     string NestedFolders(string finalName) {
-                        var targetDir = Path.Combine(rootInfo.FullName, "Packed Files", _nameService.GetOutputPathForGroup(pakBuild.Key));
+                        var targetDir = Path.Combine(rootInfo.Parent.FullName, "Packed Files", _nameService.GetOutputPathForGroup(pakBuild.Key));
                         Directory.CreateDirectory(targetDir);
                         return targetDir;
                     }

@@ -43,7 +43,7 @@ namespace InstallerCreator
         }
 
         public string PromptFileName(string prompt, string defaultValue = null, bool validate = true) {
-            var response = Prompt.Input<string>(prompt, defaultValue: defaultValue, validators: validate ? new List<Func<object, ValidationResult>>() : new[] { FileValidators.ValidFileName()});
+            var response = Prompt.Input<string>(prompt, defaultValue: defaultValue, validators: validate ? new Func<object, ValidationResult>[0] : new[] { FileValidators.ValidFileName()});
             return response;
         }
 
