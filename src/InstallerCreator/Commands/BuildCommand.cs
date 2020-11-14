@@ -19,14 +19,22 @@ namespace InstallerCreator.Commands
         private readonly ILogger<BuildCommand> _logger;
         private readonly AppInfoService _infoService;
         private readonly ImageLocatorService _imageLocator;
+        private readonly ArchiveService _archiveService;
 
-        public BuildCommand(IOptionsPrompt<BuildCommand.Settings> prompt, IFileService fileService, ILogger<BuildCommand> logger, AppInfoService infoService, ImageLocatorService imageLocator)
+        public BuildCommand(
+            IOptionsPrompt<BuildCommand.Settings> prompt, 
+            IFileService fileService, 
+            ILogger<BuildCommand> logger, 
+            AppInfoService infoService, 
+            ImageLocatorService imageLocator,
+            ArchiveService archiveService)
         {
             _prompt = prompt;
             _fileService = fileService;
             _logger = logger;
             _infoService = infoService;
             _imageLocator = imageLocator;
+            _archiveService = archiveService;
         }
         public override int Execute(CommandContext context, Settings settings)
         {
@@ -66,6 +74,19 @@ namespace InstallerCreator.Commands
             builder.WriteToInstallerFiles(info, moduleConfig);
             _logger.LogInformation($"Mod Installer files have been written to the {Path.Combine(modRoot, "fomod")} directory!");
             if (!isUnattended) {
+                var toZip = _prompt.Confirm("Do you want to immediately zip up your mod files?", true);
+                if (toZip) {
+                    var fn = _prompt.PromptFileName(
+                        "What name should the zip file have?", 
+                        defaultValue: settings.Title.IsSet ? settings.Title.Value.MakeSafe() : Path.GetDirectoryName(System.Environment.CurrentDirectory)
+                    );
+                    var op = _archiveService.MakeZip(rootPath, fn);
+                    if (op.Success) {
+                        _logger.LogInformation($"[bold green]Success![/] Your new archive file (ready for upload) has been created at {op.Result.FullName}");
+                    } else {
+                        _logger.LogWarning($"Failed to create ZIP file! [bold]Your files are still there![/] You just need to zip them up manually...");
+                    }
+                }
                 Console.WriteLine(string.Empty.PadLeft(9) + "Press <ENTER> to continue...");
                 Console.ReadLine();
             }
@@ -76,32 +97,12 @@ namespace InstallerCreator.Commands
             var table = new Table();
             table.AddColumn(new TableColumn("[u]Type[/]"));
             table.AddColumn(new TableColumn("[u]Count[/]"));
-            if (files.Skins.Keys.Any()) {
-                table.AddRow("Skins", files.Skins.Count.ToString());
-            }
-            if (files.MultiSkinFiles.Keys.Any()) {
-                table.AddRow("Merged Skins", files.MultiSkinFiles.Count.ToString());
-            }
-            if (files.Portraits.Keys.Any()) {
-                table.AddRow("Portraits", files.Portraits.Count.ToString());
-            }
-            if (files.Weapons.Keys.Any()) {
-                table.AddRow("Weapons", files.Weapons.Count.ToString());
-            }
-            if (files.Effects.Keys.Any()) {
-                table.AddRow("Effects", files.Effects.Count.ToString());
-            }
-            if (files.Crosshairs.Keys.Any()) {
-                table.AddRow("Crosshairs", files.Crosshairs.Count.ToString());
-            }
-            if (files.ExtraFiles.Any()) {
-                table.AddRow("Extra Files", files.ExtraFiles.Count.ToString());
-            }
-            if (files.Canopies.Any()) {
-                table.AddRow("Canopies", files.Canopies.Count.ToString());
-            }
-            if (files.Emblems.Any()) {
-                table.AddRow("Emblems", files.Emblems.Count.ToString());
+            var summary = files.GetSummaryCount(true);
+            foreach (var item in summary)
+            {
+                if (item.Value != 0) {
+                    table.AddRow(item.Key, item.Value.ToString());
+                }
             }
             AnsiConsole.Render(table);
         }

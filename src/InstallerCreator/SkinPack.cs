@@ -53,10 +53,29 @@ namespace InstallerCreator
         }
 
         public int GetFileCount(bool includeExtra = false) {
-            var detected = Skins.Keys.Count + MultiSkinFiles.Count + Portraits.Keys.Count + Crosshairs.Keys.Count + Weapons.Keys.Count + Effects.Keys.Count + Canopies.Keys.Count + Emblems.Keys.Count;
-            return includeExtra 
-                ? detected + ExtraFiles.Count
-                : detected;
+            var detected = GetSummaryCount(includeExtra).Sum(a => a.Value);
+            // var detected = Skins.Keys.Count + MultiSkinFiles.Count + Portraits.Keys.Count + Crosshairs.Keys.Count + Weapons.Keys.Count + Effects.Keys.Count + Canopies.Keys.Count + Emblems.Keys.Count;
+            // return includeExtra 
+            //     ? detected + ExtraFiles.Count
+            //     : detected;
+            return detected;
+        }
+
+        public Dictionary<string, int> GetSummaryCount(bool includeExtra = true) {
+            var summary = new Dictionary<string, int> {
+                ["Skins"] = Skins.Keys.Count,
+                ["Merged Skins"] = MultiSkinFiles.Count,
+                ["Portraits"] = Portraits.Keys.Count,
+                ["Crosshairs"] = Crosshairs.Keys.Count,
+                ["Weapons"] = Weapons.Keys.Count,
+                ["Effects"] = Effects.Keys.Count,
+                ["Canopies"] = Canopies.Keys.Count,
+                ["Emblems"] = Emblems.Keys.Count
+            };
+            if (includeExtra) {
+                summary.Add("Extra Files", ExtraFiles.Count);
+            }
+            return summary;
         }
     }
 }

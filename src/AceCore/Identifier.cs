@@ -3,6 +3,8 @@ namespace AceCore
     public abstract class Identifier
     {
         public string RawValue { get; protected set; }
+        public abstract string BaseObjectName {get; }
+        // public string Slot {get;protected set;}
         public virtual string GetSlotName() {
             return RawValue;
         }
@@ -16,5 +18,17 @@ namespace AceCore
                 return aircraftCode.ToUpper();
             }
         }
+
+        protected string GetItemName(string vehicleCode) {
+            var knownName = Constants.AllItemNames.TryGetValue(vehicleCode, out var name);
+            if (knownName) {
+                return name;
+            } else {
+                return vehicleCode.ToUpper();
+            }
+        }
+
+        public virtual string ObjectPath => Identifier.BaseObjectPath;
+        public static string BaseObjectPath => "Nimbus/Content/";
     }
 }

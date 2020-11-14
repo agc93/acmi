@@ -1,0 +1,28 @@
+{
+    "Weapons": [
+        ["/Game/Vehicles/Weapons/w_dptk_a0/Textures/w_dptk_a0_D.uasset", "w_dptk_a0_D", "dptk", "a0", "D"],
+        ["/Game/Vehicles/Weapons/w_4agm_r0/Textures/w_4agm_r0_D.uasset", "w_4agm_r0_D", "4agm", "r0", "D"],
+        ["/Game/Vehicles/Weapons/w_aam_a0/Materials/w_aam_a0_Inst.uasset", "w_aam_a0_Inst", "aam", "a0", "Inst"],
+        ["/Game/Vehicles/Weapons/w_icbm/Materials/w_icbm_MREC.uasset", "w_icbm_MREC", "icbm", "", "MREC"],
+        ["w_lacm_f0_D.uasset", "w_lacm_f0_D", "lacm", "f0", "D"]
+    ],
+    "Aircraft": [
+        ["/Game/Vehicles/Aircraft/a10a/00/a10a_00_D.uasset", "a10a_00_D", "a10a", "00", "D"],
+        ["/Game/Vehicles/Aircraft/a10a/00/a10a_00_Inst.uasset", "a10a_00_Inst", "a10a", "00", "Inst"],
+        ["/Game/Vehicles/Aircraft/a130/00/a130_00_D.uasset", "a130_00_D", "a130", "00", "D"],
+        ["/Game/Vehicles/Aircraft/adf11f/02a/adf11f_02a_Inst.uasset", "adf11f_02a_Inst", "adf11f", "02a", "Inst"],
+        ["/Game/Vehicles/Aircraft/aias/Textures/AIAS_Dam_D.uasset", "AIAS_Dam_D", "AIAS", "Dam", "D"],
+        ["/Game/Vehicles/Aircraft/f02a/00/f02a_01_MREC.uasset", "f02a_01_MREC", "f02a", "01", "MREC"],
+        ["Nimbus/Content/Vehicles/Aircraft/asfx/00/asfx_00_Inst.uasset", "asfx_00_Inst", "asfx", "00", "Inst"],
+        ["fa44_04_D.uasset", "fa44_04_D", "fa44", "04", "D"],
+        ["asfx_00xMREC.uasset", "asfx_00xMREC", "asfx", "00", "MREC"],
+        ["fa27_02xN.uasset", "fa27_02xN", "fa27", "02", "N"],
+        ["./Skins/av8b_01_D.uasset", "av8b_01_D", "av8b", "01", "D"],
+        ["ex/x02s_x2_MREC.uasset", "x02s_x2_MREC", "x02s", "02", "MREC"],
+        ["f18f_0b_MREC.uasset", "f18f_0b_MREC", "f18f", "00b", "MREC"]
+    ],
+    "Effects": [
+        ["Nimbus/Content/VFX/Common/Materials/Missile/LightMissle/LightMissileSmoke_Master_02_Inst.uasset", "LightMissileSmoke_Master_02_Inst", "Nimbus/Content/VFX/Common/Materials/Missile/LightMissle", "LightMissileSmoke_Master_02_Inst", "Missile"],
+        ["VFX/Common/Materials/AfterBurner/M_AfterBurner_Glow_01.uasset", "M_AfterBurner_Glow_01", "Nimbus/Content/VFX/Common/Materials/AfterBurner", "M_AfterBurner_Glow_01", "AfterBurner"]
+    ]
+}

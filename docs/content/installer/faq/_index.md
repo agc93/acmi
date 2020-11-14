@@ -14,7 +14,13 @@ Here are some of the Frequently Asked Questions about ACMI.
 At present, <strong>do not</strong> use this with model mods! It will detect model swaps as a skin file and group it with everything else. This will hopefully be fixable, but it will be fine for skins for custom models.
 {{< /block >}}
 
-> You can also run `acmi zip` to immediately pack all the files in the current directory into a ZIP.
+### Why should I use this?
+
+I get it. You've got a workflow that works for you and don't want to learn a new thing. That's why ACMI is designed to be as easy-to-use as possible!
+
+In my opinion, there's two good reasons why: **drastically** better user experience and less bug reports. For the *thousands* of Vortex users with Ace Combat, installing mods without installers is pretty unintuitive. Installing mods with ACMI files is trivial and doesn't require an innate understanding of how modding works. It's really a whole different level of easy to install, for everything from simple skin mods to complex packs.
+
+The advantage for you is less reports. When a Vortex user installs your mod without any installers, the *default* action will almost certainly not install correctly. Users will have to take a wild guess at which files they need, which is where problems can arise. With ACMI files, the installer handles all of that for them and shows a convenient wizard that avoids the installation errors you might otherwise get.
 
 ### How does it work?
 

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace AceCore
@@ -9,7 +11,9 @@ namespace AceCore
         private Dictionary<string, string> _aircraftNames = Constants.AircraftNames;
 
         public static bool TryParse(string value, out SkinIdentifier ident) {
-            var rex = new System.Text.RegularExpressions.Regex(@"([a-z0-9]+?)_(v?\d+a?\w{1}?)_(\w)(?!\.u[^a]).*");
+            // var rex = new System.Text.RegularExpressions.Regex(@"([a-z0-9]+?)_(v?\d+a?\w{1}?)_(\w)(?!\.u[^a]).*");
+            // var rex = new Regex(@"([a-z0-9]+?)_x?(\d+\w?)_([A-Z]{1}|[A-Za-z]{4})(?:[^\w])(?!u[^a])");
+            var rex = new Regex(@"(?<![a-zA-Z0-9]{1}_)([a-zA-Z0-9]{4,}?)_x?(\d*\w*)[_x]([A-Z]{1}|[A-Za-z]{4})(?:[^\w])(?!u[^a])");
             var match = rex.Match(value);
             if (match != null && match.Groups.Count >= 2) {
                 ident = new SkinIdentifier(match.Groups[0].Value, match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
@@ -18,20 +22,23 @@ namespace AceCore
             ident = null;
             return false;
         }
+
         private SkinIdentifier(string rawValue, string aircraft, string slot, string type) {
-            RawValue = rawValue;
+            RawValue = rawValue.Trim('.').Trim('\0').Replace(@"\0", string.Empty);
             Aircraft = aircraft;
-            Slot = slot;
+            var slotNum = new string(slot.TakeWhile(char.IsDigit).ToArray());
+            slotNum = int.TryParse(slotNum, out var i)
+                    ? i.ToString("D2")
+                    : slotNum;
+            Slot = slotNum + new string(slot.SkipWhile(char.IsDigit).ToArray());
+            // Slot = slot.All(char.IsDigit) 
+            //     ? 
+            //     : slot;
             Type = type;
 			SlotName = ParseSlotName();
         }
-
-		public string SlotName {get; private set;}
-
-        
-
+		private string SlotName {get; set;}
         public string Aircraft { get; }
-
         public string Slot { get; }
         public string Type { get; }
 
@@ -56,10 +63,27 @@ namespace AceCore
 			return SlotName;
         }
 
+        public string GetSlotNumber(string prefix = null) {
+            var s = Slot;
+            var npcRex = new Regex(@"(\d{2})(\w{1})");
+            if (npcRex.IsMatch(s)) {
+                var match = npcRex.Match(s);
+                var baseSlot = match.Groups[1].Value;
+                return $"NPC {baseSlot.GetSlotNumber()}{match.Groups[2].Value}";
+            }
+            return (s.Length > 0 && char.IsDigit(s[0])) ? $"{prefix.OrDefault(string.Empty)}{s.GetSlotNumber()}" : s;
+        }
+
         public override string ToString() {
             return $"{GetAircraftName(Aircraft)} ({GetSlotName()})";
         }
 
         public string GetAircraftName() => base.GetAircraftName(Aircraft);
+
+        public string GetObjectName() => $"{Aircraft}_{Slot}_{Type}";
+
+        public override string ObjectPath => base.ObjectPath + $"Vehicles/Aircraft/{Aircraft}/{Slot}";
+        public bool IsNPC => Slot.Any(char.IsLetter);
+        public override string BaseObjectName => $"{Aircraft}_{Slot}";
     }
 }

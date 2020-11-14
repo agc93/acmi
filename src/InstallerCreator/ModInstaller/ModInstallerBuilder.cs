@@ -71,7 +71,8 @@ namespace InstallerCreator.ModInstaller {
             return xdoc;
         }
 
-        private GroupedSet<T> GetSets<T>(Dictionary<string, List<T>> identifiers, string joinStr = " + ") where T : Identifier {
+        private GroupedSet<T> GetSets<T>(Dictionary<string, List<T>> identifiers, string joinStr = " + ", Func<T, string> groupFunc = null) where T : Identifier {
+                groupFunc ??= s => s.GetSlotName();
                 var pGroups = identifiers.ToList().GroupBy(g => g.Value.Select(s => s.GetSlotName()).JoinLines(joinStr));
                 var uniqueSets = pGroups.Where(g => g.Count() == 1).SelectMany(g => g.ToList());
                 var groupedSets = pGroups.Where(g => g.Count() != 1).ToDictionary(k => k.Key, v => v.ToList());
@@ -80,7 +81,7 @@ namespace InstallerCreator.ModInstaller {
             
 
         private XElement GenerateStepsXml(ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, List<string> extraPaks, Dictionary<string, List<SkinIdentifier>> multiSkins = null, Dictionary<string, List<CrosshairIdentifier>> crosshairs = null, Dictionary<string, List<PortraitIdentifier>> portraits = null, Dictionary<string, List<WeaponIdentifier>> weapons = null, Dictionary<string, List<EffectsIdentifier>> effects = null, Dictionary<string, List<CanopyIdentifier>> canopies = null, Dictionary<string, List<EmblemIdentifier>> emblems = null) {
-            XElement GetPluginElement(string fileName, string description = null) {
+            XElement GetPluginElement(string fileName, string description = null, string name = null) {
                 var children = new List<XElement> {
                     Description(description),
                 };
@@ -90,13 +91,14 @@ namespace InstallerCreator.ModInstaller {
                 }
                 children.Add(new XElement("files", new XElement("file", new XAttribute("source", fileName), new XAttribute("destination", new FileInfo(fileName).NormalizeName()), new XAttribute("priority", "0"))));
                 children.Add(OptionalTypeDescriptor());
-                return new XElement("plugin", new XAttribute("name", new FileInfo(fileName).Name), children);
+                return new XElement("plugin", new XAttribute("name", name ?? new FileInfo(fileName).Name), children);
             }
-            List<XElement> BuildGroups<T>(GroupedSet<T> groupedSet, string topName) where T : Identifier {
+            List<XElement> BuildGroups<T>(GroupedSet<T> groupedSet, string topName, Func<T, string> labelFunc = null) where T : Identifier {
                 var groups = new List<XElement>();
+                labelFunc ??= pn => pn.ToString();
                 var uniqueSets = groupedSet.UniqueSets;
                 if (uniqueSets.Any() && uniqueSets.All(s => s.Value.Any())) {
-                    var canopyGeneralGroup = new XElement("group", Name(topName), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), uniqueSets.Select(s => GetPluginElement(s.Key, Includes(s.Value.Select(pi => pi.GetSlotName()))))));
+                    var canopyGeneralGroup = new XElement("group", Name(topName), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), uniqueSets.Select(s => GetPluginElement(s.Key, Includes(s.Value.Select(pi => labelFunc(pi)))))));
                     groups.Add(canopyGeneralGroup);
                 }
                 var groupedSets = groupedSet.Groups;
@@ -114,7 +116,19 @@ namespace InstallerCreator.ModInstaller {
             steps.Add(new XElement("installStep", new XAttribute("name", "Introduction"), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), new XElement("group", new XAttribute("name", "Introduction"), new XAttribute("type", "SelectAll"), new XElement("plugins", new XAttribute("order", "Explicit"), new XElement("plugin", new XAttribute("name", "Introduction"), new XElement("description", GetDescription()), OptionalTypeDescriptor()))))));
             foreach (var aircraft in lookup)
             {
-                steps.Add(new XElement("installStep", new XAttribute("name", aircraft.Key), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), aircraft.GroupBy(a => a.Value.GetSlotName()).Select(gs => new XElement("group", new XAttribute("name", gs.Key), new XAttribute("type", "SelectExactlyOne"), new XElement("plugins", new XAttribute("order", "Explicit"), NonePlugin(), gs.Select(ssf => GetPluginElement(ssf.Key))))))));
+                var aSlots = aircraft.GroupBy(a => a.Value.GetSlotName());
+                var singleSlotOptions = aSlots.All(sl => sl.Count() == 1);
+                if (singleSlotOptions) {
+                    var allSlots = aSlots.Select(sl => sl.First());
+                    steps.Add(new XElement("installStep", Name(aircraft.Key), 
+                        new XElement("optionalFileGroups", ExplicitOrder(), 
+                            new XElement("group", Name(aircraft.Key), Type(SelectType.SelectAny), 
+                                new XElement("plugins", ExplicitOrder(), allSlots.Select(ssf => GetPluginElement(ssf.Key, ssf.Key, ssf.Value.GetSlotName()))))))); 
+
+                } else {
+                    steps.Add(new XElement("installStep", new XAttribute("name", aircraft.Key), 
+                        new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), aSlots.Select(gs => new XElement("group", new XAttribute("name", gs.Key), new XAttribute("type", "SelectExactlyOne"), new XElement("plugins", new XAttribute("order", "Explicit"), NonePlugin(), gs.Select(ssf => GetPluginElement(ssf.Key))))))));
+                }
             }
             // the below implementation is planned for future changes
             // that being said, it should not be keyed on there only being one aircraft, but there only being one option per slot
@@ -155,7 +169,12 @@ namespace InstallerCreator.ModInstaller {
                 }
             }
             if (effects != null && effects.Any()) {
-                steps.Add(new XElement("installStep", Name("Effects"), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name("Visual Effects"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), effects.Select(cm => GetPluginElement(cm.Key, Includes(cm.Value.Select(v => v.ToString())))))))));
+                var eSets = GetSets(effects, groupFunc: e => e.EffectsObject);
+                var groups = BuildGroups(eSets, "Visual Effects");
+                if (groups.Any()) {
+                    steps.Add(new XElement("installStep", Name("Effects"), new XElement("optionalFileGroups", ExplicitOrder(), groups)));
+                }
+                // steps.Add(new XElement("installStep", Name("Effects"), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name("Visual Effects"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), effects.Select(cm => GetPluginElement(cm.Key, Includes(cm.Value.Select(v => v.ToString())))))))));
             }
             if (emblems != null && emblems.Any()) {
                 steps.Add(GetSelectionStep(emblems, "Emblems", "Emblems", (ids) => Replaces(ids.Select(i => i.ToString()))));
