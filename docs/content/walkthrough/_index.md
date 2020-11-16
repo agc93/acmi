@@ -1,6 +1,6 @@
 ---
 title: "Video Walkthrough"
-weight: 1
+weight: 2
 anchor: "video-guide"
 ---
 

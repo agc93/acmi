@@ -4,8 +4,7 @@ weight: 22
 anchor: "pack-normals-mrecs"
 ---
 
-When ACMI Packer starts packing your files, it will actually read any Instance files (aka `*_Inst.uasset`) it finds and automatically determine the paths for MRECs and Normal files.
-Since ACMI Packer doesn't need to set up the full folder structure, it's a bit easier to do variations of the same files.
+When ACMI Packer starts packing your files, it will actually read any Instance files (aka `*_Inst.uasset`) it finds and automatically determine the paths for MRECs and Normal files. ACMI Packer will set up any extra paths (like the `ex/` folder) for you depending on what the Instance file uses: just make sure the cooked asset is *named* right.
 
 That means that *in general*, you can just dump all your cooked files and any relevant instance files in the same folder, like so:
 

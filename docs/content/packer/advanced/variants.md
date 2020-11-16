@@ -6,7 +6,7 @@ anchor: "pack-alt-variants"
 
 Since ACMI Packer doesn't need to set up the full folder structure, it's a bit easier to do variations of the same files.
 
-## Walkthrough: Skins
+#### Walkthrough: Skins
 
 Let's take the example of two variants of a skin for the same slot: an XFA-27 skin in Slot 7. When you cooked your files, you will have produced some files that you can copy into a folder like this:
 
