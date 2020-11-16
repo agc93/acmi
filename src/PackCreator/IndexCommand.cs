@@ -65,6 +65,7 @@ namespace PackCreator
             services.AddSingleton<BuildContextFactory>();
             services.AddSingleton<BuildService>();
             services.AddSingleton<FileNameService>();
+            services.AddSingleton<ParserService>();
             services.AddLogging(logging => {
                 logging.SetMinimumLevel(LogLevel.Trace);
                 logging.AddInlineSpectreConsole(c => {
@@ -75,8 +76,6 @@ namespace PackCreator
                 scan.FromAssemblyOf<Identifier>()
                     .AddClasses(classes => classes.AssignableTo(typeof(AceCore.Parsers.IIdentifierParser))).AsImplementedInterfaces().WithSingletonLifetime()
             );
-            // services.AddSingleton<IIdentifierParser, AceCore.Parsers.SkinParser>();
-            // services.AddSingleton<IIdentifierParser, AceCore.Parsers.PortraitParser>();
             return services;
         }
     }

@@ -20,14 +20,6 @@ namespace AceCore.Tests
     }
     public class SkinParserTests
     {
-        /* [Theory]
-        [JsonFileData("paths.json", "Aircraft")]
-        public void Should_Parse_Aircraft(string rawPath, string fullMatch, string aircraft, string slot, string type)
-        {
-            var parsed = SkinIdentifier.TryParse(rawPath, out var ident);
-            Assert.True(parsed);
-        } */
-
         [Theory]
         [JsonFileData("paths.json", "Aircraft")]
         public void Should_Parse_Skin_Details(string rawPath, string fullMatch, string aircraft, string slot, string type)
@@ -47,10 +39,24 @@ namespace AceCore.Tests
         public void Should_Parse_Effects_Path(string rawPath, string fullMatch, string objectPath, string objectName, string friendlyName) {
             var parsed = EffectsIdentifier.TryParse(rawPath, out var ident);
             Assert.True(parsed);
-            // Assert.Equal(ident.RawValue, fullMatch);
+            Assert.Equal(ident.RawValue, fullMatch);
             Assert.Equal(objectPath, ident.ObjectPath);
             Assert.Equal(objectName, ident.BaseObjectName);
             Assert.Equal(friendlyName, ident.EffectsObject);
+        }
+    }
+
+    public class CockpitParserTests {
+        [Theory]
+        [JsonFileData("paths.json", "Cockpits")]
+        public void Should_Parse_Cockpits_Path(string rawPath, string fullMatch, string aircraft, string area, string slot, string type) {
+            var parsed = CockpitIdentifier.TryParse(rawPath, out var ident);
+            Assert.True(parsed);
+            Assert.Equal(fullMatch, ident.RawValue);
+            Assert.Equal(aircraft, ident.BaseObjectName);
+            Assert.Equal(area, ident.CockpitArea.OrDefault(string.Empty));
+            Assert.Equal(slot, ident.SpecificPart.OrDefault(string.Empty));
+            Assert.Equal(type, ident.Type);
         }
     }
 }

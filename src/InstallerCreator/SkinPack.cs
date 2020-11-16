@@ -17,6 +17,7 @@ namespace InstallerCreator
         public Dictionary<string, IEnumerable<EffectsIdentifier>> Effects {get;set;} = new Dictionary<string, IEnumerable<EffectsIdentifier>>();
         public Dictionary<string, IEnumerable<CanopyIdentifier>> Canopies {get;set;} = new Dictionary<string, IEnumerable<CanopyIdentifier>>();
         public Dictionary<string, IEnumerable<EmblemIdentifier>> Emblems {get;set;} = new Dictionary<string, IEnumerable<EmblemIdentifier>>();
+        public Dictionary<string, IEnumerable<CockpitIdentifier>> Cockpits {get;set;} = new Dictionary<string, IEnumerable<CockpitIdentifier>>();
 
         public bool IsEmpty() {
             return GetFileCount(true) == 0;
@@ -49,6 +50,8 @@ namespace InstallerCreator
                 Canopies.Add(relPath, idents.Cast<CanopyIdentifier>());
             } else if (ident is EmblemIdentifier) {
                 Emblems.Add(relPath, idents.Cast<EmblemIdentifier>());
+            } else if (ident is CockpitIdentifier) {
+                Cockpits.Add(relPath, idents.Cast<CockpitIdentifier>());
             }
         }
 
@@ -70,7 +73,8 @@ namespace InstallerCreator
                 ["Weapons"] = Weapons.Keys.Count,
                 ["Effects"] = Effects.Keys.Count,
                 ["Canopies"] = Canopies.Keys.Count,
-                ["Emblems"] = Emblems.Keys.Count
+                ["Emblems"] = Emblems.Keys.Count,
+                ["Cockpits"] = Cockpits.Keys.Count
             };
             if (includeExtra) {
                 summary.Add("Extra Files", ExtraFiles.Count);

@@ -7,21 +7,14 @@ using AceCore.Parsers;
 
 namespace AceCore {
     public class PakReader : FileReader {
-        private readonly IEnumerable<IIdentifierParser> _parsers;
+        private readonly ParserService _parser;
 
-        public PakReader(IEnumerable<IIdentifierParser> parsers) {
-            _parsers = parsers;
+        public PakReader(ParserService parser) {
+            _parser = parser;
         }
 
         public IEnumerable<Identifier> ReadFile(string filePath, bool readWholeFile = false) {
             var headerFound = false;
-            Identifier ParseMatch(string rawString) {
-                var matched = _parsers.Select(p => p.TryParse(rawString, true)).FirstOrDefault(m => m.IsValid);
-                if (matched.identifier != null) {
-                    return matched.identifier;
-                }
-                return null;
-            }
             int GetOffsetLength(long fileSize) {
                 return (int)Math.Min(Math.Max(Math.Ceiling(fileSize * 0.025), 8192), 65536);
             }
@@ -35,24 +28,24 @@ namespace AceCore {
                 var searchLength = GetOffsetLength(new FileInfo(filePath).Length);
                 // foreach (var match in FindIdents(filePath, new SearchOptions() { MaxBytes = 16384, Key = "Nimbus/Content/" }, seekAction: () => (-16384, SeekOrigin.End))) {
                 foreach (var match in FindIdents(filePath, new SearchOptions() { MaxBytes = searchLength, Key = "Nimbus/Content/" }, seekAction: () => (-searchLength, SeekOrigin.End))) {
-                        var ident = ParseMatch(match);
+                        var ident = _parser.ParseMatch(match, true);
                         if (ident != null) {
                             yield return ident;
                         }
                     }
             } else {
-                foreach (var match in FindIdents(filePath)) {
-                    var ident = ParseMatch(match);
-                    // var fIdent = FancyParseMatch(match);
+                var opts = new SearchOptions {MaxBytes = 8192, Key = "Nimbus/Content/", RewindOnMatch = true, Window = 96};
+                foreach (var match in FindIdents(filePath, opts, seekAction: () => (-8192, SeekOrigin.End))) {
+                    var ident = _parser.ParseMatch(match, true);
                     if (ident != null) {
                         headerFound = true;
                         yield return ident;
                     }
                 }
                 if (!headerFound) {
-                    var opts = new SearchOptions {MaxBytes = 8192, Key = "Nimbus/Content/", RewindOnMatch = true, Window = 96};
-                    foreach (var match in FindIdents(filePath, opts, seekAction: () => (-8192, SeekOrigin.End))) {
-                        var ident = ParseMatch(match);
+                    foreach (var match in FindIdents(filePath)) {
+                        var ident = _parser.ParseMatch(match, true);
+                        // var fIdent = FancyParseMatch(match);
                         if (ident != null) {
                             headerFound = true;
                             yield return ident;
@@ -61,7 +54,7 @@ namespace AceCore {
                 }
                 if (!headerFound && new FileInfo(filePath).Length < 1049000) {
                     foreach (var match in FindIdents(filePath, new SearchOptions() { MaxBytes = int.MaxValue })) {
-                        var ident = ParseMatch(match);
+                        var ident = _parser.ParseMatch(match, true);
                         if (ident != null) {
                             yield return ident;
                         }

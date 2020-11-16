@@ -24,5 +24,14 @@
     "Effects": [
         ["Nimbus/Content/VFX/Common/Materials/Missile/LightMissle/LightMissileSmoke_Master_02_Inst.uasset", "LightMissileSmoke_Master_02_Inst", "Nimbus/Content/VFX/Common/Materials/Missile/LightMissle", "LightMissileSmoke_Master_02_Inst", "Missile"],
         ["VFX/Common/Materials/AfterBurner/M_AfterBurner_Glow_01.uasset", "M_AfterBurner_Glow_01", "Nimbus/Content/VFX/Common/Materials/AfterBurner", "M_AfterBurner_Glow_01", "AfterBurner"]
+    ],
+    "Cockpits": [
+        ["f35c_CP_D.uasset", "f35c_CP_D", "f35c", "", "", "D"],
+        ["f22a_CP_Digits_Inst.uasset", "f22a_CP_Digits_Inst", "f22a", "Digits", "", "Inst"],
+        ["rflm_CP_HUD_Glass_Inst.uasset", "rflm_CP_HUD_Glass_Inst", "rflm", "HUD", "Glass", "Inst"],
+        ["pkfa_CP_Inst.uasset", "pkfa_CP_Inst", "pkfa", "", "", "Inst"],
+        ["pkfa_CP_MFD_SWP1_M.uasset", "pkfa_CP_MFD_SWP1_M", "pkfa", "MFD", "SWP1", "M"],
+        ["mr2k_CP_N.uasset", "mr2k_CP_N", "mr2k", "", "", "N"],
+        ["/Game/Vehicles/Aircraft/rflm/CP/rflm_CP_MFD_SWP2_M.uasset", "rflm_CP_MFD_SWP2_M", "rflm", "MFD", "SWP2", "M"]
     ]
 }

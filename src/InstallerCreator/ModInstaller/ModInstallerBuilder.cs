@@ -65,7 +65,7 @@ namespace InstallerCreator.ModInstaller {
             if (skins.ReadmeFiles.Count > 0) {
                 moduleChildren.Add(new XElement("requiredInstallFiles", skins.ReadmeFiles.Select(r => new XElement("file", new XAttribute("source", r), new XAttribute("destination", Path.Combine(MakeSafePath(_title), new FileInfo(r).Name))))));
             }
-            moduleChildren.Add(GenerateStepsXml(aircraftLookup, skins.ExtraFiles.ToList(), skins.MultiSkinFiles.EnumerateDictionary(), skins.Crosshairs.EnumerateDictionary(), skins.Portraits.EnumerateDictionary(), skins.Weapons.EnumerateDictionary(), skins.Effects.EnumerateDictionary(), skins.Canopies.EnumerateDictionary(), skins.Emblems.EnumerateDictionary()));
+            moduleChildren.Add(GenerateStepsXml(aircraftLookup, skins.ExtraFiles.ToList(), skins.MultiSkinFiles.EnumerateDictionary(), skins.Crosshairs.EnumerateDictionary(), skins.Portraits.EnumerateDictionary(), skins.Weapons.EnumerateDictionary(), skins.Effects.EnumerateDictionary(), skins.Canopies.EnumerateDictionary(), skins.Emblems.EnumerateDictionary(), skins.Cockpits.EnumerateDictionary()));
             XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
             var xdoc = new XDocument(GetCreatedComment(), new XElement("config", new XAttribute(XNamespace.Xmlns + "xsi", xsi), new XAttribute(xsi + "noNamespaceSchemaLocation", "http://qconsulting.ca/fo3/ModConfig5.0.xsd"), moduleChildren));
             return xdoc;
@@ -80,7 +80,17 @@ namespace InstallerCreator.ModInstaller {
             }
             
 
-        private XElement GenerateStepsXml(ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, List<string> extraPaks, Dictionary<string, List<SkinIdentifier>> multiSkins = null, Dictionary<string, List<CrosshairIdentifier>> crosshairs = null, Dictionary<string, List<PortraitIdentifier>> portraits = null, Dictionary<string, List<WeaponIdentifier>> weapons = null, Dictionary<string, List<EffectsIdentifier>> effects = null, Dictionary<string, List<CanopyIdentifier>> canopies = null, Dictionary<string, List<EmblemIdentifier>> emblems = null) {
+        private XElement GenerateStepsXml(
+            ILookup<string, KeyValuePair<string, SkinIdentifier>> lookup, 
+            List<string> extraPaks, 
+            Dictionary<string, List<SkinIdentifier>> multiSkins = null, 
+            Dictionary<string, List<CrosshairIdentifier>> crosshairs = null, 
+            Dictionary<string, List<PortraitIdentifier>> portraits = null, 
+            Dictionary<string, List<WeaponIdentifier>> weapons = null, 
+            Dictionary<string, List<EffectsIdentifier>> effects = null, 
+            Dictionary<string, List<CanopyIdentifier>> canopies = null, 
+            Dictionary<string, List<EmblemIdentifier>> emblems = null,
+            Dictionary<string, List<CockpitIdentifier>> cockpits = null) {
             XElement GetPluginElement(string fileName, string description = null, string name = null) {
                 var children = new List<XElement> {
                     Description(description),
@@ -130,17 +140,6 @@ namespace InstallerCreator.ModInstaller {
                         new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), aSlots.Select(gs => new XElement("group", new XAttribute("name", gs.Key), new XAttribute("type", "SelectExactlyOne"), new XElement("plugins", new XAttribute("order", "Explicit"), NonePlugin(), gs.Select(ssf => GetPluginElement(ssf.Key))))))));
                 }
             }
-            // the below implementation is planned for future changes
-            // that being said, it should not be keyed on there only being one aircraft, but there only being one option per slot
-            /* if (lookup.Count > 1) {
-                foreach (var aircraft in lookup)
-                {
-                    steps.Add(new XElement("installStep", new XAttribute("name", aircraft.Key), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), aircraft.GroupBy(a => a.Value.GetSlotName()).Select(gs => new XElement("group", new XAttribute("name", gs.Key), new XAttribute("type", "SelectExactlyOne"), new XElement("plugins", new XAttribute("order", "Explicit"), NonePlugin(), gs.Select(ssf => GetPluginElement(ssf.Key))))))));
-                }
-            } else if (lookup.Count == 1) {
-                var aircraft = lookup.First();
-                steps.Add(new XElement("installStep", Name(aircraft.Key), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name(aircraft.Key), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), aircraft.Select(a => GetPluginElement(a.Key, "Replaces " + a.Value.GetSlotName())))))));
-            } */
             if (multiSkins != null && multiSkins.Count > 0) {
                 steps.Add(new XElement("installStep", new XAttribute("name", "Merged Files"), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name("Combination Skin Files"), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), multiSkins.Select(ms => GetPluginElement(ms.Key, string.Join(System.Environment.NewLine, ms.Value.Select(v => v.ToString())))))))));
             }
@@ -166,6 +165,13 @@ namespace InstallerCreator.ModInstaller {
                 var groups = BuildGroups(cSets, "Canopy Mods");
                 if (groups.Any()) {
                     steps.Add(new XElement("installStep", Name("Canopy"), new XElement("optionalFileGroups", ExplicitOrder(), groups)));
+                }
+            }
+            if (cockpits != null && cockpits.Any()) {
+                var cSets = GetSets(cockpits);
+                var groups = BuildGroups(cSets, "Cockpit Mods");
+                if (groups.Any()) {
+                    steps.Add(new XElement("installStep", Name("Cockpit Mods"), new XElement("optionalFileGroups", ExplicitOrder(), groups)));
                 }
             }
             if (effects != null && effects.Any()) {

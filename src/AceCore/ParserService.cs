@@ -11,7 +11,7 @@ namespace AceCore
 
         public ParserService(IEnumerable<IIdentifierParser> parsers)
         {
-            _parsers = parsers;
+            _parsers = parsers.OrderBy(p => p.Priority);
         }
 
         public Identifier ParseFilePath(FileInfo file, DirectoryInfo fileRoot = null) {

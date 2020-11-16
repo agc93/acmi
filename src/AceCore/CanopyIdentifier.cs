@@ -41,7 +41,7 @@ namespace AceCore
             return false;
         }
 
-        public override string ObjectPath => base.ObjectPath + $"Vehicles/{_aircraft}/Materials";
+        public override string ObjectPath => base.ObjectPath + $"Vehicles/Aircraft/{_aircraft}/Materials";
 
         public override string BaseObjectName => _aircraft;
     }

@@ -2,6 +2,7 @@ namespace AceCore.Parsers
 {
     public interface IIdentifierParser  {
         (bool IsValid, Identifier identifier) TryParse(string value, bool strict = false);
+        int Priority => 100;
     }
     public class CrosshairParser : IIdentifierParser {
         public (bool IsValid, Identifier identifier) TryParse(string value, bool strict = false) {
@@ -43,6 +44,8 @@ namespace AceCore.Parsers
             var parsed = CanopyIdentifier.TryParse(value, out var ident);
             return (parsed, ident);
         }
+
+        public int Priority => 50;
     }
 
     public class EmblemParser : IIdentifierParser {
@@ -57,5 +60,14 @@ namespace AceCore.Parsers
             var parsed = VesselIdentifier.TryParse(value, out var ident);
             return (parsed && (strict ? ident.Type == "D" : true), ident);
         }
+    }
+
+    public class CockpitParser : IIdentifierParser {
+        public (bool IsValid, Identifier identifier) TryParse(string value, bool strict = false) {
+            var parsed = CockpitIdentifier.TryParse(value, out var ident);
+            return (parsed && (strict ? ident.Type == "D" : true), ident);
+        }
+
+        public int Priority => 50;
     }
 }

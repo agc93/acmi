@@ -33,9 +33,11 @@ namespace InstallerCreator {
             services.AddSingleton<IIdentifierParser, EffectsParser>();
             services.AddSingleton<IIdentifierParser, CanopyParser>();
             services.AddSingleton<IIdentifierParser, EmblemParser>();
+            services.AddSingleton<IIdentifierParser, CockpitParser>();
             services.AddSingleton<ArchiveService>();
             services.AddSingleton<PakReader>();
             services.AddSingleton<AppInfoService>();
+            services.AddSingleton<ParserService>();
             services.AddSingleton<ModInstaller.ImageLocatorService>();
             services.AddLogging(logging => {
                 logging.SetMinimumLevel(LogLevel.Trace);

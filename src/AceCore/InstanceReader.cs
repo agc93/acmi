@@ -7,23 +7,16 @@ namespace AceCore
 {
     public class InstanceReader : FileReader
     {
-        private readonly IEnumerable<IIdentifierParser> _parsers;
-        public InstanceReader(IEnumerable<IIdentifierParser> parsers)
+        private readonly ParserService _parser;
+
+        public InstanceReader(ParserService parser)
         {
-            _parsers = parsers;
+            _parser = parser;
         }
         public IEnumerable<(string Path, SkinIdentifier Identifier)> FindMREC(string filePath, bool fullPath = false) {
-            Identifier ParseMatch(string rawString) {
-                var matched = _parsers.Select(p => p.TryParse(rawString, false)).FirstOrDefault(m => m.IsValid);
-                if (matched.identifier != null) {
-                    
-                    return matched.identifier;
-                }
-                return null;
-            }
             var opts = new SearchOptions {Window = 42, MaxBytes = int.MaxValue, RewindOnMatch = true};
             foreach (var match in FindIdents(filePath, opts)) {
-                var ident = ParseMatch(match);
+                var ident = _parser.ParseMatch(match, false);
                 
 
                 // var fIdent = FancyParseMatch(match);
@@ -39,17 +32,9 @@ namespace AceCore
         }
 
         public IEnumerable<(string Path, SkinIdentifier Identifier)> FindNormal(string filePath, bool fullPath = false) {
-            Identifier ParseMatch(string rawString) {
-                var matched = _parsers.Select(p => p.TryParse(rawString, false)).FirstOrDefault(m => m.IsValid);
-                if (matched.identifier != null) {
-                    
-                    return matched.identifier;
-                }
-                return null;
-            }
             var opts = new SearchOptions {Window = 50, MaxBytes = int.MaxValue, RewindOnMatch = true};
             foreach (var match in FindIdents(filePath, opts)) {
-                var ident = ParseMatch(match);
+                var ident = _parser.ParseMatch(match, false);
                 if (ident != null && ident is SkinIdentifier sIdent && sIdent.Type == "N") {
                     var pathIdx = match.IndexOf(ident.RawValue);
                     var path = fullPath 

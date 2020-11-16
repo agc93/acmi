@@ -11,7 +11,7 @@ namespace AceCore {
         public string EffectsObject => _object;
 
         private EffectsIdentifier(string rawValue, string group, string category, string obj, string asset) {
-            RawValue = rawValue;
+            RawValue = System.IO.Path.GetFileNameWithoutExtension(rawValue);
             _group = group.TrimEnd('/');
             _category = category.TrimEnd('/');
             _object = obj.TrimEnd('/');

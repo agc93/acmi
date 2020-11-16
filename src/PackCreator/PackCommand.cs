@@ -20,15 +20,15 @@ namespace PackCreator {
         private readonly ILogger<PackCommand> _logger;
         private readonly PythonService _pyService;
         private readonly BuildService _buildService;
-        private readonly IEnumerable<IIdentifierParser> _parsers;
+        private readonly ParserService _parser;
         private readonly FileNameService _nameService;
 
-        public PackCommand(ILogger<PackCommand> logger, PythonService pyService, BuildService buildService, IEnumerable<IIdentifierParser> parser, FileNameService nameService)
+        public PackCommand(ILogger<PackCommand> logger, PythonService pyService, BuildService buildService, ParserService parser, FileNameService nameService)
         {
             _logger = logger;
             _pyService = pyService;
             _buildService = buildService;
-            _parsers = parser;
+            _parser = parser;
             _nameService = nameService;
         }
 
@@ -45,6 +45,10 @@ namespace PackCreator {
             var buildSettings = new BuildSettings();
             if (rootInfo.Name == "Nimbus") {
                 rootInfo = rootInfo.Parent;
+            }
+            if (!rootInfo.Exists) {
+                _logger.LogError("Specified directory does not exist!");
+                return 404;
             }
             // _logger.LogInformation($"Starting packing for {rootInfo.Name}");
             var prefixName = Sharprompt.Prompt.Input<string>("Please enter a title/name for your new mod/pack", rootInfo.Name.MakeSafe(), validators: new[] { FileValidators.ValidFileName(true)});
@@ -64,29 +68,9 @@ namespace PackCreator {
             }
             var roots = new Dictionary<PackTarget, List<AssetContext>>();
             var instructions = new List<BuildInstruction>();
-            
-            Identifier ParsePath(FileInfo file) {
-                var matched = _parsers.Select(p => p.TryParse(file.Name, false)).FirstOrDefault(m => m.IsValid);
-                if (matched.identifier != null) {
-                    return matched.identifier;
-                } else {
-                    var pathMatched = _parsers.Select(p => p.TryParse(Path.GetRelativePath(rootInfo.FullName, file.FullName).Replace('\\', '/'), false)).FirstOrDefault(m => m.IsValid);
-                    if (pathMatched.identifier != null) {
-                        return pathMatched.identifier;
-                    }
-                }
-                return null;
-            }
-            Identifier ParseMatch(string rawString) {
-                var matched = _parsers.Select(p => p.TryParse(rawString, false)).FirstOrDefault(m => m.IsValid);
-                if (matched.identifier != null) {
-                    return matched.identifier;
-                }
-                return null;
-            }
             foreach (var file in allFiles)
             {
-                var ident = ParsePath(file);
+                var ident = _parser.ParseFilePath(file, rootInfo);
                 if (ident == null) {
                     var relPath = Path.GetRelativePath(rootInfo.FullName, file.Directory.FullName);
                     _logger.LogTrace($"Adding {file.Name} as generic build instruction with target path: {relPath}");
@@ -119,7 +103,7 @@ namespace PackCreator {
                                 _logger.LogDebug($"Error while searching for relative path: {instr.TargetPath}/{targetInstr.TargetPath}");
                             }
                         }
-                        var iReader = new InstanceReader(_parsers);
+                        var iReader = new InstanceReader(_parser);
                         var mrecs = iReader.FindMREC(file.FullName).ToList();
                         if (mrecs.Any()) {
                             var mrec = mrecs.First();
@@ -158,7 +142,7 @@ namespace PackCreator {
                     }
                 } else {
                     var instr = new BuildInstruction<Identifier>(ident) {
-                        SourceFiles = file.Directory.GetFiles($"{ident.BaseObjectName}.*").ToList()
+                        SourceFiles = file.Directory.GetFiles($"{ident.RawValue}.*").ToList()
                     };
                     instructions.Add(instr);
                 }
