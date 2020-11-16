@@ -11,6 +11,7 @@ The advantage to using ACMI's detection logic is that you often won't need to re
 |Skins|N/A|`./fa44_04_D.uasset`|
 |Canopies|N/A|`./f15c_Canopy1_Inst.uasset`|
 |Weapons|N/A|`w_lacm_f0_D.uasset`|
+|Cockpits|N/A|`asfx_CP_D.uasset`|
 |Ships*|N/A*|`./aegs_D.uasset`|
 |Radio Portraits|`SubtitleSpeakerPortrait`|`./SubtitleSpeakerPortrai/40_Scream.uasset`|
 |Emblems|`Emblem`|`Emblem/png/emblem_022_m.uasset`

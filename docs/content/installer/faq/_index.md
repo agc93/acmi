@@ -28,7 +28,7 @@ The short version is that ACMI will scan through the mod root (defaults to the c
 
 ### What file types does it support?
 
-At current, ACMI will fully detect and specifically handle skins, radio portraits, weapons, crosshairs, canopies and visual effects. Any PAK files that can't be detected properly will still be included in the installer files in a separate "Extra Files" step.
+At current, ACMI will fully detect and specifically handle skins, radio portraits, weapons, crosshairs, cockpits, canopies and visual effects. Any PAK files that can't be detected properly will still be included in the installer files in a separate "Extra Files" step.
 
 ### What happens to my lovingly crafted README files?
 

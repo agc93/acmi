@@ -11,7 +11,7 @@ In short, the easiest way to build your PAK files is to drag-and-drop the folder
 Once you have your cooked files (should be a set of files like `fa27_05_D.uasset` and so forth), drop them into an empty folder.
 
 - Aircraft skin files (including diffuses, instance files and MREC files) can simply be left as-is, they don't need to be put into their own folder structure.
-- Same for weapon skins and canopies: just dump them wherever
+- Same for weapon skins, cockpits and canopies: just dump them wherever
 - Other supported file types (i.e. portraits, emblems, and crosshairs) should be put in a folder but *don't need the whole folder structure*, just the actual folder they end up in.
   - For example, radio portraits just need to be in a folder called `SubtitleSpeakerPortrait` and emblems just need to go in a folder called `Emblem` etc etc
 - Any files that ACMI doesn't support, you'll need to recreate the full "Nimbus/..." structure for, but they'll still be packed.

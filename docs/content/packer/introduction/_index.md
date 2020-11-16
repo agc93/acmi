@@ -20,4 +20,4 @@ It's worth knowing that ACMI Packer doesn't generate the pak files itself: it re
 
 ACMI Packer is pretty much impossible to fully separate from ACMI itself as it uses the same underlying logic to read and identify AC7 mod files. Whereas ACMI reads the files from inside a `pak` file, ACMI Packer can just read it straight from the cooked files on disk.
 
-This also means that ACMI Packer works best with any of the file types that ACMI supports. As of 0.2.1, that's aircraft skins, radio portraits, weapon skins, crosshairs, and canopies.
+This also means that ACMI Packer works best with any of the file types that ACMI supports. As of 0.3.1, that's aircraft skins, radio portraits, weapon skins, crosshairs, cockpits, and canopies.
