@@ -6,6 +6,10 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.3.1**
+  - Quick panic update to fix an incorrect path in canopies...
+  - ...also adds support for cockpit mods
+  - ...and improves how the installer is generated
 - **0.3.0**
   - Introduces ACMI Packer: a semi-automatic packer for mod assets
   - Add zipping of mod files to end of installer creation
