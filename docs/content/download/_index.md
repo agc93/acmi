@@ -9,5 +9,5 @@ Download the [latest release](https://github.com/agc93/acmi/releases) to somewhe
 You can also get the latest version from [Nexus Mods](https://www.nexusmods.com/acecombat7skiesunknown/mods/787) if you prefer.
 
 {{< block tip >}}
-ACMI won't update itself at this time. Make sure to check [releases](https://github.com/agc93/acmi/releases) regularly for new updates.
+ACMI won't update itself at this time. Make sure to check <a target="_blank" href="https://github.com/agc93/acmi/releases">GitHub</a> regularly for new updates.
 {{< /block >}}

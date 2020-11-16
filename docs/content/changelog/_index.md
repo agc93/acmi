@@ -6,6 +6,12 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.3.0**
+  - Introduces ACMI Packer: a semi-automatic packer for mod assets
+  - Add zipping of mod files to end of installer creation
+  - Better installers for mods with one-skin-per-slot
+  - Added support for VFX mods
+  - Heaps more I can't think of...
 - **0.2.6**
   - Update with name mappings for OAS DLC aircraft
   - Now requires a path, showing an error if one isn't given.
