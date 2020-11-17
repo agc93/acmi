@@ -27,7 +27,7 @@ namespace AceCore
             // var rex = new System.Text.RegularExpressions.Regex(@"\/HUD\/(MultiLockon\/)?hud_(\w+[\d{2}-])(?=[^.\d]|.ua)");
             var rex = new System.Text.RegularExpressions.Regex(@"HUD\/(?:MultiLockon\/)?hud_([\w-]+)+(?=[^.\d]|.ua)");
             var match = rex.Match(value);
-            if (match != null && match.Groups.Count >= 2) {
+            if (match != null && match.MatchedGroups().Count >= 2) {
                 ident = new CrosshairIdentifier(match.Groups[0].Value, match.Groups[1].Value);
                 return true;
             }

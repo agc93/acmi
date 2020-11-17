@@ -29,7 +29,7 @@ namespace AceCore {
             ident = null;
             var rex = new System.Text.RegularExpressions.Regex(@"VFX\/(\w+?)\/(\w+\/?)(\w+\/)(.*?)\.ua\w+");
             var match = rex.Match(value);
-            if (match != null && match.Groups.Count >= 4) {
+            if (match != null && match.MatchedGroups().Count >= 4) {
                 ident = new EffectsIdentifier(match.Groups[0].Value, match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value, match.Groups[4].Value);
                 return true;
             }

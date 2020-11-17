@@ -9,6 +9,7 @@ namespace AceCore.Tests
                 scan.FromAssemblyOf<Identifier>()
                     .AddClasses(classes => classes.AssignableTo(typeof(AceCore.Parsers.IIdentifierParser))).AsImplementedInterfaces().WithSingletonLifetime()
             );
+            services.AddSingleton<ParserService>();
         }
     }
 }

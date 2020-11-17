@@ -17,7 +17,7 @@ namespace AceCore {
             // var rex = new System.Text.RegularExpressions.Regex(@"\/Weapons\/w_(\w+_\w+)");
             var rex = new System.Text.RegularExpressions.Regex(@"(?:w_)([a-zA-Z0-9]+)_(\w{2})?(?:_?)([A-Z]{1}|[A-Za-z]{4})(?:[^\w])(?!u[^a])");
             var match = rex.Match(value);
-            if (match != null && match.Groups.Count >= 2) {
+            if (match != null && match.MatchedGroups().Count >= 2) {
                 ident = new WeaponIdentifier(match.Groups[0].Value, match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
                 return true;
             }

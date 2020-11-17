@@ -39,10 +39,8 @@ namespace AceCore
         public static bool TryParse(string value, out CockpitIdentifier ident) {
             var rex = new System.Text.RegularExpressions.Regex(@"(\w{4,6})_CP_(\w+)?([A-Z]{1}|[A-Za-z]{4})\.(?!u[^a])");
             var match = rex.Match(value);
-            if (match != null && match.Groups.Count >= 3) {
-                ident = match.Groups.Count == 3
-                    ? new CockpitIdentifier(match.Groups[0].Value, match.Groups[1].Value, null, match.Groups[2].Value)
-                    : new CockpitIdentifier(match.Groups[0].Value, match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
+            if (match != null && match.MatchedGroups().Count >= 3) {
+                ident = new CockpitIdentifier(match.Groups[0].Value, match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
                 return true;
             }
             ident = null;

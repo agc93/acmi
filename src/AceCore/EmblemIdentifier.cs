@@ -1,14 +1,18 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AceCore
 {
     public class EmblemIdentifier : Identifier {
-        private EmblemIdentifier(string rawValue, string slot, string format)
+        private EmblemIdentifier(string rawValue, string slot, string format, string size)
         {
             RawValue = rawValue;
+            Slot = slot;
             _slotName = ParseSlotName(slot) ?? slot;
             Format = format;
-            // var path ="/Game/Vehicles/Weapons/w_dptk_a0/Textures/w_dptk_a0_D.uasset";
+            if (!string.IsNullOrWhiteSpace(size)) {
+                Size = size.TrimStart('_');
+            }
         }
 
         private Dictionary<string, string> _specialNames = new Dictionary<string, string> {
@@ -17,11 +21,13 @@ namespace AceCore
 
 
         public static bool TryParse(string value, out EmblemIdentifier ident) {
-            // var rex = new System.Text.RegularExpressions.Regex(@"\/Weapons\/w_(\w+_\w+)");
-            var rex = new System.Text.RegularExpressions.Regex(@"Emblem\/(tga|png)\/emblem_(\d{3})(?!\.u[^a])");
+            // var rex = new System.Text.RegularExpressions.Regex(@"Emblem\/(tga|png)\/emblem_(\d{3})(?!\.u[^a])");
+            var rex = new System.Text.RegularExpressions.Regex(@"emblem_(\d{3})(\w{2,3}_?)?(?=\.ua)");
             var match = rex.Match(value);
-            if (match != null && match.Groups.Count >= 3) {
-                ident = new EmblemIdentifier(match.Groups[0].Value, match.Groups[2].Value, match.Groups[1].Value);
+            if (match != null && match.MatchedGroups().Count >= 2) {
+                ident = match.MatchedGroups().Count == 2
+                    ? new EmblemIdentifier(match.Groups[0].Value, match.Groups[1].Value, "tga", null)
+                    : new EmblemIdentifier(match.Groups[0].Value, match.Groups[1].Value, "png", match.Groups[2].Value);
                 return true;
             }
             ident = null;
@@ -34,7 +40,7 @@ namespace AceCore
             if (knownName) {
                 return name;
             } else {
-                return $"Emblem {_slotName.TrimStart('0')}";
+                return $"Emblem {Slot.TrimStart('0')}";
             }
 		}
 
@@ -48,9 +54,11 @@ namespace AceCore
         }
 
         public string Format { get; }
+        public string Slot { get; }
+        public string Size { get; }
 
         public override string ObjectPath => base.ObjectPath + $"Emblem/{Format}";
 
-        public override string BaseObjectName => $"emblem_{_slotName}";
+        public override string BaseObjectName => $"emblem_{Slot}";
     }
 }

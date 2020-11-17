@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <None Update="paths.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="types.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

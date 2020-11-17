@@ -31,7 +31,7 @@ namespace AceCore
         public static bool TryParse(string value, out PortraitIdentifier ident) {
             var rex = new System.Text.RegularExpressions.Regex(@"SubtitleSpeakerPortrait\/\b\d{2}_([a-zA-Z_]+)(\d{2}|_)?\.ua.*");
             var match = rex.Match(value);
-            if (match != null && match.Groups.Count >= 2) {
+            if (match != null && match.MatchedGroups().Count >= 2) {
                 ident = new PortraitIdentifier(match.Groups[0].Value, match.Groups[1].Value);
                 return true;
             }

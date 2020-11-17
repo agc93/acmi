@@ -33,5 +33,10 @@
         ["pkfa_CP_MFD_SWP1_M.uasset", "pkfa_CP_MFD_SWP1_M", "pkfa", "MFD", "SWP1", "M"],
         ["mr2k_CP_N.uasset", "mr2k_CP_N", "mr2k", "", "", "N"],
         ["/Game/Vehicles/Aircraft/rflm/CP/rflm_CP_MFD_SWP2_M.uasset", "rflm_CP_MFD_SWP2_M", "rflm", "MFD", "SWP2", "M"]
+    ],
+    "Emblems": [
+        ["emblem_022_m.uasset", "emblem_022_m", "png", "022", "m"],
+        ["Nimbus/Content/Emblem/png/emblem_041_ss.uasset", "emblem_041_ss", "png", "041", "ss"],
+        ["Emblem/png/emblem_228.uasset", "emblem_228", "tga", "228", ""]
     ]
 }

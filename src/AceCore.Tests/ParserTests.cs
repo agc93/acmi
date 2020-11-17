@@ -59,4 +59,17 @@ namespace AceCore.Tests
             Assert.Equal(type, ident.Type);
         }
     }
+
+    public class EmblemParserTests {
+        [Theory]
+        [JsonFileData("paths.json", "Emblems")]
+        public void Should_Parse_Emblems_Path(string rawPath, string fullMatch, string format, string number, string size) {
+            var parsed = EmblemIdentifier.TryParse(rawPath, out var ident);
+            Assert.True(parsed);
+            Assert.Equal(fullMatch, ident.RawValue);
+            Assert.Equal(format, ident.Format);
+            Assert.Equal(number, ident.Slot);
+            Assert.Equal(size, ident.Size.OrDefault(string.Empty));
+        }
+    }
 }

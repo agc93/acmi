@@ -13,7 +13,7 @@ namespace AceCore
             // var rex = new System.Text.RegularExpressions.Regex(@"([a-z0-9]+?)_(v?\d+a?\w{1}?)_(\w)(?!\.u[^a]).*");
             var rex = new Regex(@"(?:\w+_)?([a-zA-Z]{4})_(\w{1})?(?:_?)([A-Z]{1}|[A-Za-z]{4})(?:[^\w])(?!u[^a])");
             var match = rex.Match(value);
-            if (match != null && match.Groups.Count >= 4) {
+            if (match != null && match.MatchedGroups().Count >= 4) {
                 ident = new VesselIdentifier(match.Groups[0].Value, match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
                 return true;
             }
