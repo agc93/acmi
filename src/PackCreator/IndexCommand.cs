@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Spectre.Cli;
 using Spectre.Cli.AppInfo;
 using Spectre.Cli.Extensions.DependencyInjection;
+using static PackCreator.Startup;
 
 namespace PackCreator
 {
@@ -54,29 +55,6 @@ namespace PackCreator
         public class Settings : CommandSettings {
             [CommandArgument(0, "<folder-path>")]
             public string FolderPath {get;set;}
-        }
-
-        private IServiceCollection GetServices() {
-            var services = new ServiceCollection();
-            services.AddSingleton<ScriptDownloadService>();
-            services.AddSingleton<PythonService>();
-            services.AddSingleton<ExecEngine.CommandRunner>(provider => new ExecEngine.CommandRunner("python"));
-            services.AddSingleton<AppInfoService>();
-            services.AddSingleton<BuildContextFactory>();
-            services.AddSingleton<BuildService>();
-            services.AddSingleton<FileNameService>();
-            services.AddSingleton<ParserService>();
-            services.AddLogging(logging => {
-                logging.SetMinimumLevel(LogLevel.Trace);
-                logging.AddInlineSpectreConsole(c => {
-                    c.LogLevel = Program.GetLogLevel();
-                });
-            });
-            services.Scan(scan =>
-                scan.FromAssemblyOf<Identifier>()
-                    .AddClasses(classes => classes.AssignableTo(typeof(AceCore.Parsers.IIdentifierParser))).AsImplementedInterfaces().WithSingletonLifetime()
-            );
-            return services;
         }
     }
 }

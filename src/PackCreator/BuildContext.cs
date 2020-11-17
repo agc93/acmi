@@ -36,7 +36,6 @@ namespace PackCreator {
 
         internal BuildContext(ScriptContext ctx, DirectoryInfo targetPath, ILogger logger)
         {
-            // _scriptService = scriptService;
             var path = targetPath;
             _scriptContext = ctx;
             _workingDirectory = targetPath;
@@ -87,7 +86,8 @@ namespace PackCreator {
         }
 
         public (bool Success, FileInfo Output) RunBuild(CommandRunner runner, string targetFileName) {
-            var args = new List<string> {_scriptContext.CurrentPath.ToArgument(), "pack", targetFileName.ToArgument(), "Nimbus".ToArgument()};
+            // var args = new List<string> {_scriptContext.CurrentPath.ToArgument(), "pack", targetFileName.ToArgument(), "Nimbus".ToArgument()};
+            var args = new List<string> {"pack", targetFileName.ToArgument(), "Nimbus".ToArgument()};
             var output = runner.SetWorkingDirectory(_scriptContext.WorkingDirectory).RunCommand(args);
             return (output.ExitCode == 0, new FileInfo(Path.IsPathRooted(targetFileName) ? targetFileName : Path.Combine(_scriptContext.WorkingDirectory, targetFileName)));
         }

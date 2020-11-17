@@ -59,12 +59,13 @@ namespace PackCreator {
             var metaObjects = rootInfo.GetModFileNodes("_meta").Select(fn => new AssetContext(fn) { PackTargetOverride = "Nimbus/Content"} ).ToList();
             var unhandledObjects = new Dictionary<string, List<AssetContext>>();
             // settings = InputHelpers.PromptMissing(settings, false);
-            var pythonReady = CheckPython();
+            var pythonReady = _pyService.IsPythonAvailable();
             if (!pythonReady) {
                 AnsiConsole.MarkupLine("[bold white on red]ERROR[/]: It looks like Python isn't installed on your PC. Install Python [bold]3[/] and try again!");
-                Console.WriteLine(string.Empty.PadLeft(9) + "Press <ENTER> to continue...");
-                Console.ReadLine();
-                return 3;
+                var forceContinue = Sharprompt.Prompt.Confirm("We can try and run the script anyway using your Windows defaults settings, but this could lead to errors. Do you want to continue?", false);
+                if (!forceContinue) {
+                    return 3;
+                }
             }
             var roots = new Dictionary<PackTarget, List<AssetContext>>();
             var instructions = new List<BuildInstruction>();
@@ -238,22 +239,6 @@ namespace PackCreator {
             Console.WriteLine(string.Empty.PadLeft(9) + "Press <ENTER> to continue...");
             Console.ReadLine();
             return 0;
-        }
-
-        private bool CheckPython() {
-            try
-            {
-                var check =  _pyService.TestPython();
-                if (!check) {
-                    return false;
-                }
-                return true;
-            }
-            catch (System.Exception ex)
-            {
-                AnsiConsole.MarkupLine(ex.Message);
-                return false;
-            }
         }
 
         public class Settings : CommandSettings {

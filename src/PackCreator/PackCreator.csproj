@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ExecEngine" Version="0.0.1" />
+    <PackageReference Include="ExecEngine" Version="0.0.2" />
     <PackageReference Include="Scrutor" Version="3.3.0" />
     <PackageReference Include="Sharprompt" Version="2.0.0" />
     <PackageReference Include="Spectre.Cli" Version="0.46.0" />
@@ -17,6 +17,7 @@
     <PackageReference Include="Spectre.Cli.Extensions.DependencyInjection" Version="0.2.3" />
     <PackageReference Include="Spectre.Console" Version="0.27.0" />
     <PackageReference Include="Spectre.Console.Extensions.Logging" Version="0.3.0-alpha0011" />
+    <PackageReference Include="whichpython" Version="0.3.3" />
   </ItemGroup>
 
   <ItemGroup>

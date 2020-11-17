@@ -19,9 +19,29 @@ namespace PackCreator
             _scriptService = scriptService;
         }
 
-        public bool TestPython() {
-            var versionOut = _runner.RunCommand("--version");
-            return (versionOut.ExitCode == 0 && versionOut.Output.Contains("Python"));
+        public bool TestPathPython() {
+            try
+            {
+                var versionOut = _runner.RunCommand("--version");
+                return (versionOut.ExitCode == 0 && versionOut.Output.Contains("Python"));
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool IsPythonAvailable() {
+            var onPath = TestPathPython();
+            return onPath || GetInstalledPythons().Any();
+        }
+
+        public List<string> GetInstalledPythons() {
+            var envs = LostTech.WhichPython.PythonEnvironment.EnumerateEnvironments().ToList();
+            return envs
+                .Where(e => e.InterpreterPath.FullName.Contains("Python3") || e.LanguageVersion?.Major == 3)
+                .Select(e => e.InterpreterPath.FullName)
+                .ToList();
         }
 
         public async Task<(bool Success, FileInfo result)> RunPackScript(string filesDirectory, string targetFileName, bool enforceDirName = true) {

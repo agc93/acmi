@@ -10,30 +10,9 @@ namespace PackCreator
 {
     class Program
     {
-        internal static LogLevel GetLogLevel() {
-            var envVar = System.Environment.GetEnvironmentVariable("ACMI_DEBUG");
-            if (System.IO.File.Exists(@"C:\acmi-debug.txt")) envVar = "trace";
-            return string.IsNullOrWhiteSpace(envVar)
-                ? LogLevel.Information
-                :  envVar.ToLower() == "trace"
-                    ? LogLevel.Trace
-                    : LogLevel.Debug;
-        }
         static async Task<int> Main(string[] args)
         {
-            var services = new ServiceCollection();
-            // services.AddSingleton<IOptionsPrompt<BuildCommand.Settings>, SharpromptOptionsPrompt>();
-            services.AddSingleton<AppInfoService>();
-            /* services.AddSingleton<ScriptDownloadService>();
-            services.AddSingleton<PythonService>();
-            services.AddSingleton< ExecEngine.CommandRunner>(provider => new ExecEngine.CommandRunner("python"));
-            services.AddLogging(logging => {
-                logging.SetMinimumLevel(LogLevel.Trace);
-                logging.AddInlineSpectreConsole(c => {
-                    c.LogLevel = GetLogLevel();
-                });
-            }); */
-            var app = new CommandApp(new DependencyInjectionRegistrar(services));
+            var app = new CommandApp(new DependencyInjectionRegistrar(Startup.GetServices()));
             app.SetDefaultCommand<IndexCommand>();
             app.Configure(c => {
                 c.SetApplicationName("acmi-pack");
