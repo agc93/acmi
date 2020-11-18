@@ -123,7 +123,18 @@ namespace InstallerCreator.ModInstaller {
                 return new XElement("installStep", Name(title), new XElement("optionalFileGroups", ExplicitOrder(), new XElement("group", Name(groupName), Type(SelectType.SelectAny), new XElement("plugins", ExplicitOrder(), idents.Select(cm => GetPluginElement(cm.Key, descriptionFunc(cm.Value)))))));
             }
             var steps = new List<XElement>();
-            steps.Add(new XElement("installStep", new XAttribute("name", "Introduction"), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), new XElement("group", new XAttribute("name", "Introduction"), new XAttribute("type", "SelectAll"), new XElement("plugins", new XAttribute("order", "Explicit"), new XElement("plugin", new XAttribute("name", "Introduction"), new XElement("description", GetDescription()), OptionalTypeDescriptor()))))));
+            var introGroups = new List<XElement>() {
+                new XElement("group", new XAttribute("name", "Introduction"), new XAttribute("type", "SelectAll"), new XElement("plugins", new XAttribute("order", "Explicit"), new XElement("plugin", new XAttribute("name", "Introduction"), new XElement("description", GetDescription()), OptionalTypeDescriptor())))
+            };
+            if (extraPaks.Where(a => System.Text.RegularExpressions.Regex.IsMatch(a, @"[_[(](?:REQD?)[_\]\)]")) is var reqdExtras && reqdExtras.Any()) {
+                var reqdFiles = new List<string>(reqdExtras.ToList());
+                introGroups.Add(new XElement("group", Name("Required Files"), Type(SelectType.SelectAll), new XElement("plugins", ExplicitOrder(), reqdFiles.Select(a => new XElement("plugin", Name(a), Description("This file is required by the mod and will be installed"), OptionalTypeDescriptor())))));
+                extraPaks.RemoveAll(ep => reqdFiles.Contains(ep));
+            }
+
+            steps.Add(new XElement("installStep", new XAttribute("name", "Introduction"), new XElement("optionalFileGroups", new XAttribute("order", "Explicit"), 
+                introGroups
+                )));
             foreach (var aircraft in lookup)
             {
                 var aSlots = aircraft.GroupBy(a => a.Value.GetSlotName());

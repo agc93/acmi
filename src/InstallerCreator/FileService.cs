@@ -26,8 +26,12 @@ namespace InstallerCreator {
                 var relPath = Path.GetRelativePath(rootPath, file.FullName);
                 // _logger.LogTrace($"FileService reading {relPath}");
                 var useMultiple = allowMultiple || file.Name.Contains("MULTI");
-                    var idents = reader.ReadFile(file.FullName, useMultiple);
-                    files.Add(idents.ToList(), relPath);
+                var readOpts = new PakReaderOptions {
+                    ReadWholeFile = useMultiple,
+                    TreatAsLightweight = System.Text.RegularExpressions.Regex.IsMatch(file.Name, @"[_[(](?:LW|LIGHT)[_\]\)]")
+                };
+                var idents = reader.ReadFile(file.FullName, readOpts);
+                files.Add(idents.ToList(), relPath);
             }
             var textFiles = Directory.EnumerateFiles(rootPath, "*.txt", SearchOption.TopDirectoryOnly);
             files.ReadmeFiles = textFiles.Count() > 0 ? textFiles.Select(f => Path.GetRelativePath(rootPath, f)).ToList() : new List<string>();
