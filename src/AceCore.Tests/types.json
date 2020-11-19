@@ -29,6 +29,7 @@
         ["/Game/Vehicles/Aircraft/rflm/CP/rflm_CP_MFD_SWP2_M.uasset", "Cockpit", "rflm_CP_MFD_SWP2_M"],
         ["emblem_022_m.uasset", "Emblem", "emblem_022_m"],
         ["Nimbus/Content/Emblem/png/emblem_041_ss.uasset", "Emblem", "emblem_041_ss"],
-        ["Emblem/png/emblem_228.uasset", "Emblem", "emblem_228"]
+        ["Emblem/png/emblem_228.uasset", "Emblem", "emblem_228"],
+        ["Game/Vehicles/Aircraft/asfx/00/asfx_00_Inst.", "Skin", "asfx_00_Inst"]
     ]
 }
