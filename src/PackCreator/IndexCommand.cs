@@ -39,6 +39,7 @@ namespace PackCreator
             } else { */
                 //time to pack boys
                 var app = GetApp();
+                var info = new AppInfoService();
                 var args = new[] { "pack", settings.FolderPath}.Concat(context.Remaining.Raw);
                 var result = await app.RunAsync(args);
                 if (result != 0) {
