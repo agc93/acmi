@@ -77,8 +77,8 @@ namespace PackCreator
             var pyService = new PythonService();
             var check = pyService.TestPathPython();
             var envs = pyService.GetInstalledPythons();
-            // if (check || envs.Any()) {
-            if (false) {
+            if (check || envs.Any()) {
+            // if (false) {
                 services.AddSingleton<IBuildRunner>(provider => new PythonBuildRunner(check ? "python" : envs.First()));
                 services.AddSingleton<IScriptDownloadService, PythonScriptDownloadService>();
                 //python is available, use u4pak
