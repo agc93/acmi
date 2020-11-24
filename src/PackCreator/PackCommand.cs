@@ -22,23 +22,17 @@ namespace PackCreator {
         private readonly BuildService _buildService;
         private readonly ParserService _parser;
         private readonly FileNameService _nameService;
+        private readonly IAnsiConsole _console;
 
-        public PackCommand(ILogger<PackCommand> logger, PythonService pyService, BuildService buildService, ParserService parser, FileNameService nameService)
+        public PackCommand(ILogger<PackCommand> logger, PythonService pyService, BuildService buildService, ParserService parser, FileNameService nameService, IAnsiConsole console)
         {
             _logger = logger;
             _pyService = pyService;
             _buildService = buildService;
             _parser = parser;
             _nameService = nameService;
+            _console = console;
         }
-
-        private string GetFriendlyName(KeyValuePair<string, List<AssetContext>> obj) {
-            return GetFriendlyName(Path.GetFileName(obj.Key));
-                // return Constants.AllVehicleNames.TryGetValue(Path.GetFileName(obj.Key), out var fn) ? fn : obj.Key;
-            }
-            private string GetFriendlyName(string objName) {
-                return Constants.AllVehicleNames.TryGetValue(objName, out var fn) ? fn : objName;
-            }
 
         public override async Task<int> ExecuteAsync(CommandContext context, Settings settings) {
             var rootInfo = new DirectoryInfo(settings.FileRootPath);
@@ -55,19 +49,15 @@ namespace PackCreator {
             prefixName = prefixName.OrDefault(rootInfo.Name.MakeSafe()); //workaround for shibayan/Sharprompt#84
             buildSettings.Prefix = prefixName;
             var allFiles = rootInfo.EnumerateFiles("*.uasset", SearchOption.AllDirectories);
-            // var vehicles = rootInfo.GetModFileNodes("Nimbus").ToList();
-            var metaObjects = rootInfo.GetModFileNodes("_meta").Select(fn => new AssetContext(fn) { PackTargetOverride = "Nimbus/Content"} ).ToList();
-            var unhandledObjects = new Dictionary<string, List<AssetContext>>();
             // settings = InputHelpers.PromptMissing(settings, false);
             var pythonReady = _pyService.IsPythonAvailable();
             if (!pythonReady) {
                 AnsiConsole.MarkupLine("[bold white on red]ERROR[/]: It looks like Python isn't installed on your PC. Install Python [bold]3[/] and try again!");
-                var forceContinue = Sharprompt.Prompt.Confirm("We can try and run the script anyway using your Windows defaults settings, but this could lead to errors. Do you want to continue?", false);
+                var forceContinue = _console.Confirm("We can try and run the build anyway using UnrealPak, but this has not been as well-tested as Python/u4pak. Do you want to continue?");
                 if (!forceContinue) {
                     return 3;
                 }
             }
-            var roots = new Dictionary<PackTarget, List<AssetContext>>();
             var instructions = new List<BuildInstruction>();
             foreach (var file in allFiles)
             {

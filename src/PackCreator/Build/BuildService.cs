@@ -1,19 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AceCore;
 using ExecEngine;
 using Microsoft.Extensions.Logging;
+using PackCreator.Build;
 
 namespace PackCreator {
     public class BuildService {
         private readonly ILogger<BuildService> _logger;
         private readonly BuildContextFactory _contextFactory;
-        private readonly CommandRunner _runner;
+        private readonly IBuildRunner _runner;
 
-        public BuildService(ILogger<BuildService> logger, BuildContextFactory contextFactory, CommandRunner runner) {
+        public BuildService(ILogger<BuildService> logger, BuildContextFactory contextFactory, IBuildRunner runner) {
             _logger = logger;
             _contextFactory = contextFactory;
             _runner = runner;
@@ -33,7 +33,8 @@ namespace PackCreator {
                         return null;
                     }
                 }
-                var buildResult = ctx.RunBuild(_runner, "packed-files.pak");
+                var buildResult = _runner.RunBuild(ctx.BuildScript, "packed-files.pak");
+                // var buildResult = ctx.RunBuild(_runner, "packed-files.pak");
                 if (buildResult.Success) {
                     _logger.LogInformation($"[bold green]Success![/] Files for {objName.GetFriendlyName()} successfully packed from {targets.Sum(t => t.SourceFiles.Count)} ({targets.Count}) files");
                     var tempFile = Path.GetTempFileName();
@@ -44,17 +45,6 @@ namespace PackCreator {
                     return null;
                 }
             }
-        }
-    }
-
-    public static class BuildExtensions {
-        public static bool AddFromInstruction(this BuildContext ctx, BuildInstruction instruction) {
-            var results = new List<bool>();
-            foreach (var file in instruction.SourceFiles)
-            {
-                results.Add(ctx.AddFile(instruction.TargetPath, file));
-            }
-            return results.All(r => r == true);
         }
     }
 }

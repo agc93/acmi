@@ -13,6 +13,10 @@ namespace PackCreator {
                 : path;
         }
 
+        public static IEnumerable<string> ToArguments(this IEnumerable<string> paths) {
+            return paths.Select(p => p.ToArgument());
+        }
+
         public static IEnumerable<DirectoryInfo> GetLeafNodes(this DirectoryInfo root, bool requireFiles = true) {
             var folderWithoutSubfolder = Directory.EnumerateDirectories(root.FullName, "*.*", SearchOption.AllDirectories)
                 .Where(f => (!Directory.EnumerateDirectories(f, "*.*", SearchOption.TopDirectoryOnly).Any()) && (requireFiles ? Directory.EnumerateFiles(f, "*.*", SearchOption.AllDirectories).Any() : true));
@@ -20,7 +24,7 @@ namespace PackCreator {
             // return folderWithoutSubfolder;
         }
 
-        public static IEnumerable<DirectoryInfo> GetModFileNodes(this DirectoryInfo root) {
+        /* public static IEnumerable<DirectoryInfo> GetModFileNodes(this DirectoryInfo root) {
             var folderWithoutSubfolder = Directory.EnumerateDirectories(root.FullName, "*.*", SearchOption.AllDirectories)
                 .Where(f => {
                     var files = Directory.EnumerateFiles(f, "*.*", SearchOption.TopDirectoryOnly);
@@ -41,7 +45,7 @@ namespace PackCreator {
         internal static bool IsSlotFolder(this string folderName) {
             var leafName = Path.GetFileName(folderName);
             return leafName == "Materials" || leafName == "Textures" || leafName.Any(char.IsDigit);
-        }
+        } */
 
         public static void CopyTo(this DirectoryInfo sourceDirectory, DirectoryInfo targetDirectory, string fileFilter) {
 
@@ -127,26 +131,6 @@ namespace PackCreator {
             }
 
             return commonPath;
-        }
-
-        /* internal static bool IsPlayable(this string name) {
-            return AceCore.Constants.PlayerAircraft.Any(a => a.ObjectName == name || a.Name == name);
-        }
-
-        internal static bool IsPlayable(this AceCore.SkinIdentifier skin) {
-            return skin.Aircraft.IsPlayable();
-        } */
-
-        internal static void AddOrUpdate(this Dictionary<PackTarget, List<AssetContext>> roots, PackTarget target, IEnumerable<AssetContext> targetAssets) {
-            if (roots.Any(r => r.Key.TargetFileName == target.TargetFileName)) {
-                roots.First(r => r.Key.TargetFileName == target.TargetFileName).Value.AddRange(targetAssets.ToList());
-            } else {
-                roots.Add(target, targetAssets.ToList());
-            }
-        }
-
-        internal static void AddOrUpdate(this Dictionary<PackTarget, List<AssetContext>> roots, AceCore.SkinIdentifier skin, IEnumerable<AssetContext> targetAssets) {
-            roots.AddOrUpdate(new PackTarget($"{skin.GetAircraftName().MakeSafe(true)}_{skin.GetSlotName()}", skin.ObjectPath + "/" + skin.Aircraft), targetAssets);
         }
 
         internal static string ToObjectPath(this AceCore.VesselIdentifier vessel) {

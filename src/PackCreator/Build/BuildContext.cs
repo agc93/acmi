@@ -4,42 +4,25 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using AceCore;
 using ExecEngine;
 using Microsoft.Extensions.Logging;
 
 namespace PackCreator {
-    public class BuildContextFactory {
-        private readonly ScriptDownloadService _scriptService;
-        private readonly ILogger<BuildContext> _logger;
-
-        public BuildContextFactory(ScriptDownloadService scriptService, ILogger<BuildContext> logger)
-        {
-            _scriptService = scriptService;
-            _logger = logger;
-        }
-        public async Task<BuildContext> Create(string contextName) {
-            var targetPath = new DirectoryInfo(Path.Combine(Path.GetTempPath(), "acmi", contextName ?? Guid.NewGuid().ToString()));
-            targetPath.Create();
-            var scriptContext = await _scriptService.GetScriptContext(targetPath.FullName);
-            return new BuildContext(scriptContext, targetPath, _logger);
-        }
-    }
     public class BuildContext : IDisposable
     {
         [System.Runtime.InteropServices.DllImport("kernel32.dll")]
         static extern bool CreateSymbolicLink(string lpSymlinkFileName, string lpTargetFileName, SymbolicLink dwFlags);
         private readonly DirectoryInfo _workingDirectory;
         private readonly ILogger _logger;
-        private readonly ScriptContext _scriptContext;
+        public readonly BuildScript BuildScript;
 
-        internal BuildContext(ScriptContext ctx, DirectoryInfo targetPath, ILogger logger)
+        internal BuildContext(BuildScript ctx, DirectoryInfo targetPath, ILogger logger)
         {
             var path = targetPath;
-            _scriptContext = ctx;
             _workingDirectory = targetPath;
             _logger = logger;
+            BuildScript = ctx;
         }
 
         public bool AddFolder(string relPath, DirectoryInfo sourceDir, string fileFilter = "*") {
@@ -82,47 +65,18 @@ namespace PackCreator {
             cmdRunner.SetWorkingDirectory(Path.GetDirectoryName(linkPath.FullName));
             var result = cmdRunner.RunCommand(new[] { "/C mklink /D", linkPath.Name.ToArgument(), targetName.ToArgument()});
             return result.ExitCode == 0 && Directory.Exists(linkPath.FullName);
-            // return Directory.Exists(linkName);
         }
 
-        public (bool Success, FileInfo Output) RunBuild(CommandRunner runner, string targetFileName) {
+        /* public (bool Success, FileInfo Output) RunBuild(CommandRunner runner, string targetFileName) {
             // var args = new List<string> {_scriptContext.CurrentPath.ToArgument(), "pack", targetFileName.ToArgument(), "Nimbus".ToArgument()};
             var args = new List<string> {"pack", targetFileName.ToArgument(), "Nimbus".ToArgument()};
             var output = runner.SetWorkingDirectory(_scriptContext.WorkingDirectory).RunCommand(args);
             return (output.ExitCode == 0, new FileInfo(Path.IsPathRooted(targetFileName) ? targetFileName : Path.Combine(_scriptContext.WorkingDirectory, targetFileName)));
-        }
+        } */
 
         public void Dispose() {
-            _scriptContext.Dispose();
+            BuildScript.Dispose();
             _workingDirectory.Delete(true);
         }
-    }
-
-    public class AssetContext {
-        public AssetContext(DirectoryInfo sourcePath, string targetOverride = null)
-        {
-            SourcePath = sourcePath;
-            PackTargetOverride = targetOverride;
-        }
-        public DirectoryInfo SourcePath {get;set;}
-        public string GetTargetPath(string rootPath, Func<string, string> pathOverride = null) {
-            pathOverride ??= s => s;
-            var relPath = Path.GetRelativePath(rootPath, SourcePath.FullName);
-            relPath = pathOverride(relPath);
-            if (!string.IsNullOrWhiteSpace(PackTargetOverride)) {
-                relPath = (relPath == "." ? PackTargetOverride : Path.Combine(PackTargetOverride, relPath).Replace('\\', '/'));
-            }
-            return relPath;
-        }
-        public string SlotName => string.IsNullOrWhiteSpace(PackTargetOverride) ? SourcePath.Name : Path.GetFileName(PackTargetOverride);
-        public string PackTargetOverride {get;set;} 
-
-        public string FileFilter {get;set;} = "*";
-
-        public string FilePattern {get;set;}
-
-        // public bool HasNpc => SourcePath.Name.Any(char.IsLetter) && SourcePath.Name.Any(char.IsDigit);
-        // public bool HasNpc => SlotName == "ex" || Regex.IsMatch(string.IsNullOrWhiteSpace(PackTargetOverride) ? SourcePath.Name : PackTargetOverride, @"\d{2}[a-z]{1}(_|$)");
-        // public bool HasPlayer => Regex.IsMatch(string.IsNullOrWhiteSpace(PackTargetOverride) ? SourcePath.Name : PackTargetOverride, @"[^a-z](\d{2}|x{1}\d{1})(?![a-z]{1})");
     }
 }
