@@ -6,6 +6,10 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.3.3**
+  - Completely rework build runner logic
+  - Now supports falling back to `UnrealPak.exe` when Python isn't installed
+  - Now has **very** limited support for lightweight/instance-based files
 - **0.3.2**
   - Completely rework Python detection.
   - Improve detection for a few file types.
