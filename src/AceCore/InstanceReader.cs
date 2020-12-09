@@ -14,7 +14,7 @@ namespace AceCore
             _parser = parser;
         }
         public IEnumerable<(string Path, SkinIdentifier Identifier)> FindMREC(string filePath, bool fullPath = false) {
-            var opts = new SearchOptions {Window = 42, MaxBytes = int.MaxValue, RewindOnMatch = true};
+            var opts = new SearchOptions {Window = 48, MaxBytes = int.MaxValue, RewindOnMatch = true};
             foreach (var match in FindIdents(filePath, opts)) {
                 var ident = _parser.ParseMatch(match, false);
                 

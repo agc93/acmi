@@ -30,6 +30,8 @@
         ["emblem_022_m.uasset", "Emblem", "emblem_022_m"],
         ["Nimbus/Content/Emblem/png/emblem_041_ss.uasset", "Emblem", "emblem_041_ss"],
         ["Emblem/png/emblem_228.uasset", "Emblem", "emblem_228"],
-        ["Game/Vehicles/Aircraft/asfx/00/asfx_00_Inst.", "Skin", "asfx_00_Inst"]
+        ["Game/Vehicles/Aircraft/asfx/00/asfx_00_Inst.", "Skin", "asfx_00_Inst"],
+        ["Vehicles/Aircraft/f15c/04/f15c_04_MREC\\0u\u0013v", "Skin", "f15c_04_MREC"],
+        ["Nimbus/Content/Vehicles/Vessels/alcn/Textures/alcn_a_MREC.uasset", "Vessel", "alcn_a_MREC"]
     ]
 }

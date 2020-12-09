@@ -26,14 +26,14 @@ namespace AceCore.Tests
         {
             var parsed = SkinIdentifier.TryParse(rawPath, out var ident);
             Assert.True(parsed);
-            Assert.Equal(ident.RawValue, fullMatch);
+            Assert.Equal(fullMatch, ident.RawValue);
             Assert.Equal(ident.Aircraft, aircraft);
             Assert.Equal(ident.Slot, slot);
             Assert.Equal(ident.Type, type);
         }
     }
 
-    public class EFfectsParserTests {
+    public class EffectsParserTests {
         [Theory]
         [JsonFileData("paths.json", "Effects")]
         public void Should_Parse_Effects_Path(string rawPath, string fullMatch, string objectPath, string objectName, string friendlyName) {

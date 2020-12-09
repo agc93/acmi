@@ -20,7 +20,8 @@
         ["./Skins/av8b_01_D.uasset", "av8b_01_D", "av8b", "01", "D"],
         ["ex/x02s_x2_MREC.uasset", "x02s_x2_MREC", "x02s", "02", "MREC"],
         ["f18f_0b_MREC.uasset", "f18f_0b_MREC", "f18f", "00b", "MREC"],
-        ["Game/Vehicles/Aircraft/asfx/00/asfx_00_Inst.", "asfx_00_Inst", "asfx", "00", "Inst"]
+        ["Game/Vehicles/Aircraft/asfx/00/asfx_00_Inst.", "asfx_00_Inst", "asfx", "00", "Inst"],
+        ["Vehicles/Aircraft/f15c/04/f15c_04_MREC\\0u\u0013v", "f15c_04_MREC", "f15c", "04", "MREC"]
     ],
     "Effects": [
         ["Nimbus/Content/VFX/Common/Materials/Missile/LightMissle/LightMissileSmoke_Master_02_Inst.uasset", "LightMissileSmoke_Master_02_Inst", "Nimbus/Content/VFX/Common/Materials/Missile/LightMissle", "LightMissileSmoke_Master_02_Inst", "Missile"],

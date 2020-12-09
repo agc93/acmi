@@ -60,6 +60,8 @@ namespace AceCore.Parsers
             var parsed = VesselIdentifier.TryParse(value, out var ident);
             return (parsed && (strict ? ident.Type == "D" : true), ident);
         }
+
+        public int Priority => 50;
     }
 
     public class CockpitParser : IIdentifierParser {

@@ -13,7 +13,7 @@ namespace AceCore
         public static bool TryParse(string value, out SkinIdentifier ident) {
             // var rex = new System.Text.RegularExpressions.Regex(@"([a-z0-9]+?)_(v?\d+a?\w{1}?)_(\w)(?!\.u[^a]).*");
             // var rex = new Regex(@"([a-z0-9]+?)_x?(\d+\w?)_([A-Z]{1}|[A-Za-z]{4})(?:[^\w])(?!u[^a])");
-            var rex = new Regex(@"(?<![a-zA-Z0-9]{1}_)\b([a-zA-Z0-9]{4,6}?)_x?(\d*\w*)[_x]([A-Z]{1}|[A-Za-z]{4})(?:[^\w])(?!u[^a])");
+            var rex = new Regex(@"(?<![a-zA-Z0-9]{1}_)\b([a-zA-Z0-9]{4,6}?)_x?(\d*\w*)[_x]([A-Z]{1}|[A-Za-z]{4})(?:[^\w])(?!u[^a\W])");
             var match = rex.Match(value);
             if (match != null && match.MatchedGroups().Count >= 2) {
                 ident = new SkinIdentifier(match.Groups[0].Value, match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
@@ -24,7 +24,7 @@ namespace AceCore
         }
 
         private SkinIdentifier(string rawValue, string aircraft, string slot, string type) {
-            RawValue = rawValue.Trim('.').Trim('\0').Replace(@"\0", string.Empty);
+            RawValue = rawValue.Trim('.').Trim('\0').Replace(@"\0", string.Empty).Trim('\\');
             Aircraft = aircraft;
             var slotNum = new string(slot.TakeWhile(char.IsDigit).ToArray());
             slotNum = int.TryParse(slotNum, out var i)
