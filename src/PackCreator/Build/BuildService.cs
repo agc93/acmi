@@ -36,7 +36,7 @@ namespace PackCreator {
                 var buildResult = _runner.RunBuild(ctx.BuildScript, "packed-files.pak");
                 // var buildResult = ctx.RunBuild(_runner, "packed-files.pak");
                 if (buildResult.Success) {
-                    _logger.LogInformation($"[bold green]Success![/] Files for {objName.GetFriendlyName()} successfully packed from {targets.Sum(t => t.SourceFiles.Count)} ({targets.Count}) files");
+                    _logger.LogInformation($"[bold green]Success![/] Files for {objName.GetFriendlyName()} successfully packed from {targets.Sum(t => t.SourceFiles.Count)} files (in {targets.Count} targets)");
                     var tempFile = Path.GetTempFileName();
                     buildResult.Output.CopyTo(tempFile, true);
                     return new FileInfo(tempFile);

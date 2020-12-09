@@ -59,6 +59,9 @@ namespace PackCreator {
                 }
             }
             var instructions = new List<BuildInstruction>();
+            if (_logger.IsEnabled(LogLevel.Trace)) {
+                _logger.LogTrace($"Running pack operation on {rootInfo.Name} with {allFiles.Count()} files.");
+            }
             foreach (var file in allFiles)
             {
                 var ident = _parser.ParseFilePath(file, rootInfo);
