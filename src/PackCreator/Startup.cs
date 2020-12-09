@@ -30,10 +30,12 @@ namespace PackCreator
                 });
             });
             services.AddLogging(logging => {
+                var level = GetLogLevel();
                 logging.SetMinimumLevel(LogLevel.Trace);
                 logging.AddInlineSpectreConsole(c => {
-                    c.LogLevel = GetLogLevel();
+                    c.LogLevel = level;
                 });
+                AddFileLogging(logging, level);
             });
             services.Scan(scan =>
                 scan.FromAssemblyOf<Identifier>()
@@ -63,9 +65,26 @@ namespace PackCreator
                 );
         }
 
+        internal static ILoggingBuilder AddFileLogging(ILoggingBuilder logging, LogLevel level) {
+            var options = new NReco.Logging.File.FileLoggerOptions {
+                Append = true,
+                FileSizeLimitBytes = 4096,
+                MaxRollingFiles = 5
+            };
+            if (level < LogLevel.Information) {
+                logging.Services.Add(ServiceDescriptor.Singleton<ILoggerProvider, NReco.Logging.File.FileLoggerProvider>(
+                    (srvPrv) => {
+                        return new NReco.Logging.File.FileLoggerProvider("acmi.log", options) { MinLevel = level };
+                    }
+                ));
+            }
+            return logging;
+        }
+
         internal static LogLevel GetLogLevel() {
             var envVar = System.Environment.GetEnvironmentVariable("ACMI_DEBUG");
-            if (System.IO.File.Exists(@"C:\acmi-debug.txt")) envVar = "trace";
+            if (System.IO.File.Exists(System.IO.Path.Combine(Environment.CurrentDirectory, "acmi-debug.txt"))) envVar = "trace";
+            if (System.IO.File.Exists(System.IO.Path.Combine(new System.IO.FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).Directory.FullName, "acmi-debug.txt"))) envVar = "trace";
             return string.IsNullOrWhiteSpace(envVar)
                 ? LogLevel.Information
                 :  envVar.ToLower() == "trace"
