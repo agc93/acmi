@@ -6,6 +6,12 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.3.4**
+  - Major improvements to detections
+    - Should support more of the weird MREC paths
+    - Fixes vessel and weapon path matching
+  - Improve logging and build scripts
+  - Probably some other stuff I've forgotten about
 - **0.3.3**
   - Completely rework build runner logic
   - Now supports falling back to `UnrealPak.exe` when Python isn't installed
