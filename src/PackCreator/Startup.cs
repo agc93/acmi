@@ -4,13 +4,31 @@ using AceCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PackCreator.Build;
+using Spectre.Cli;
 using Spectre.Cli.AppInfo;
+using Spectre.Cli.Extensions.DependencyInjection;
 using Spectre.Console;
 
 namespace PackCreator
 {
     public static class Startup
     {
+        internal static CommandApp GetApp() {
+            var app = new CommandApp(new DependencyInjectionRegistrar(GetServices()));
+            // app.SetDefaultCommand<PackCommand>();
+            app.Configure(c => {
+                c.PropagateExceptions();
+                c.SetApplicationName("acmi-pack");
+                c.AddCommand<PackCommand>("pack");
+                c.AddCommand<InitCommand>("init");
+                c.AddCommand<InstanceCommand>("instance");
+                c.AddExample(new[] { "build" });
+                c.AddExample(new[] { "build", "./ModPackFiles" });
+                c.AddExample(new[] { "build", "--author", "agc93", "--title", "\"My Awesome Skin Pack\"", "--version", "1.0.0" });
+            });
+            return app;
+        }
+        
         internal static IServiceCollection GetServices() {
             var services = new ServiceCollection();
             services.AddSingleton<IScriptDownloadService, PythonScriptDownloadService>();
@@ -25,7 +43,7 @@ namespace PackCreator
             services.AddSingleton<IAnsiConsole>(p => {
                 return AnsiConsole.Create(
                     new AnsiConsoleSettings {
-                        Ansi = AnsiSupport.Detect,
+                        Ansi = Spectre.Console.AnsiSupport.Detect,
                         ColorSystem = ColorSystemSupport.Detect
                 });
             });

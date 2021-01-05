@@ -12,16 +12,15 @@ namespace PackCreator
     {
         static async Task<int> Main(string[] args)
         {
-            var app = new CommandApp(new DependencyInjectionRegistrar(Startup.GetServices()));
+            var app = Startup.GetApp();
+            // var app = new CommandApp(new DependencyInjectionRegistrar(Startup.GetServices()));
             app.SetDefaultCommand<IndexCommand>();
-            app.Configure(c => {
+            /* app.Configure(c => {
                 c.SetApplicationName("acmi-pack");
                 c.AddCommand<PackCommand>("pack");
                 c.AddCommand<InfoCommand>("info");
-                /* c.AddExample(new[] { "build" });
-                c.AddExample(new[] { "build", "./ModPackFiles" });
-                c.AddExample(new[] { "build", "--author", "agc93", "--title", "\"My Awesome Skin Pack\"", "--version", "1.0.0" }); */
-            });
+                c.AddCommand<InstanceCommand>("instance");
+            }); */
             return await app.RunAsync(args);
         }
     }
