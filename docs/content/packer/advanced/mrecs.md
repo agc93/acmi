@@ -22,3 +22,5 @@ C:/Mods/A10Skin
 ```
 
 ...and when ACMI runs, it will open and read `a10a_00_Inst.uasset` and determine the correct place for the `MREC` and `N` files in the final PAK file.
+
+If you have the Instance file, you can also open it with the ACMI Packer to quickly check what paths it uses. Note that the instance reader will show you the paths that the instance file uses **even if it's a vanilla game file**. For example, instances without separated Normals will still show a path/filename for Normals, it will just be a vanilla game file.
