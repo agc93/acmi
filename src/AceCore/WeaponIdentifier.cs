@@ -53,8 +53,15 @@ namespace AceCore {
 
         public override string GetSlotName() => GetWeaponName();
 
-        public override string ObjectPath => base.ObjectPath + $"Vehicles/Weapons/{RawValue}/Textures";
+        public override string ObjectPath => base.ObjectPath + $"Vehicles/Weapons/w_{Weapon}{GetSlotPath(_slotId)}/{(Type == "Inst" ? "Material" : "Textures")}";
 
         public override string BaseObjectName => Weapon;
+
+        private static string GetSlotPath(string slotId)
+        {
+            return string.IsNullOrWhiteSpace(slotId)
+                ? string.Empty
+                : $"_{slotId}";
+        }
     }
 }

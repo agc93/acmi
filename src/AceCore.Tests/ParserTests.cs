@@ -8,7 +8,7 @@ namespace AceCore.Tests
     {
         [Theory]
         [JsonFileData("paths.json", "Weapons")]
-        public void Should_Parse_Weapon_Details(string rawPath, string fullMatch, string weaponName, string slot, string type)
+        public void Should_Parse_Weapon_Details(string rawPath, string fullMatch, string weaponName, string slot, string type, string path)
         {
             var parsed = WeaponIdentifier.TryParse(rawPath, out var ident);
             Assert.True(parsed);
@@ -16,6 +16,7 @@ namespace AceCore.Tests
             Assert.Equal(ident.Weapon, weaponName);
             Assert.Equal(ident.BaseObjectName, weaponName);
             Assert.Equal(ident.Type, type);
+            Assert.Equal(ident.ObjectPath, path);
         }
     }
     public class SkinParserTests

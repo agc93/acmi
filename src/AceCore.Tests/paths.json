@@ -1,10 +1,10 @@
 {
     "Weapons": [
-        ["/Game/Vehicles/Weapons/w_dptk_a0/Textures/w_dptk_a0_D.uasset", "w_dptk_a0_D", "dptk", "a0", "D"],
-        ["/Game/Vehicles/Weapons/w_4agm_r0/Textures/w_4agm_r0_D.uasset", "w_4agm_r0_D", "4agm", "r0", "D"],
-        ["/Game/Vehicles/Weapons/w_aam_a0/Materials/w_aam_a0_Inst.uasset", "w_aam_a0_Inst", "aam", "a0", "Inst"],
-        ["/Game/Vehicles/Weapons/w_icbm/Materials/w_icbm_MREC.uasset", "w_icbm_MREC", "icbm", "", "MREC"],
-        ["w_lacm_f0_D.uasset", "w_lacm_f0_D", "lacm", "f0", "D"]
+        ["/Game/Vehicles/Weapons/w_dptk_a0/Textures/w_dptk_a0_D.uasset", "w_dptk_a0_D", "dptk", "a0", "D", "Nimbus/Content/Vehicles/Weapons/w_dptk_a0/Textures"],
+        ["/Game/Vehicles/Weapons/w_4agm_r0/Textures/w_4agm_r0_D.uasset", "w_4agm_r0_D", "4agm", "r0", "D", "Nimbus/Content/Vehicles/Weapons/w_4agm_r0/Textures"],
+        ["/Game/Vehicles/Weapons/w_aam_a0/Materials/w_aam_a0_Inst.uasset", "w_aam_a0_Inst", "aam", "a0", "Inst", "Nimbus/Content/Vehicles/Weapons/w_aam_a0/Material"],
+        ["/Game/Vehicles/Weapons/w_icbm/Materials/w_icbm_MREC.uasset", "w_icbm_MREC", "icbm", "", "MREC", "Nimbus/Content/Vehicles/Weapons/w_icbm/Textures"],
+        ["w_lacm_f0_D.uasset", "w_lacm_f0_D", "lacm", "f0", "D", "Nimbus/Content/Vehicles/Weapons/w_lacm_f0/Textures"]
     ],
     "Aircraft": [
         ["/Game/Vehicles/Aircraft/a10a/00/a10a_00_D.uasset", "a10a_00_D", "a10a", "00", "D"],
