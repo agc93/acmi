@@ -6,6 +6,8 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.3.6**
+  - Fix bug in weapon packing: instances and textures will now be in the right paths
 - **0.3.5**
   - Add new instance reader command
     - Drag an Instance file to `acmi-pack.exe` to quickly check what paths the file expects
