@@ -68,6 +68,7 @@ namespace AceCore
             ["w_dptk_a0"] = "Droptanks",
             ["w_lacm_f0"] = "LACM (Rafale)",
             ["w_lacm_e0"] = "LACM (Gripen)",
+            ["w_lacm_r0"] = "LACM (Russian)",
             ["w_4aam_a0"] = "4AAM/8AAM/6AAM/HCAA",
             ["w_4aam_f0"] = "Mirage/Rafale HCAA/4AAM",
             ["w_4aam_j0"] = "HCAA (F-15J)",
