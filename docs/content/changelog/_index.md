@@ -6,6 +6,9 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.3.7**
+  - Now uses a slightly older-than-current version of u4pak to avoid a bug in the latest release.
+  - This means that the first time you run this version, it will probably re-download `u4pak`. This is expected.
 - **0.3.6**
   - Fix bug in weapon packing: instances and textures will now be in the right paths
 - **0.3.5**
