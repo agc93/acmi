@@ -82,17 +82,24 @@ namespace PackCreator {
         }
     }
     public class PythonScriptDownloadService : ScriptDownloadBase, IScriptDownloadService {
+
+        private (string FileUri, string Hash) GetSourceScript() {
+            return ("https://raw.githubusercontent.com/panzi/u4pak/8ea81ea019c0fea4e3cbe29720ed9a94e3875e0b/u4pak.py",
+                "6e5858b7fee1ccb304218b98886b1a1e");
+        }
         
 
         public PythonScriptDownloadService(AppInfoService appInfo, ILogger<PythonScriptDownloadService> logger) : base("u4pak.py", appInfo, logger) {
         }
 
         public async Task<string> GetScriptPath() {
+            var src = GetSourceScript();
             var fi = new FileInfo(_scriptFilePath);
-            if (fi.Exists && fi.Length > 0) {
+            if (fi.Exists && fi.Length > 0 && fi.CalculateMD5() == src.Hash) {
+                //check if it matches
                 return fi.FullName;
             } else {
-                await DownloadScript("https://raw.githubusercontent.com/panzi/u4pak/master/u4pak.py");
+                await DownloadScript(src.FileUri);
                 return fi.FullName;
             }
         }
