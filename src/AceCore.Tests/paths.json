@@ -23,7 +23,7 @@
         ["Game/Vehicles/Aircraft/asfx/00/asfx_00_Inst.", "asfx_00_Inst", "asfx", "00", "Inst"],
         ["Vehicles/Aircraft/f15c/04/f15c_04_MREC\\0u\u0013v", "f15c_04_MREC", "f15c", "04", "MREC"],
         ["Vehicles/Aircraft/fb22/04/fb22_04_MREC.uasset", "fb22_04_MREC", "fb22", "04", "MREC"],
-        ["/Game/Vehicles/Aircraft/f15m/02/f15m_02_inst.uasset", "f15m_02_inst", "f15m", "02", "Inst"],
+        ["/Game/Vehicles/Aircraft/f15m/02/f15m_02_inst.uasset", "f15m_02_inst", "f15m", "02", "inst"],
         ["/Game/Vehicles/Aircraft/f16x/06/f16x_06_D.uasset", "f16x_06_D", "f16x", "06", "D"]
     ],
     "Effects": [

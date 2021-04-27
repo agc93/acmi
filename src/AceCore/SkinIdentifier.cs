@@ -34,7 +34,8 @@ namespace AceCore
             // Slot = slot.All(char.IsDigit) 
             //     ? 
             //     : slot;
-            Type = type.CapitalizeFirst();
+            // Type = type.CapitalizeFirst();
+            Type = type;
 			SlotName = ParseSlotName();
         }
 		private string SlotName {get; set;}
