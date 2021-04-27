@@ -160,7 +160,10 @@ namespace AceCore
             new AircraftSlot("zoef", "FALKEN"),
             new AircraftSlot("fa44", "CFA-44"),
             new AircraftSlot("fa27", "XFA-27"),
-            new AircraftSlot("asfx", "ASF-X")
+            new AircraftSlot("asfx", "ASF-X"),
+            new AircraftSlot("f15m", "F-15 S-MTD"),
+            new AircraftSlot("fb22", "FB-22"),
+            new AircraftSlot("f16x", "F-16XL")
         };
         public static Dictionary<string, string> SlotNames {get;} = new Dictionary<string, string> {
             ["00"] = "Osea",
@@ -212,7 +215,10 @@ namespace AceCore
             ["zoef"] = "FALKEN",
             ["fa44"] = "CFA-44",
             ["fa27"] = "XFA-27",
-            ["asfx"] = "ASF-X"
+            ["asfx"] = "ASF-X",
+            ["f15m"] = "F-15 SMTD",
+            ["fb22"] = "FB-22",
+            ["f16x"] = "F-16XL"
         };
 
         public static Dictionary<string, string> Aces => new Dictionary<string, string> {

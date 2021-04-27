@@ -65,5 +65,13 @@ namespace AceCore
         public static List<Group> MatchedGroups(this Match match) {
             return match.Groups.Where(m => m.Success).ToList();
         }
+        
+        internal static string CapitalizeFirst(this string input) =>
+            input switch
+            {
+                null => throw new ArgumentNullException(nameof(input)),
+                "" => throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input)),
+                _ => input.First().ToString().ToUpper() + input.Substring(1)
+            };
     }
 }
