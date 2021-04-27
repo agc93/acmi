@@ -6,6 +6,9 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.3.8**
+  - Update with name mappings for EAS DLC aircraft.
+  - Take note that the casing for some new files (especially the MTD) is very inconsistent.
 - **0.3.7**
   - Now uses a slightly older-than-current version of u4pak to avoid a bug in the latest release.
   - This means that the first time you run this version, it will probably re-download `u4pak`. This is expected.
