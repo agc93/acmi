@@ -6,6 +6,10 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.3.9**
+  - Major under-the-covers rework to file detection and handling: please report any new issues you find
+  - Fixes to properly support `Decal_Inst` files
+  - Update with name mappings for (hypothetical) TG DLC aircraft.
 - **0.3.8**
   - Update with name mappings for EAS DLC aircraft.
   - Take note that the casing for some new files (especially the MTD) is very inconsistent.
