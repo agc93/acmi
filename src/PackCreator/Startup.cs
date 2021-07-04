@@ -20,7 +20,7 @@ namespace PackCreator
                 c.PropagateExceptions();
                 c.SetApplicationName("acmi-pack");
                 c.AddCommand<PackCommand>("pack");
-                c.AddCommand<InitCommand>("init");
+                // c.AddCommand<InitCommand>("init");
                 c.AddCommand<InstanceCommand>("instance");
                 c.AddExample(new[] { "build" });
                 c.AddExample(new[] { "build", "./ModPackFiles" });

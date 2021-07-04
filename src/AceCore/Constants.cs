@@ -7,9 +7,8 @@ namespace AceCore
 {
     public static class Constants
     {
-        public static Dictionary<string, string> AllVehicleNames => new List<VehicleSlot>().Concat(NonPlayableAircraft).Concat(PlayerAircraft).Concat(Vessels).ToDictionary(k => k.ObjectName, v => v.Name);
-        public static Dictionary<string, string> AllItemNames => new Dictionary<string, string>().Concat(AllVehicleNames).Concat(WeaponNames).ToDictionary(k => k.Key, v => v.Value);
-        public static List<VehicleSlot> AllVehicles {get;} = new List<VehicleSlot>().Concat(NonPlayableAircraft).Concat(PlayerAircraft).Concat(Vessels).ToList();
+        public static Dictionary<string, string> AllVehicleNames => new List<VehicleSlot>().Concat(NonPlayableAircraft).Concat(Vessels).ToDictionary(k => k.ObjectName, v => v.Name);
+        public static Dictionary<string, string> AllItemNames => new Dictionary<string, string>().Concat(AllVehicleNames).Concat(AircraftNames).Concat(WeaponNames).ToDictionary(k => k.Key, v => v.Value);
 
         public static Dictionary<string, string> AllNames => new Dictionary<string, string>().Concat(AllItemNames).Concat(SlotNames).Concat(ModTypes).Concat(Aces).ToDictionary(k => k.Key, v => v.Value);
         public static List<AircraftSlot> NonPlayableAircraft => new List<AircraftSlot> {
@@ -124,6 +123,7 @@ namespace AceCore
             ["w_uav_x0"] = "UAV (ADF-11F)",
             ["w_ugb_r0"] = "UGB (Su-47)"
         };
+        [Obsolete("Don't use this", false)]
         public static List<AircraftSlot> PlayerAircraft => new List<AircraftSlot> {
             new AircraftSlot("a10a", "A-10C", new[] {"00a", "02a"}),
             new AircraftSlot("adf11f", "ADF-11F") { NPCSlots = new List<string>{"02a"} },
@@ -218,7 +218,11 @@ namespace AceCore
             ["asfx"] = "ASF-X",
             ["f15m"] = "F-15 SMTD",
             ["fb22"] = "FB-22",
-            ["f16x"] = "F-16XL"
+            ["f16x"] = "F-16XL",
+            ["f14a"] = "F-14A",
+            ["f14atg"] = "F-14A (Top Gun)",
+            ["f18e"] = "F/A-18E",
+            ["f18etg"] = "F/A-18E (Top Gun)"
         };
 
         public static Dictionary<string, string> Aces => new Dictionary<string, string> {

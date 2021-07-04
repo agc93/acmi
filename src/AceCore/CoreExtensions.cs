@@ -40,6 +40,10 @@ namespace AceCore
             return string.IsNullOrWhiteSpace(value) ? defaultValue : value;
         }
 
+        internal static string WithPrefix(this string value, string prefix) {
+            return string.IsNullOrWhiteSpace(value) ? string.Empty : prefix + value;
+        }
+
         public static string GetSlotNumber(this string slotValue, int padLength = 0) {
             return int.TryParse(slotValue, out var i)
                 ? (i + 1).ToString($"D{padLength}")

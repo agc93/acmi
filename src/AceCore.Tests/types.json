@@ -12,6 +12,7 @@
         ["/Game/Vehicles/Aircraft/aias/Textures/AIAS_Dam_D.uasset", "Skin", "AIAS_Dam_D"],
         ["/Game/Vehicles/Aircraft/f02a/00/f02a_01_MREC.uasset", "Skin", "f02a_01_MREC"],
         ["Nimbus/Content/Vehicles/Aircraft/asfx/00/asfx_00_Inst.uasset", "Skin", "asfx_00_Inst"],
+        ["/Game/Vehicles/Aircraft/f16c/f16c_05_Decal_Inst.uasset", "Skin", "f16c_05_Decal_Inst"],
         ["fa44_04_D.uasset", "Skin", "fa44_04_D"],
         ["asfx_00xMREC.uasset", "Skin", "asfx_00xMREC"],
         ["fa27_02xN.uasset", "Skin", "fa27_02xN"],

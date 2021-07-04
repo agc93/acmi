@@ -23,8 +23,9 @@ namespace PackCreator {
         private readonly ParserService _parser;
         private readonly FileNameService _nameService;
         private readonly IAnsiConsole _console;
+        private readonly IEnumerable<IPackedFileHandler> _fileHandlers;
 
-        public PackCommand(ILogger<PackCommand> logger, PythonService pyService, BuildService buildService, ParserService parser, FileNameService nameService, IAnsiConsole console)
+        public PackCommand(ILogger<PackCommand> logger, PythonService pyService, BuildService buildService, ParserService parser, FileNameService nameService, IAnsiConsole console, IEnumerable<IPackedFileHandler> fileHandlers)
         {
             _logger = logger;
             _pyService = pyService;
@@ -32,6 +33,7 @@ namespace PackCreator {
             _parser = parser;
             _nameService = nameService;
             _console = console;
+            _fileHandlers = fileHandlers;
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, Settings settings) {
@@ -71,68 +73,16 @@ namespace PackCreator {
                     var gInstr = new GenericInstruction() {
                         SourceGroup = file.Directory.Name,
                         TargetPath = relPath,
-                        SourceFiles = file.Directory.GetFiles($"{Path.GetFileNameWithoutExtension(file.FullName)}.*").ToList()
+                        SourceFiles = file.Directory.GetFiles($"{Path.GetFileNameWithoutExtension(file.FullName)}.*")
+                            .ToList()
                     };
                     instructions.Add(gInstr);
                     //follow earlier notes, this is an unknown
-                } else if (ident is SkinIdentifier sIdent) {
-                    _logger.LogTrace($"Detected {file.Name} as skin file: {sIdent.ToString()} for {sIdent.BaseObjectName}");
-                    var instr = new SkinInstruction(sIdent) {
-                        SourceFiles = file.Directory.GetFiles($"{sIdent.BaseObjectName}_{sIdent.Type}.*").ToList()
-                    };
-                    if (sIdent.Type == "MREC" || sIdent.Type == "N") {
-                        continue;
-                    } else if (sIdent.Type == "Inst") {
-                        void AddRelativeSource(BuildInstruction<SkinIdentifier> targetInstr, SkinIdentifier ident) {
-                            try
-                            {
-                                var rp = Path.GetRelativePath(instr.TargetPath, targetInstr.TargetPath);
-                                var absPath = Path.GetFullPath(Path.Combine(file.Directory.FullName, rp));
-                                if (rp != "." && Directory.Exists(absPath)) { // assume they're being added elsewhere for '.'
-                                    targetInstr.SourceFiles.AddFiles(new DirectoryInfo(absPath), ident.RawValue + ".*");
-                                }
-                            }
-                            catch (System.Exception)
-                            {
-                                _logger.LogDebug($"Error while searching for relative path: {instr.TargetPath}/{targetInstr.TargetPath}");
-                            }
-                        }
-                        var iReader = new InstanceReader(_parser);
-                        var mrecs = iReader.FindMREC(file.FullName).ToList();
-                        if (mrecs.Any()) {
-                            var mrec = mrecs.First();
-                            _logger.LogTrace($"Detected MREC for {mrec.Identifier.BaseObjectName} at {mrec.Path}");
-                            var mrecInstr = new SkinInstruction(mrec.Identifier);
-                            mrecInstr.TargetPath = Identifier.BaseObjectPath + mrec.Path.TrimEnd('/');
-                            mrecInstr.SourceFiles.AddFiles(file.Directory, mrec.Identifier.RawValue + ".*");
-                            AddRelativeSource(mrecInstr, mrec.Identifier);
-                            instructions.Add(mrecInstr);
-                        }
-                        var normals = iReader.FindNormal(file.FullName).ToList();
-                        if (normals.Any()) {
-                            var normal = normals.First();
-                            _logger.LogTrace($"Detected Normals for {normal.Identifier.BaseObjectName} at {normal.Path}");
-                            var normalInstr = new SkinInstruction(normal.Identifier);
-                            normalInstr.TargetPath = Identifier.BaseObjectPath + normal.Path.TrimEnd('/');
-                            normalInstr.SourceFiles.AddFiles(file.Directory, normal.Identifier.RawValue + ".*");
-                            AddRelativeSource(normalInstr, normal.Identifier);
-                            instructions.Add(normalInstr);
-                        }
-                        instructions.Add(instr);
-                    } else if (sIdent.Type == "D") {
-                        _logger.LogTrace($"Detected Diffuse for {sIdent.BaseObjectName} at {file.Name}");
-                        var mrecPath = Path.Combine(file.Directory.FullName, $"{sIdent.BaseObjectName}_MREC.uasset");
-                        var normPath = Path.Combine(file.Directory.FullName, $"{sIdent.BaseObjectName}_N.uasset");
-                        var instPath = Path.Combine(file.Directory.FullName, $"{sIdent.BaseObjectName}_Inst.uasset");
-                        if (File.Exists(mrecPath) && !File.Exists(instPath)) {
-                            instr.SourceFiles.AddFiles(file.Directory, $"{sIdent.BaseObjectName}_MREC.*");
-                        }
-                        if (File.Exists(normPath) && !File.Exists(instPath)) {
-                            instr.SourceFiles.AddFiles(file.Directory, $"{sIdent.BaseObjectName}_N.*");
-                        }
-                        instructions.Add(instr);
-                    } else {
-                        _logger.LogWarning("[bold white on red]Found an unmatched skin mod file![/] This shouldn't happen!");
+                } else if (_fileHandlers.Any(fh => fh.Supports(ident))) {
+                    var fh = _fileHandlers.FirstOrDefault(handler => handler.Supports(ident));
+                    var handlerInstructions = fh?.HandleIdentifier(ident, file)?.ToList();
+                    if (handlerInstructions != null && handlerInstructions.Any()) {
+                        instructions.AddRange(handlerInstructions);
                     }
                 } else {
                     var instr = new BuildInstruction<Identifier>(ident) {

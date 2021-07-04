@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using AceCore;
 
 namespace PackCreator {
     public static class CoreExtensions {
@@ -22,6 +23,13 @@ namespace PackCreator {
                 .Where(f => (!Directory.EnumerateDirectories(f, "*.*", SearchOption.TopDirectoryOnly).Any()) && (requireFiles ? Directory.EnumerateFiles(f, "*.*", SearchOption.AllDirectories).Any() : true));
             return folderWithoutSubfolder.Select(fs => Path.GetFileName(fs).Any(char.IsDigit) ? Directory.GetParent(fs) : new DirectoryInfo(fs)).Select(f => f.FullName).Distinct().Select(p => new DirectoryInfo(p)).ToList();
             // return folderWithoutSubfolder;
+        }
+
+        public static BuildInstruction GetInstruction(this SkinIdentifier skinIdentifier, FileInfo srcFile) {
+            var instr = new SkinInstruction(skinIdentifier) {
+                SourceFiles = srcFile.Directory.GetFiles($"{skinIdentifier.BaseObjectName}_{skinIdentifier.Type}.*").ToList()
+            };
+            return instr;
         }
 
         /* public static IEnumerable<DirectoryInfo> GetModFileNodes(this DirectoryInfo root) {

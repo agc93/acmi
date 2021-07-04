@@ -23,9 +23,14 @@ namespace AceCore
             return false;
         }
 
-        private SkinIdentifier(string rawValue, string aircraft, string slot, string type) {
+        private SkinIdentifier(string rawValue, string aircraft, string slot, string type, string part = null) {
             RawValue = rawValue.Trim('.').Trim('\0').Replace(@"\0", string.Empty).Trim('\\');
             Aircraft = aircraft;
+            if (slot.Contains('_')) {
+                var slotParts = slot.Split('_');
+                Part = slotParts.Last();
+                slot = string.Join(string.Empty, slotParts[..^1]);
+            }
             var slotNum = new string(slot.TakeWhile(char.IsDigit).ToArray());
             slotNum = int.TryParse(slotNum, out var i)
                     ? i.ToString("D2")
@@ -42,6 +47,7 @@ namespace AceCore
         public string Aircraft { get; }
         public string Slot { get; }
         public string Type { get; }
+        public string Part { get; }
 
 		private string ParseSlotName() {
 			var knownName = _slotNames.TryGetValue(Slot, out var name);
@@ -81,10 +87,9 @@ namespace AceCore
 
         public string GetAircraftName() => base.GetAircraftName(Aircraft);
 
-        public string GetObjectName() => $"{Aircraft}_{Slot}_{Type}";
-
         public override string ObjectPath => base.ObjectPath + $"Vehicles/Aircraft/{Aircraft}/{Slot}";
         public bool IsNPC => Slot.Any(char.IsLetter);
         public override string BaseObjectName => $"{Aircraft}_{Slot}";
+        // public override string BaseObjectName => $"{Aircraft}_{Slot}{Part.WithPrefix("_")}";
     }
 }
