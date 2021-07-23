@@ -1,6 +1,9 @@
 using System;
 using System.Linq;
 using AceCore;
+using AceCore.Parsers;
+using BuildEngine;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PackCreator.Build;
@@ -8,6 +11,8 @@ using Spectre.Cli;
 using Spectre.Cli.AppInfo;
 using Spectre.Cli.Extensions.DependencyInjection;
 using Spectre.Console;
+using UnPak.Core;
+using UnPak.Core.Crypto;
 
 namespace PackCreator
 {
@@ -31,12 +36,10 @@ namespace PackCreator
         
         internal static IServiceCollection GetServices() {
             var services = new ServiceCollection();
-            services.AddSingleton<IScriptDownloadService, PythonScriptDownloadService>();
-            services.AddSingleton<PythonService>();
             // services.AddSingleton<ExecEngine.CommandRunner>(provider => new ExecEngine.CommandRunner("python") { Name = "python"});
             services.AddSingleton<AppInfoService>();
-            services.AddSingleton<BuildContextFactory>();
-            services.AddBuildServices();
+            
+            services.AddBuildServices().AddUnPak().AddMessaging();
             // services.AddSingleton<BuildService>(GetBuildService);
             services.AddSingleton<FileNameService>();
             services.AddSingleton<ParserService>();
@@ -60,27 +63,6 @@ namespace PackCreator
                     .AddClasses(classes => classes.AssignableTo(typeof(AceCore.Parsers.IIdentifierParser))).AsImplementedInterfaces().WithSingletonLifetime()
             );
             return services;
-        }
-
-        private static BuildService GetBuildService(IServiceProvider provider) {
-            var pyService = provider.GetRequiredService<PythonService>();
-            var logger = provider.GetRequiredService<ILogger<BuildService>>();
-            var factory = provider.GetRequiredService<BuildContextFactory>();
-            var check = pyService.TestPathPython();
-            var envs = pyService.GetInstalledPythons();
-            IBuildRunner runner = null;
-            if (check || envs.Any()) {
-                runner = new PythonBuildRunner(check ? "python" : envs.First());
-            } else {
-                logger.LogWarning("Python not detected! Attempting to fall back to UnrealPak.exe!");
-                runner = new UnrealBuildRunner("UnrealPak.exe");
-            }
-            // var runner = new ExecEngine.CommandRunner(check ? "python" : env, "u4pak.py");
-            return new BuildService(
-                    logger,
-                    factory,
-                    runner
-                );
         }
 
         internal static ILoggingBuilder AddFileLogging(ILoggingBuilder logging, LogLevel level) {
@@ -110,25 +92,23 @@ namespace PackCreator
                     : LogLevel.Debug;
         }
 
+        internal static IServiceCollection AddUnPak(this IServiceCollection services) {
+            return services.AddSingleton<IPakFormat, PakVersion3Format>()
+                .AddSingleton<IPakFormat, PakVersion8Format>()
+                .AddSingleton<IFooterLayout, DefaultFooterLayout>()
+                .AddSingleton<IFooterLayout, PaddedFooterLayout>()
+                .AddSingleton<IHashProvider, NativeHashProvider>()
+                .AddSingleton<PakFileProvider>();
+        }
+
+        internal static IServiceCollection AddMessaging(this IServiceCollection services) {
+            return services.AddMediatR(mc => mc.AsScoped(),
+                typeof(Startup), typeof(IIdentifierParser));
+        }
+
         internal static IServiceCollection AddBuildServices(this IServiceCollection services) {
-            var pyService = new PythonService();
-            var check = pyService.TestPathPython();
-            var envs = pyService.GetInstalledPythons();
-            if (check || envs.Any()) {
-            // if (false) {
-                services.AddSingleton<IBuildRunner>(provider => new PythonBuildRunner(check ? "python" : envs.First()));
-                services.AddSingleton<IScriptDownloadService, PythonScriptDownloadService>();
-                //python is available, use u4pak
-            } else {
-                services.AddSingleton<IBuildRunner>(provider => {
-                    var uLogger = provider.GetRequiredService<ILogger<UnrealBuildRunner>>();
-                    uLogger.LogWarning("Python not detected! Attempting to fall back to UnrealPak.exe!");
-                    return new UnrealBuildRunner("UnrealPak.exe");
-                });
-                services.AddSingleton<IScriptDownloadService, UnrealPakDownloadService>();
-            }
-            services.AddSingleton<BuildService>();
-            return services;
+            return services.AddSingleton<IBuildServiceProvider, BuildServiceProvider>()
+                .AddSingleton<DirectoryBuildContextFactory>();
         }
     }
 }

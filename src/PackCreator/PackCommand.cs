@@ -11,29 +11,31 @@ using System.Collections.Generic;
 using Sharprompt.Validations;
 using AceCore.Parsers;
 using System.Text.RegularExpressions;
+using BuildEngine;
+using BuildEngine.Builder;
+using MediatR;
 using static PackCreator.PackingHelpers;
 using Microsoft.Extensions.Logging;
+using PackCreator.Build;
 
 namespace PackCreator {
     public class PackCommand : AsyncCommand<PackCommand.Settings>
     {
         private readonly ILogger<PackCommand> _logger;
-        private readonly PythonService _pyService;
-        private readonly BuildService _buildService;
         private readonly ParserService _parser;
         private readonly FileNameService _nameService;
         private readonly IAnsiConsole _console;
         private readonly IEnumerable<IPackedFileHandler> _fileHandlers;
+        private readonly IMediator _mediator;
 
-        public PackCommand(ILogger<PackCommand> logger, PythonService pyService, BuildService buildService, ParserService parser, FileNameService nameService, IAnsiConsole console, IEnumerable<IPackedFileHandler> fileHandlers)
+        public PackCommand(ILogger<PackCommand> logger, ParserService parser, FileNameService nameService, IAnsiConsole console, IEnumerable<IPackedFileHandler> fileHandlers, IMediator mediator)
         {
             _logger = logger;
-            _pyService = pyService;
-            _buildService = buildService;
             _parser = parser;
             _nameService = nameService;
             _console = console;
             _fileHandlers = fileHandlers;
+            _mediator = mediator;
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, Settings settings) {
@@ -52,14 +54,6 @@ namespace PackCreator {
             buildSettings.Prefix = prefixName;
             var allFiles = rootInfo.EnumerateFiles("*.uasset", SearchOption.AllDirectories);
             // settings = InputHelpers.PromptMissing(settings, false);
-            var pythonReady = _pyService.IsPythonAvailable();
-            if (!pythonReady) {
-                AnsiConsole.MarkupLine("[bold white on red]ERROR[/]: It looks like Python isn't installed on your PC. Install Python [bold]3[/] and try again!");
-                var forceContinue = _console.Confirm("We can try and run the build anyway using UnrealPak, but this has not been as well-tested as Python/u4pak. Do you want to continue?");
-                if (!forceContinue) {
-                    return 3;
-                }
-            }
             var instructions = new List<BuildInstruction>();
             if (_logger.IsEnabled(LogLevel.Trace)) {
                 _logger.LogTrace($"Running pack operation on {rootInfo.Name} with {allFiles.Count()} files.");
@@ -149,14 +143,17 @@ namespace PackCreator {
             {
                 var ctxName = pakBuild.Key;
                 _logger.LogDebug($"Running asset build for {ctxName}");
-                // buildRoot.Key.TargetAssets.AddRange(metaObjects);
-                var bResult = await _buildService.RunBuild(ctxName, rootInfo.FullName, pakBuild.Value.ToArray());
-                if (bResult == null) {
+                var req = new FileBuildRequest() {
+                    Instructions = pakBuild.Value,
+                    Name = pakBuild.Key,
+                    GroupName = buildSettings.Prefix
+                };
+                var res = await _mediator.Send(req);
+                if (res == null) {
                     AnsiConsole.MarkupLine($"[bold white on red]ERROR[/]: Failed to build the pak file for {ctxName}! This can mean a lot of things, including an incorrect folder structure or failed build.");
                     //well shit
                 } else {
-                    
-                    var finalName = $"{_nameService.GetNameFromBuildGroup(pakBuild, buildSettings)}_P.pak";
+                    var targetFileName = $"{_nameService.GetNameFromBuildGroup(pakBuild, buildSettings.Prefix)}_P.pak";
                     string NestedFolders(string finalName) {
                         var targetDir = Path.Combine(rootInfo.Parent.FullName, "Packed Files", _nameService.GetOutputPathForGroup(pakBuild.Key));
                         Directory.CreateDirectory(targetDir);
@@ -164,11 +161,11 @@ namespace PackCreator {
                     }
                     var finalTarget = buildSettings.OutputMode switch {
                         OutputModes.SubDirectory => subDir,
-                        OutputModes.NestedFolders => NestedFolders(finalName),
+                        OutputModes.NestedFolders => NestedFolders(targetFileName),
                         _ => rootInfo.FullName
                     };
-                    var finalFile = Path.Join(finalTarget, finalName);
-                    File.Copy(bResult.FullName, finalFile, true);
+                    var finalFile = Path.Join(finalTarget, targetFileName);
+                    File.Copy(res.FullName, finalFile, true);
                     finalFiles.Add(Path.GetRelativePath(rootInfo.FullName, finalFile));
                 }
             }

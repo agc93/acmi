@@ -2,14 +2,16 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>acmi-pack</AssemblyName>
     <DebugType>embedded</DebugType>
     <!-- <ApplicationManifest>app.manifest</ApplicationManifest> -->
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ExecEngine" Version="0.0.2" />
+    <PackageReference Include="BuildEngine" Version="0.0.0-preview.0.11" />
+    <PackageReference Include="ExecEngine" Version="0.0.3" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="NReco.Logging.File" Version="1.1.1" />
     <PackageReference Include="Scrutor" Version="3.3.0" />
     <PackageReference Include="Sharprompt" Version="2.0.0" />
@@ -18,6 +20,7 @@
     <PackageReference Include="Spectre.Cli.Extensions.DependencyInjection" Version="0.2.3" />
     <PackageReference Include="Spectre.Console" Version="0.30.0" />
     <PackageReference Include="Spectre.Console.Extensions.Logging" Version="0.2.2-preview.0.3" />
+    <PackageReference Include="UnPak.Core" Version="0.0.0-preview.0.14" />
     <PackageReference Include="whichpython" Version="0.3.3" />
   </ItemGroup>
 
