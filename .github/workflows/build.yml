@@ -19,9 +19,32 @@ on:
 
 jobs:
   build:
+    runs-on: ubuntu-latest
+    if: ${{!startsWith(github.ref, 'refs/tags/')}}
+    steps:
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+      - name: Restore Tools
+        run: |
+          dotnet tool restore
+      - name: Run the Cake script
+        uses: cake-build/cake-action@v1
+        with:
+          target: Publish
+      - uses: actions/upload-artifact@v1
+        name: Upload Artifacts
+        with:
+          name: acmi-cli
+          path: dist/archive/
+  build-win:
     # have to use Windows to get app versions and assembly info
     # get your shit together Microsoft
     runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
     - uses: actions/checkout@master
       with:
@@ -42,7 +65,6 @@ jobs:
         name: acmi-cli
         path: dist/archive/
     - name: Create Release
-      if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
         body: |
@@ -54,7 +76,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   nexus:
-    needs: build
+    needs: build-win
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
