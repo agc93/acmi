@@ -19,7 +19,9 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # have to use Windows to get app versions and assembly info
+    # get your shit together Microsoft
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@master
       with:
@@ -27,11 +29,13 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
+    - name: Restore Tools
+      run: |
+        dotnet tool restore
     - name: Run the Cake script
       uses: cake-build/cake-action@v1
       with:
         target: Publish
-        cake-bootstrap: true
     - uses: actions/upload-artifact@v1
       name: Upload Artifacts
       with:
