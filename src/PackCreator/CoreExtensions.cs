@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using AceCore;
+using BuildEngine.Builder;
 
 namespace PackCreator {
     public static class CoreExtensions {
@@ -31,29 +32,6 @@ namespace PackCreator {
             };
             return instr;
         }
-
-        /* public static IEnumerable<DirectoryInfo> GetModFileNodes(this DirectoryInfo root) {
-            var folderWithoutSubfolder = Directory.EnumerateDirectories(root.FullName, "*.*", SearchOption.AllDirectories)
-                .Where(f => {
-                    var files = Directory.EnumerateFiles(f, "*.*", SearchOption.TopDirectoryOnly);
-                    return (!Directory.EnumerateDirectories(f, "*.*", SearchOption.TopDirectoryOnly).Any()) && files.Any() && !files.All(a => Path.GetExtension(a) == ".pak") && new DirectoryInfo(f).Name != "ex" && !f.Contains("\\_meta\\");
-                });
-            return folderWithoutSubfolder.Select(fs => IsSlotFolder(fs) ? Directory.GetParent(fs) : new DirectoryInfo(fs)).Select(f => f.FullName).Distinct().Select(p => new DirectoryInfo(p)).ToList();
-        }
-
-        public static IEnumerable<DirectoryInfo> GetModFileNodes(this DirectoryInfo root, string rootPattern) {
-            var folderWithoutSubfolder = Directory.EnumerateDirectories(root.FullName, rootPattern, SearchOption.TopDirectoryOnly).SelectMany( td => Directory.EnumerateDirectories(td, "*", SearchOption.AllDirectories)
-                .Where(f => {
-                    var files = Directory.EnumerateFiles(f, "*.*", SearchOption.TopDirectoryOnly);
-                    return (!Directory.EnumerateDirectories(f, "*.*", SearchOption.TopDirectoryOnly).Any()) && files.Any() && !files.All(a => Path.GetExtension(a) == ".pak") && new DirectoryInfo(f).Name != "ex";
-                }));
-            return folderWithoutSubfolder.Select(fs => IsSlotFolder(fs) ? Directory.GetParent(fs) : new DirectoryInfo(fs)).Select(f => f.FullName).Distinct().Select(p => new DirectoryInfo(p)).ToList();
-        }
-
-        internal static bool IsSlotFolder(this string folderName) {
-            var leafName = Path.GetFileName(folderName);
-            return leafName == "Materials" || leafName == "Textures" || leafName.Any(char.IsDigit);
-        } */
 
         public static void CopyTo(this DirectoryInfo sourceDirectory, DirectoryInfo targetDirectory, string fileFilter) {
 

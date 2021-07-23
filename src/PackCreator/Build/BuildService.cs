@@ -3,26 +3,52 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AceCore;
+using BuildEngine;
+using BuildEngine.Builder;
 using ExecEngine;
 using Microsoft.Extensions.Logging;
 using PackCreator.Build;
+using UnPak.Core;
 
 namespace PackCreator {
+    
+    public class PackBuildService : BuildService<DirectoryBuildContext>
+    {
+        private readonly ILogger<PackBuildService> _logger;
+
+        private readonly PakFileProvider _pakFileProvider;
+        // private readonly IModBuilder _modBuilder;
+
+        public PackBuildService(DirectoryBuildContext context, ILogger<PackBuildService> logger, PakFileProvider pakFileProvider) : base(context) {
+            _logger = logger;
+            _pakFileProvider = pakFileProvider;
+            // _modBuilder = modBuilder;
+        }
+
+        public override  Task<(bool Success, FileSystemInfo Output)> RunBuildAsync(string targetFileName) {
+            var writer = _pakFileProvider.GetWriter();
+            var gameDir = new DirectoryInfo(Directory.GetDirectories(Context.WorkingDirectory.FullName).First());
+            var targetBuildPath = Path.IsPathRooted(targetFileName) ? targetFileName : Path.Combine(Context.WorkingDirectory.FullName, targetFileName);
+            var fi = writer.BuildFromDirectory(gameDir, new FileInfo(targetBuildPath));
+            return Task.FromResult((fi.Exists, (FileSystemInfo) fi));
+        }
+    }
+
     public class BuildService {
         private readonly ILogger<BuildService> _logger;
-        private readonly BuildContextFactory _contextFactory;
-        private readonly IBuildRunner _runner;
+        private readonly DirectoryBuildContextFactory _contextFactory;
+        // private readonly IBuildRunner _runner;
 
-        public BuildService(ILogger<BuildService> logger, BuildContextFactory contextFactory, IBuildRunner runner) {
+        public BuildService(ILogger<BuildService> logger, DirectoryBuildContextFactory contextFactory) {
             _logger = logger;
             _contextFactory = contextFactory;
-            _runner = runner;
+            // _runner = runner;
         }
 
 
         public async Task<FileInfo> RunBuild(string objName, string rootPath, params BuildInstruction[] contextTargets) {
             var targets = contextTargets.ToList();
-            using (var ctx = await _contextFactory.Create(objName))
+            using (var ctx = _contextFactory.CreateContext(objName))
             {
                 foreach (var target in targets)
                 {
@@ -33,7 +59,8 @@ namespace PackCreator {
                         return null;
                     }
                 }
-                var buildResult = _runner.RunBuild(ctx.BuildScript, "packed-files.pak");
+                // var buildResult = _runner.RunBuild(null, "packed-files.pak");
+                (bool Success, FileInfo Output) buildResult = (false, null);
                 // var buildResult = ctx.RunBuild(_runner, "packed-files.pak");
                 if (buildResult.Success) {
                     _logger.LogInformation($"[bold green]Success![/] Files for {objName.GetFriendlyName()} successfully packed from {targets.Sum(t => t.SourceFiles.Count)} files (in {targets.Count} targets)");

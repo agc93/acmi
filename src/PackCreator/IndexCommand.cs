@@ -17,7 +17,8 @@ namespace PackCreator
     {
         public override async Task<int> ExecuteAsync(CommandContext context, Settings settings) {
             var result = 0;
-            if (File.Exists(settings.FolderPath) && Path.GetExtension(settings.FolderPath) is var fileExt && (fileExt == ".uasset" || fileExt == ".uexp") && Path.GetFileNameWithoutExtension(settings.FolderPath).Contains("Inst")) {
+            if (File.Exists(settings.FolderPath) && Path.GetExtension(settings.FolderPath) is ".uasset" or ".uexp" && Path.GetFileNameWithoutExtension(settings.FolderPath) is {
+            } folderPath && folderPath.Contains("Inst")) {
                 //instance reader
                 var app = GetApp();
                 var args = new[] { "instance", settings.FolderPath}.Concat(context.Remaining.Raw);

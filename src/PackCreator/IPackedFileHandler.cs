@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AceCore;
+using BuildEngine.Builder;
 using Microsoft.Extensions.Logging;
 
 namespace PackCreator

@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AceCore;
+using BuildEngine.Builder;
 using static AceCore.Constants;
 
 namespace PackCreator {
     public class FileNameService {
         private static Dictionary<string, string> ItemNames {get;} = new Dictionary<string, string>().Concat(AllItemNames).Concat(ModTypes).Concat(Aces).ToDictionary(k => k.Key, v => v.Value);
         private static Dictionary<string, string> AllNames {get;} = new Dictionary<string, string>().Concat(AllItemNames).Concat(SlotNames).Concat(ModTypes).Concat(Aces).ToDictionary(k => k.Key, v => v.Value);
-        public string GetNameFromGroup(SourceGroup sourceGroup, BuildSettings bSettings, string separator = "_") {
+        public string GetNameFromGroup(SourceGroup sourceGroup, string prefix, string separator = "_") {
             var segments = (sourceGroup.Name ?? sourceGroup.RawValue).Split('_');
             var parts = segments.Select(s => Constants.AllItemNames.TryGetValue(s, out var name) ? name : s).ToList();
-            parts.AddIfSet(bSettings.Prefix);
+            parts.AddIfSet(prefix);
             return string.Join(separator, parts).MakeSafe(true);
         }
 
@@ -23,11 +24,11 @@ namespace PackCreator {
                 parts.AddIfSet(settings.Prefix);
                 return string.Join(separator, parts).MakeSafe(true);
             } else {
-                return GetNameFromGroup(sourceGroup, settings, separator);
+                return GetNameFromGroup(sourceGroup, settings.Prefix, separator);
             }
         }
 
-        public string GetNameFromBuildGroup(KeyValuePair<SourceGroup, List<BuildInstruction>> pakBuild, BuildSettings settings, string separator = "_") {
+        public string GetNameFromBuildGroup(KeyValuePair<SourceGroup, List<BuildInstruction>> pakBuild, string prefix, string separator = "_") {
             SourceGroup nameKey;
             if (string.IsNullOrWhiteSpace(pakBuild.Key.Name)) {
                 //there's no pre-set name. time to guess one.
@@ -41,7 +42,7 @@ namespace PackCreator {
                 //if there's a pre-set name, use that always
                 nameKey = pakBuild.Key;
             }
-            return GetNameFromGroup(nameKey, settings);
+            return GetNameFromGroup(nameKey, prefix);
         }
 
         public string GetOutputPathForGroup(string sourceGroup, string prefix = null) {
