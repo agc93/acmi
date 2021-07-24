@@ -9,10 +9,10 @@ namespace InstallerCreator {
         SkinPack GetFiles(string rootPath, bool allowMultiple = false);
     }
     public class FileService : IFileService {
-        private readonly PakReader _reader;
+        private readonly PakFileReader _reader;
         private readonly ILogger<FileService> _logger;
 
-        public FileService(PakReader reader, ILogger<FileService> logger)
+        public FileService(PakFileReader reader, ILogger<FileService> logger)
         {
             _reader = reader;
             _logger = logger;
@@ -30,7 +30,7 @@ namespace InstallerCreator {
                     ReadWholeFile = useMultiple,
                     TreatAsLightweight = System.Text.RegularExpressions.Regex.IsMatch(file.Name, @"[_[(](?:LW|LIGHT)[_\]\)]")
                 };
-                var idents = reader.ReadFile(file.FullName, readOpts);
+                var idents = reader.ReadFile(file.FullName);
                 files.Add(idents.ToList(), relPath);
             }
             var textFiles = Directory.EnumerateFiles(rootPath, "*.txt", SearchOption.TopDirectoryOnly);

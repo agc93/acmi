@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>acmi</AssemblyName>
     <DebugType>embedded</DebugType>
     <ApplicationIcon>acmi.ico</ApplicationIcon>
@@ -25,9 +25,11 @@
     <PackageReference Include="spectre.cli.extensions.dependencyinjection" Version="0.3.0-alpha0013" />
     <PackageReference Include="spectre.console" Version="0.14.0" />
     <PackageReference Include="Spectre.Console.Extensions.Logging" Version="0.1.1" />
+    <PackageReference Include="UnPak.Core" Version="0.0.0-preview.0.14" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AceCore.UnPak\AceCore.UnPak.csproj" />
     <ProjectReference Include="..\AceCore\AceCore.csproj" />
   </ItemGroup>
 
