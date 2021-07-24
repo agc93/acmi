@@ -14,6 +14,27 @@ namespace AceCore
             _parsers = parsers.OrderBy(p => p.Priority);
         }
 
+        public Identifier ParseFilePath(string assetPath, FileInfo file, DirectoryInfo fileRoot = null) {
+            var matched = _parsers.Select(p => p.TryParse(assetPath, false)).FirstOrDefault(m => m.IsValid);
+            if (matched.identifier != null) {
+                return matched.identifier;
+            } else {
+                matched = _parsers.Select(p => p.TryParse(file.Name, false)).FirstOrDefault(m => m.IsValid);
+                if (matched.identifier != null) {
+                    return matched.identifier;
+                } else if (fileRoot != null && fileRoot.Exists) {
+                    var pathMatched = _parsers
+                        .Select(p =>
+                            p.TryParse(Path.GetRelativePath(fileRoot.FullName, file.FullName).Replace('\\', '/'),
+                                false)).FirstOrDefault(m => m.IsValid);
+                    if (pathMatched.identifier != null) {
+                        return pathMatched.identifier;
+                    }
+                }
+                return null;
+            }
+        }
+
         public Identifier ParseFilePath(FileInfo file, DirectoryInfo fileRoot = null) {
             var matched = _parsers.Select(p => p.TryParse(file.Name, false)).FirstOrDefault(m => m.IsValid);
             if (matched.identifier != null) {

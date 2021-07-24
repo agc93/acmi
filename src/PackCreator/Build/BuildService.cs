@@ -29,6 +29,7 @@ namespace PackCreator {
             var writer = _pakFileProvider.GetWriter();
             var gameDir = new DirectoryInfo(Directory.GetDirectories(Context.WorkingDirectory.FullName).First());
             var targetBuildPath = Path.IsPathRooted(targetFileName) ? targetFileName : Path.Combine(Context.WorkingDirectory.FullName, targetFileName);
+            // var fi = writer.BuildFromDirectory(gameDir, new FileInfo(targetBuildPath), new PakFileCreationOptions {Compression = new PackageCompression(CompressionMethod.Zlib)});
             var fi = writer.BuildFromDirectory(gameDir, new FileInfo(targetBuildPath));
             return Task.FromResult((fi.Exists, (FileSystemInfo) fi));
         }
