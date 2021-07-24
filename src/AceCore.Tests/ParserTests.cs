@@ -73,4 +73,17 @@ namespace AceCore.Tests
             Assert.Equal(size, ident.Size.OrDefault(string.Empty));
         }
     }
+
+    public class TankParserTests
+    {
+        [Theory]
+        [JsonFileData("paths.json", "DropTanks")]
+        public void Should_Parse_Tanks_Path(string rawPath, string fullMatch, string aircraft, string type) {
+            var parsed = DropTankIdentifier.TryParse(rawPath, out var ident);
+            Assert.True(parsed);
+            Assert.Equal(fullMatch, ident.RawValue);
+            Assert.Equal(aircraft, ident.Aircraft);
+            Assert.Equal(type, ident.Type);
+        }
+    }
 }

@@ -29,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AceCore.UnPak\AceCore.UnPak.csproj" />
     <ProjectReference Include="..\AceCore\AceCore.csproj" />
   </ItemGroup>
 

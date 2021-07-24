@@ -12,7 +12,7 @@ namespace AceCore
         public static bool TryParse(string value, out VesselIdentifier ident) {
             // var rex = new System.Text.RegularExpressions.Regex(@"([a-z0-9]+?)_(v?\d+a?\w{1}?)_(\w)(?!\.u[^a]).*");
             // var rex = new Regex(@"(?:\w+_)?([a-zA-Z]{4})_(\w{1})?(?:_?)([A-Z]{1}|[A-Za-z]{4})(?:[^\w])(?!u[^a])");
-            var rex = new Regex(@"(?<mission>\w{2,}_)?(?<vessel>[a-zA-Z]{4})_(?<slot>\w{1})?(?:_?)(?<type>[A-Z]{1}|[A-Za-z]{4})(?:[^\w])(?!u[^a])");
+            var rex = new Regex(@"(?<mission>ex\d{2,}_)?(?<vessel>[a-zA-Z]{4})_(?<slot>\w{1})?(?:_?)(?<type>[A-Z]{1}|[A-Za-z]{4})(?:[^\w])(?!u[^a])");
             var match = rex.Match(value);
             // System.Console.WriteLine($"Matching {value}: {match.Success}");
             if (match != null && match.MatchedGroups().Count >= 4) {

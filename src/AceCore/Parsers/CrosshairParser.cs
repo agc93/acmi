@@ -72,4 +72,12 @@ namespace AceCore.Parsers
 
         public int Priority => 50;
     }
+
+    public class DropTankParser : IIdentifierParser
+    {
+        public (bool IsValid, Identifier identifier) TryParse(string value, bool strict = false) {
+            var parsed = DropTankIdentifier.TryParse(value, out var ident);
+            return (parsed && (!strict || ident.Type == "D"), ident);
+        }
+    }
 }
