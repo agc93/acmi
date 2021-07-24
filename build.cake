@@ -131,6 +131,7 @@ Task("Publish-Runtime")
 				OutputDirectory = runtimeDir,
 				PublishSingleFile = true,
 				PublishTrimmed = true,
+				IncludeNativeLibrariesForSelfExtract = true,
 				ArgumentCustomization = args => args.Append($"/p:Version={packageVersion}")
 			};
 			DotNetCorePublish(projPath, settings);

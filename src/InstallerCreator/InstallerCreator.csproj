@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>acmi</AssemblyName>
     <DebugType>embedded</DebugType>
+    <ApplicationIcon>acmi.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Publish'">
@@ -28,6 +29,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AceCore\AceCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="acmi.ico" />
   </ItemGroup>
 
 </Project>
