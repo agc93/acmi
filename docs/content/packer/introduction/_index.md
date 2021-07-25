@@ -12,10 +12,6 @@ ACMI Packer is <strong>extremely</strong> new and <strong>extremely</strong> alp
 
 ACMI Packer is a **highly-opinionated** tool. To boil that down, it means this will **not** be the tool for *every* possible packing scenario and has no intentions to be. ACMI Packer is primarily intended for skin mods and other UI mods and might struggle with more complex stuff.
 
-{{< block note >}}
-It's worth knowing that ACMI Packer doesn't generate the pak files itself: it relies on <code>u4pak.py</code> for that.
-{{< /block >}}
-
 #### What's the ACMI connection?
 
 ACMI Packer is pretty much impossible to fully separate from ACMI itself as it uses the same underlying logic to read and identify AC7 mod files. Whereas ACMI reads the files from inside a `pak` file, ACMI Packer can just read it straight from the cooked files on disk.

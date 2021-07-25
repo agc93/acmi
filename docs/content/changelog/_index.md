@@ -6,6 +6,11 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.4.0**
+  - No more Python required! ACMI now uses an internal packer so it no longer depends on either `u4pak` or `UnrealPak`. This should speed up packing and make setting up easier.
+  - Support for drop tanks that use their own textures (i.e. F-15E and MTD)
+  - Improved detection of both aircraft skins and vessels
+  - *Highly experimental* support for recooking skin assets into new slots
 - **0.3.9**
   - Major under-the-covers rework to file detection and handling: please report any new issues you find
   - Fixes to properly support `Decal_Inst` files
