@@ -35,6 +35,8 @@
         ["Vehicles/Aircraft/f15c/04/f15c_04_MREC\\0u\u0013v", "Skin", "f15c_04_MREC"],
         ["Nimbus/Content/Vehicles/Vessels/alcn/Textures/alcn_a_MREC.uasset", "Vessel", "alcn_a_MREC"],
         ["/Game/Vehicles/Aircraft/f16x/06/f16x_06_D.uasset", "Skin", "f16x_06_D"],
-        ["/Game/Vehicles/Aircraft/f15m/CP/f15m_CP_Inst.uasset", "Cockpit", "f15m_CP_Inst"]
+        ["/Game/Vehicles/Aircraft/f15m/CP/f15m_CP_Inst.uasset", "Cockpit", "f15m_CP_Inst"],
+        ["Nimbus/Content/Vehicles/Aircraft/f15e/f15e_dptk/f15e_dptk_D.uasset", "DropTank", "f15e_dptk_D"],
+        ["Nimbus/Content/Vehicles/Aircraft/f15m/f15m_dptk/f15m_dptk_N.uasset", "DropTank", "f15m_dptk_N"]
     ]
 }

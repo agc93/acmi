@@ -7,9 +7,9 @@ namespace AceCore
 {
     public class InstanceReader : FileReader
     {
-        private readonly ParserService _parser;
+        private readonly IParserService _parser;
 
-        public InstanceReader(ParserService parser)
+        public InstanceReader(IParserService parser)
         {
             _parser = parser;
         }

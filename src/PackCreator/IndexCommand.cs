@@ -17,21 +17,30 @@ namespace PackCreator
     {
         public override async Task<int> ExecuteAsync(CommandContext context, Settings settings) {
             var result = 0;
-            if (File.Exists(settings.FolderPath) && Path.GetExtension(settings.FolderPath) is ".uasset" or ".uexp" && Path.GetFileNameWithoutExtension(settings.FolderPath) is {
-            } folderPath && folderPath.Contains("Inst")) {
-                //instance reader
-                var app = GetApp();
-                var args = new[] { "instance", settings.FolderPath}.Concat(context.Remaining.Raw);
-                result = await app.RunAsync(args);
-            } else {
-                var di = new DirectoryInfo(settings.FolderPath);
-                //time to pack boys
-                var app = GetApp();
-                var info = new AppInfoService();
-                var args = new[] { "pack", settings.FolderPath}.Concat(context.Remaining.Raw);
-                result = await app.RunAsync(args);
-            // }
-            // return await app.RunAsync(args);
+            switch (settings.FolderPath.Length) {
+                case > 1 when settings.FolderPath.Any(fp => fp.Contains("_D") || fp.Contains("MREC") || fp.Contains("_N")):
+                {
+                    // recooker
+                    var app = GetApp();
+                    var args = new[] {"slot-edit"}.Concat(settings.FolderPath).Concat(context.Remaining.Raw);
+                    result = await app.RunAsync(args);
+                    break;
+                }
+                case 1 when File.Exists(settings.FolderPath[0]) && Path.GetExtension(settings.FolderPath[0]) is ".uasset" or ".uexp" && Path.GetFileNameWithoutExtension(settings.FolderPath[0]) is { } folderPath:
+                {
+                    var app = GetApp();
+                    var args = new[] {"instance", settings.FolderPath[0]}.Concat(context.Remaining.Raw);
+                    result = await app.RunAsync(args);
+                    break;
+                }
+                default:
+                {
+                    //time to pack boys
+                    var app = GetApp();
+                    var args = new[] { "pack", settings.FolderPath[0]}.Concat(context.Remaining.Raw);
+                    result = await app.RunAsync(args);
+                    break;
+                }
             }
             if (result != 0) {
                 Console.WriteLine("It looks like there might have been an error running the pack command!");
@@ -45,7 +54,7 @@ namespace PackCreator
 
         public class Settings : CommandSettings {
             [CommandArgument(0, "<folder-path>")]
-            public string FolderPath {get;set;}
+            public string[] FolderPath {get;set;}
         }
     }
 }

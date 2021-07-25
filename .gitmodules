@@ -1,3 +1,6 @@
 [submodule "docs/themes/kraiklyn"]
 	path = docs/themes/kraiklyn
 	url = https://github.com/jsnjack/kraiklyn.git
+[submodule "lib/UAssetAPI"]
+	path = lib/UAssetAPI
+	url = https://github.com/agc93/UAssetAPI.git

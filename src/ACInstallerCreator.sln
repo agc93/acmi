@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackCreator", "PackCreator\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AceCore.Tests", "AceCore.Tests\AceCore.Tests.csproj", "{9E137060-364C-45B4-93F4-03F43195EDEA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AceCore.Assets", "AceCore.Assets\AceCore.Assets.csproj", "{24C30DA0-EADC-4E60-9C28-24709ED70DE7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,17 @@ Global
 		{9E137060-364C-45B4-93F4-03F43195EDEA}.Release|x64.Build.0 = Release|Any CPU
 		{9E137060-364C-45B4-93F4-03F43195EDEA}.Release|x86.ActiveCfg = Release|Any CPU
 		{9E137060-364C-45B4-93F4-03F43195EDEA}.Release|x86.Build.0 = Release|Any CPU
+		{24C30DA0-EADC-4E60-9C28-24709ED70DE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24C30DA0-EADC-4E60-9C28-24709ED70DE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24C30DA0-EADC-4E60-9C28-24709ED70DE7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{24C30DA0-EADC-4E60-9C28-24709ED70DE7}.Debug|x64.Build.0 = Debug|Any CPU
+		{24C30DA0-EADC-4E60-9C28-24709ED70DE7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{24C30DA0-EADC-4E60-9C28-24709ED70DE7}.Debug|x86.Build.0 = Debug|Any CPU
+		{24C30DA0-EADC-4E60-9C28-24709ED70DE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24C30DA0-EADC-4E60-9C28-24709ED70DE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24C30DA0-EADC-4E60-9C28-24709ED70DE7}.Release|x64.ActiveCfg = Release|Any CPU
+		{24C30DA0-EADC-4E60-9C28-24709ED70DE7}.Release|x64.Build.0 = Release|Any CPU
+		{24C30DA0-EADC-4E60-9C28-24709ED70DE7}.Release|x86.ActiveCfg = Release|Any CPU
+		{24C30DA0-EADC-4E60-9C28-24709ED70DE7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
