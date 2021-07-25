@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <!-- <ProjectReference Include="..\..\..\..\Other\ExecEngine\src\ExecEngine\ExecEngine.csproj" /> -->
+    <ProjectReference Include="..\AceCore.Assets\AceCore.Assets.csproj" />
     <ProjectReference Include="..\AceCore\AceCore.csproj" />
   </ItemGroup>
 

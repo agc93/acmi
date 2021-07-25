@@ -27,6 +27,7 @@ namespace PackCreator
                 c.AddCommand<PackCommand>("pack");
                 // c.AddCommand<InitCommand>("init");
                 c.AddCommand<InstanceCommand>("instance");
+                c.AddCommand<SlotEditCommand>("slot-edit");
                 c.AddExample(new[] { "build" });
                 c.AddExample(new[] { "build", "./ModPackFiles" });
                 c.AddExample(new[] { "build", "--author", "agc93", "--title", "\"My Awesome Skin Pack\"", "--version", "1.0.0" });
@@ -43,6 +44,7 @@ namespace PackCreator
             // services.AddSingleton<BuildService>(GetBuildService);
             services.AddSingleton<FileNameService>();
             services.AddSingleton<ParserService>();
+            services.AddSingleton<IParserService>(p => p.GetRequiredService<ParserService>());
             services.AddSingleton<IAnsiConsole>(p => {
                 return AnsiConsole.Create(
                     new AnsiConsoleSettings {
