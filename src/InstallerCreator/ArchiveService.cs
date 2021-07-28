@@ -13,7 +13,7 @@ namespace InstallerCreator
             var absoluteTarget = Path.Combine(rootPath.AbsolutePath, targetFileName);
             ZipFile.CreateFromDirectory(rootPath.AbsolutePath, tempFile);
             File.Move(tempFile, absoluteTarget);
-            Console.WriteLine($"Created archive file at ${absoluteTarget}");
+            Console.WriteLine($"Created archive file at {absoluteTarget}");
             return (File.Exists(absoluteTarget), new FileInfo(absoluteTarget));
         }
     }

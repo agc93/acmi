@@ -7,6 +7,7 @@ using InstallerCreator.Commands;
 using System.Threading.Tasks;
 using AceCore.Parsers;
 using AceCore;
+using UnPak.Core;
 
 namespace InstallerCreator {
     class Program {
@@ -35,7 +36,7 @@ namespace InstallerCreator {
             services.AddSingleton<IIdentifierParser, EmblemParser>();
             services.AddSingleton<IIdentifierParser, CockpitParser>();
             services.AddSingleton<ArchiveService>();
-            services.AddSingleton<PakFileReader>();
+            services.AddUnPak();
             services.AddSingleton<AppInfoService>();
             services.AddSingleton<ParserService>();
             services.AddSingleton<ModInstaller.ImageLocatorService>();
@@ -57,6 +58,19 @@ namespace InstallerCreator {
                 c.AddExample(new[] { "build", "--author", "agc93", "--title", "\"My Awesome Skin Pack\"", "--version", "1.0.0" });
             });
             return await app.RunAsync(args);
+        }
+    }
+
+    internal static class ServiceExtensions
+    {
+        internal static IServiceCollection AddUnPak(this IServiceCollection services) {
+            return services.AddSingleton<IPakFormat, PakVersion3Format>()
+                .AddSingleton<IPakFormat, PakVersion8Format>()
+                .AddSingleton<IFooterLayout, DefaultFooterLayout>()
+                .AddSingleton<IFooterLayout, PaddedFooterLayout>()
+                .AddSingleton<UnPak.Core.Crypto.IHashProvider, UnPak.Core.Crypto.NativeHashProvider>()
+                .AddSingleton<PakFileProvider>()
+                .AddSingleton<PakFileReader>();
         }
     }
 }

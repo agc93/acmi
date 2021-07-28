@@ -22,10 +22,7 @@ namespace InstallerCreator
             return version;
         }
 
-        public string GetAppPath() {
-            var path = Path.GetDirectoryName(_assembly.Location);
-            return path;
-        }
+        public string GetAppPath() =>  AppContext.BaseDirectory;
 
         public string GetRuntimeName() {
             return _assembly?.GetCustomAttribute<System.Runtime.Versioning.TargetFrameworkAttribute>()?.FrameworkName ?? "Unknown";
