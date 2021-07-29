@@ -79,10 +79,22 @@ namespace PackCreator {
                         instructions.AddRange(handlerInstructions);
                     }
                 } else {
-                    var instr = new BuildInstruction<Identifier>(ident) {
-                        SourceFiles = file.Directory.GetFiles($"{ident.RawValue}.*").ToList()
-                    };
-                    instructions.Add(instr);
+                    try {
+                        var instruction = BuildInstructionFactory.GetInstructionForIdentifier(ident);
+                        if (instruction != null) {
+                            instruction.SourceFiles = file.Directory.GetFiles($"{ident.RawValue}.*").ToList();
+                            instructions.Add(instruction);
+                        }
+                        else {
+                            var instr = new BuildInstruction<Identifier>(ident) {
+                                SourceFiles = file.Directory.GetFiles($"{ident.RawValue}.*").ToList()
+                            };
+                            instructions.Add(instr);
+                        }
+                    }
+                    catch (Exception e) {
+                        _logger.LogWarning($"Didn't find an instruction type for '{ident.GetType().Name.Replace("Identifier", string.Empty)}', falling back to generic.");
+                    }
                 }
             }
             _logger.LogDebug($"Grouping {instructions.Count} build instructions by source group");
