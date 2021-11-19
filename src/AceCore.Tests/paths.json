@@ -17,6 +17,7 @@
         ["Nimbus/Content/Vehicles/Aircraft/asfx/00/asfx_00_Inst.uasset", "asfx_00_Inst", "asfx", "00", "Inst"],
         ["fa44_04_D.uasset", "fa44_04_D", "fa44", "04", "D"],
         ["asfx_00xMREC.uasset", "asfx_00xMREC", "asfx", "00", "MREC"],
+        ["rflm_02_D.uasset", "rflm_02_D", "rflm", "02", "D"],
         ["fa27_02xN.uasset", "fa27_02xN", "fa27", "02", "N"],
         ["./Skins/av8b_01_D.uasset", "av8b_01_D", "av8b", "01", "D"],
         ["ex/x02s_x2_MREC.uasset", "x02s_x2_MREC", "x02s", "02", "MREC"],
@@ -25,7 +26,8 @@
         ["Vehicles/Aircraft/f15c/04/f15c_04_MREC\\0u\u0013v", "f15c_04_MREC", "f15c", "04", "MREC"],
         ["Vehicles/Aircraft/fb22/04/fb22_04_MREC.uasset", "fb22_04_MREC", "fb22", "04", "MREC"],
         ["/Game/Vehicles/Aircraft/f15m/02/f15m_02_inst.uasset", "f15m_02_inst", "f15m", "02", "inst"],
-        ["/Game/Vehicles/Aircraft/f16x/06/f16x_06_D.uasset", "f16x_06_D", "f16x", "06", "D"]
+        ["/Game/Vehicles/Aircraft/f16x/06/f16x_06_D.uasset", "f16x_06_D", "f16x", "06", "D"],
+        ["/Game/Vehicles/Aircraft/m35d/00/m35d_00_D.uasset", "m35d_00_D", "m35d", "00", "D"]
     ],
     "Effects": [
         ["Nimbus/Content/VFX/Common/Materials/Missile/LightMissle/LightMissileSmoke_Master_02_Inst.uasset", "LightMissileSmoke_Master_02_Inst", "Nimbus/Content/VFX/Common/Materials/Missile/LightMissle", "LightMissileSmoke_Master_02_Inst", "Missile"],
