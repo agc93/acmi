@@ -6,6 +6,8 @@ anchor: "changelog"
 
 This is a brief summary only of major changes in each version.
 
+- **0.4.3**
+  - Update name mappings for CAS DLC aircraft.
 - **0.4.2**
   - Fix packed skin files getting generic names instead of skin names.
 - **0.4.1**
