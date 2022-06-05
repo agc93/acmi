@@ -225,7 +225,9 @@ namespace AceCore
             ["f18etg"] = "F/A-18E (Top Gun)",
             ["f02x"] = "F-2A Super Kai",
             ["f18x"] = "F/A-18F Block III",
-            ["m35d"] = "MiG-35D"
+            ["m35d"] = "MiG-35D",
+            ["dark"] = "DarkStar",
+            ["su57tg"] = "Su-57 (Top Gun)"
         };
 
         public static Dictionary<string, string> Aces => new Dictionary<string, string> {

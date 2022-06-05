@@ -4,7 +4,8 @@
         ["/Game/Vehicles/Weapons/w_4agm_r0/Textures/w_4agm_r0_D.uasset", "w_4agm_r0_D", "4agm", "r0", "D", "Nimbus/Content/Vehicles/Weapons/w_4agm_r0/Textures"],
         ["/Game/Vehicles/Weapons/w_aam_a0/Materials/w_aam_a0_Inst.uasset", "w_aam_a0_Inst", "aam", "a0", "Inst", "Nimbus/Content/Vehicles/Weapons/w_aam_a0/Material"],
         ["/Game/Vehicles/Weapons/w_icbm/Materials/w_icbm_MREC.uasset", "w_icbm_MREC", "icbm", "", "MREC", "Nimbus/Content/Vehicles/Weapons/w_icbm/Textures"],
-        ["w_lacm_f0_D.uasset", "w_lacm_f0_D", "lacm", "f0", "D", "Nimbus/Content/Vehicles/Weapons/w_lacm_f0/Textures"]
+        ["w_lacm_f0_D.uasset", "w_lacm_f0_D", "lacm", "f0", "D", "Nimbus/Content/Vehicles/Weapons/w_lacm_f0/Textures"],
+        ["w_hcaa_r1_D.uasset", "w_hcaa_r1_D", "hcaa", "r1", "D", "Nimbus/Content/Vehicles/Weapons/w_hcaa_r1/Textures"]
     ],
     "Aircraft": [
         ["/Game/Vehicles/Aircraft/a10a/00/a10a_00_D.uasset", "a10a_00_D", "a10a", "00", "D"],
@@ -27,7 +28,9 @@
         ["Vehicles/Aircraft/fb22/04/fb22_04_MREC.uasset", "fb22_04_MREC", "fb22", "04", "MREC"],
         ["/Game/Vehicles/Aircraft/f15m/02/f15m_02_inst.uasset", "f15m_02_inst", "f15m", "02", "inst"],
         ["/Game/Vehicles/Aircraft/f16x/06/f16x_06_D.uasset", "f16x_06_D", "f16x", "06", "D"],
-        ["/Game/Vehicles/Aircraft/m35d/00/m35d_00_D.uasset", "m35d_00_D", "m35d", "00", "D"]
+        ["/Game/Vehicles/Aircraft/m35d/01/m35d_00_D.uasset", "m35d_00_D", "m35d", "00", "D"],
+        ["/Game/Vehicles/Aircraft/f14atg/00/f14atg_00_D.uasset", "f14atg_00_D", "f14atg", "00", "D"],
+        ["/Game/Vehicles/Aircraft/dark/01/dark_01_D.uasset", "dark_01_D", "dark", "01", "D"]
     ],
     "Effects": [
         ["Nimbus/Content/VFX/Common/Materials/Missile/LightMissle/LightMissileSmoke_Master_02_Inst.uasset", "LightMissileSmoke_Master_02_Inst", "Nimbus/Content/VFX/Common/Materials/Missile/LightMissle", "LightMissileSmoke_Master_02_Inst", "Missile"],
